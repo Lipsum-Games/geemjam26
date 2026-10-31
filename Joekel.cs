@@ -11,6 +11,7 @@ public partial class Joekel : CharacterBody2D
 	private float _kachow;
 	private float _hunger;
 	private float _turnJitter;
+	private Area2D detectionArea;
 	
 	public Dna Dna;
 
@@ -24,6 +25,8 @@ public partial class Joekel : CharacterBody2D
 		_kachow = Karaktereigenschappen.Kachow.Van(Dna);
 		_turnJitter = Karaktereigenschappen.TurnJitter.Van(Dna);
 		_hunger = HungerMin;
+		detectionArea = GetNode<Area2D>("Area2D");
+		detectionArea.AreaEntered += OnAreaEntered;
 		for (int r = 0; r < 3; r++)
 			_kleuren_bandjes[r] = new Color(Sigmoid(Dna[r, 0]), Sigmoid(Dna[r, 1]), Sigmoid(Dna[r, 2]));
 	}
@@ -71,6 +74,13 @@ public partial class Joekel : CharacterBody2D
 	private void CalculateHunger(double delta)
 	{
 		bool foodSourceClose = false;
+		//foreach (Node2D body in GetOverlappingBodies())
+		//{
+			//if (body.IsInGroup("FoodSource"))
+			//{
+				//GD.Print("An enemy is overlapping!");
+			//}
+		//}
 		foreach (Node2D source in GetTree().GetNodesInGroup("FoodSource"))
 		{
 			float distance = GlobalPosition.DistanceTo(source.GlobalPosition);
@@ -86,6 +96,14 @@ public partial class Joekel : CharacterBody2D
 			_hunger = Mathf.Max(_hunger - 10 * (float)delta, HungerMin);
 		} else {
 			_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
+		}
+	}
+
+	private void OnAreaEntered(Area2D area)
+	{
+		if (area.IsInGroup("FoodSource"))
+		{
+			GD.Print("Overlapping an enemy area!");
 		}
 	}
 
