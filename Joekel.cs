@@ -214,9 +214,13 @@ public partial class Joekel : CharacterBody2D
 		foreach (var body in _detectionArea.GetOverlappingBodies())
 		{
 			if (body is Joekel ander && ander != this)
-				if (_behaviour.CheckReproduce())
+				if (_behaviour.CheckReproduce() && Dna.Similarity(Dna, ander.Dna) < 6)
 				{
 					Reproduce(ander);
+				} else if (Dna.Similarity(Dna, ander.Dna) > 6){
+					// ATTACK
+					ander._huidigeGezonheid -= _chonkheid;
+					_hunger -= Math.Max((_vleeslustigheid - 0.5f), 0);
 				}
 				continue;
 				// hier kan je op de andere joekel leuke code toepassen voor interacties.
