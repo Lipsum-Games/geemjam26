@@ -8,7 +8,7 @@ public partial class ClusterLijst : Control
 	const float RijHoogte = 76;
 	const float CelB = 34, CelH = 21; // heatmap-vakjes, groot genoeg voor een getal met 1 decimaal
 
-	public override void _Ready() => TooltipText = " "; // niet-leeg, anders vraagt Godot _GetTooltip nooit op
+	public override void _Ready() => HoverUitleg.Koppel(this, HoverTekst); // eigen hover-paneel (leesbaar, werkt ook tijdens de sim)
 
 	public override void _Process(double delta)
 	{
@@ -17,7 +17,8 @@ public partial class ClusterLijst : Control
 	}
 
 	// hover-uitleg per onderdeel van een rij (zelfde maten als in _Draw)
-	public override string _GetTooltip(Vector2 p)
+	// niet _GetTooltip: dan toont Godot óók zijn eigen tooltip (dubbel)
+	public string HoverTekst(Vector2 p)
 	{
 		if (Bron == null) return "";
 		if (p.Y < 30) return Bron.Uitleg();
@@ -32,8 +33,7 @@ public partial class ClusterLijst : Control
 		{
 			int c = (int)((p.X - x0) / CelB), r = (int)((y - 8) / CelH);
 			if (c is >= 0 and < 3 && r is >= 0 and < 3)
-				return $"Gemiddeld DNA van deze groep, gen ({r},{c}): {g.Centrum[r * 3 + c]:0.00}\n" +
-					"Rood = positief, blauw = negatief, wit ≈ 0. Zelfde indeling als de DNA-matrix.";
+				return GenInvloed.Tekst(r * 3 + c, g.Centrum);
 		}
 		if (p.X < 8)
 			return "Groepskleur: dezelfde kleur in de grafiek hieronder en in de tab 'DNA genen'.";

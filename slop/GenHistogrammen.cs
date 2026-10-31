@@ -8,11 +8,12 @@ public partial class GenHistogrammen : Control
 	public Clusters Bron;
 	const int Bakjes = 20;
 
-	public override void _Ready() => TooltipText = " "; // niet-leeg, anders vraagt Godot _GetTooltip nooit op
+	public override void _Ready() => HoverUitleg.Koppel(this, HoverTekst); // eigen hover-paneel (leesbaar, werkt ook tijdens de sim)
 
 	public override void _Process(double delta) => QueueRedraw();
 
-	public override string _GetTooltip(Vector2 p)
+	// niet _GetTooltip: dan toont Godot óók zijn eigen tooltip (dubbel)
+	public string HoverTekst(Vector2 p)
 	{
 		int c = Mathf.Clamp((int)(p.X / (Size.X / 3)), 0, 2), r = Mathf.Clamp((int)(p.Y / (Size.Y / 3)), 0, 2);
 		return $"Gen ({r},{c}): hoe deze genwaarde verdeeld is over alle joekels (-1 links, +1 rechts).\n" +
