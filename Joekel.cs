@@ -260,7 +260,7 @@ public partial class Joekel : CharacterBody2D
 
 	
 	private void Reproduce(){
-		if (!IsNodeReady() || Dna == null || age < AgeOfConsent)
+		if (!IsNodeReady() || Dna == null || age < AgeOfConsent || _hunger > ReproductionHunger)
 			return;
 		((World) GetParent()).SpawnJoekel(Position, Dna.Noisified());
 		_hunger += ReproductionHungerCost;
