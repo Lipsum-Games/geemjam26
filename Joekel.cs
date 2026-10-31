@@ -14,7 +14,7 @@ public partial class Joekel : CharacterBody2D
 
 	// Muur stuiter dingetjes
 	[Export] public float ZachteStuiter = 0.4f;
-	[Export] public float HardeStuiter = 2.5f;
+	[Export] public float HardeStuiter = 0.9f;
 	[Export] public float MuurHeal = 2f;
 	[Export] public float MuurSchade = 0.02f;
 
