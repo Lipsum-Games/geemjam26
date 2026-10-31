@@ -20,22 +20,7 @@ public partial class ClusterLijst : Control
 	public override string _GetTooltip(Vector2 p)
 	{
 		if (Bron == null) return "";
-		if (p.Y < 30)
-			return Bron.Wijze switch
-			{
-				Clusters.Modus.Plek =>
-					"Kuddes: joekels die bij elkaar in de buurt lopen (binnen ~120 px, min. 4 samen).\n" +
-					"Het aantal kuddes volgt vanzelf. Losse joekels tellen als zwervers.\n" +
-					"Per kudde zie je waarin hij genetisch afwijkt van de rest (σ-kenmerken).",
-				Clusters.Modus.Geur =>
-					"Geurgroepen: joekels met (bijna) dezelfde geurwaarde = dezelfde mistkleur.\n" +
-					"Een groep loopt door zolang er geen gat in de geurwaardes zit,\n" +
-					"dus blauw en groen worden apart, ook als ze door elkaar lopen.",
-				_ =>
-					"Soorten op basis van alle 9 genen (k-means). Een extra groep komt er pas als die\n" +
-					"de genetische spreiding minstens 30% verlaagt. Verschillen in maar 1-3 genen\n" +
-					"(zoals alleen geur) vallen hier weg; daarvoor zijn 'Plek' en 'Geur'.",
-			} + "\nElke 2 sim-seconden opnieuw berekend.";
+		if (p.Y < 30) return Bron.Uitleg();
 
 		int i = (int)((p.Y - 30) / RijHoogte);
 		if (i < 0 || i >= Bron.Groepen.Count) return "";

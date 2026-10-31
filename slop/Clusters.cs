@@ -97,6 +97,43 @@ public partial class Clusters : Node
 
 	public static Color KleurVan(int id) => Kleuren[id % Kleuren.Length];
 
+	// uitleg voor in het stats-scherm (ⓘ), met de waardes van de huidige slider-stand
+	public string Uitleg()
+	{
+		int n = S.Indeling.Count + S.Zwervers;
+		int minimum = Math.Max(MinGroep, (int)(MinGroepAandeel * n));
+		string modus = Wijze switch
+		{
+			Modus.Plek =>
+				$"PLEK (kuddes)\n" +
+				$"Joekels binnen {Mathf.Lerp(200f, 40f, S.Losheid):0} px van elkaar zijn buren. Wie minstens {KuddeMinimum} joekels\n" +
+				"om zich heen heeft (zichzelf meegeteld) begint een kudde, en die groeit door via elke buur die\n" +
+				"óók genoeg buren heeft (een ketting). Wie niemand dichtbij genoeg heeft is zwerver.\n" +
+				"Het aantal kuddes volgt vanzelf (DBSCAN).",
+			Modus.Geur =>
+				$"GEUR (mistkleur)\n" +
+				"Zelfde ketting-idee als bij Plek, maar op de geurwaarde (-1..1) in plaats van positie:\n" +
+				$"zolang er tussen geurwaardes geen gat groter dan {Mathf.Lerp(0.08f, 0.02f, S.Losheid):0.000} zit, is het één groep.\n" +
+				"Blauwe en groene mist (gat ertussen) worden dus aparte groepen, ook als ze door elkaar lopen.",
+			_ =>
+				$"DNA (alle 9 genen)\n" +
+				"k-means op de 9 genen. Begint met 1 groep; er komt pas een groep bij als dat de genetische\n" +
+				$"spreiding verlaagt tot onder {Mathf.Lerp(0.78f, 0.92f, S.Losheid) * 100:0}% van ervoor (max {MaxK} groepen).\n" +
+				"Ziet alleen soorten die in veel genen verschillen; een verschil in 1-3 genen (zoals alleen geur)\n" +
+				"valt weg in de ruis. Puur random DNA haalt al ~88%, dus boven die stand splitst hij ook ruis.",
+		};
+		return modus + "\n\n" +
+			$"Voor alle modi:\n" +
+			$"• Een groep telt pas vanaf {minimum} joekels ({MinGroep}, of {MinGroepAandeel * 100:0}% van de populatie als dat meer is);\n" +
+			"   kleiner = zwervers.\n" +
+			$"• Elke {Interval:0.#} sim-seconden opnieuw ingedeeld, alle 3 de modi tegelijk (wisselen gooit niks weg).\n" +
+			"• Groepen houden hun nummer/kleur: elke nieuwe groep wordt gekoppeld aan de dichtstbijzijnde groep\n" +
+			"   van de vorige meting (op plek, geur of DNA).\n" +
+			"• De slider (Grof–Fijn) zet de getallen hierboven. Bij loslaten wordt de héle geschiedenis opnieuw\n" +
+			"   ingedeeld met de nieuwe stand (op de achtergrond), dus de grafiek klopt altijd met de stand.\n" +
+			"• Kenmerken per groep (σ) = hoe die groep afwijkt van de hele populatie.";
+	}
+
 	public override void _Process(double delta)
 	{
 		VerwerkHerberekeningen();
