@@ -12,6 +12,7 @@ public partial class Joekel : CharacterBody2D
 	private float _heading;
 	private float _kachow;
 	private float _hunger;
+	private float _zwem;
 	private float _turnJitter;
 	
 	public Dna Dna;
@@ -34,7 +35,7 @@ public partial class Joekel : CharacterBody2D
 		float dt = (float)delta;
 		_heading += (float)GD.RandRange(-_turnJitter, _turnJitter) * dt;
 
-		Velocity = Vector2.FromAngle(_heading) * _kachow * (HungerMax + HungerMin - _hunger) / HungerMax;
+		Velocity = GetVelocityVector();
 		MoveAndSlide();
 
 		for (int i = 0; i < GetSlideCollisionCount(); i++)
@@ -67,6 +68,14 @@ public partial class Joekel : CharacterBody2D
 		DrawCircle(Vector2.Zero, 10, _kleuren_bandjes[0]);
 		DrawCircle(Vector2.Zero, 7, _kleuren_bandjes[1]);
 		DrawCircle(Vector2.Zero, 4, _kleuren_bandjes[2]);
+	}
+
+	private Vector2 GetVelocityVector() {
+		var result = Vector2.FromAngle(_heading) 				// unit vector 
+		result *= _kachow 										// joekel speed multiplier
+		result *= (HungerMax + HungerMin - _hunger) / HungerMax // hunger discount
+		result *= WorldTiles.GetTileAt(this.GlobalPosition);  // discount from the tile the joekel is on
+		return result 
 	}
 	
 	private void CalculateHunger(double delta)
@@ -101,9 +110,6 @@ public partial class Joekel : CharacterBody2D
 	private void Reproduce(){
 		if (!IsNodeReady() || Dna == null)
 			return;
-		GD.Print("parent world", ((World) GetParent()));
-		GD.Print("dna", Dna);
-		GD.Print();
 		((World) GetParent()).SpawnJoekel(Position, Dna.Noisified());
 	}
 }
