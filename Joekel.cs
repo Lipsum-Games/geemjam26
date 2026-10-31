@@ -95,6 +95,27 @@ public partial class Joekel : CharacterBody2D
 		}
 	}
 
+	public override void _InputEvent(Viewport viewport, InputEvent e, int shapeIdx)
+	{
+		if (e is InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true })
+			Toon();
+	}
+
+	void Toon()
+		{
+			var s = "DNA\n";
+			for (int r = 0; r < Dna.N; r++)
+				s += Dna[r, 0].ToString("F2") + "  " + Dna[r, 1].ToString("F2") + "  " + Dna[r, 2].ToString("F2") + "\n";
+
+			s += "\n";
+			foreach (var k in Karaktereigenschap.Alle)
+			    s += k.Naam + ": " + {k.Van(Dna)}
+
+			var label = GetTree().CurrentScene.GetNode<Label>("%DnaLabel");
+			label.Text = s;
+			label.GetParent<Control>().Visible = true;
+		}
+
 	
 	private void Reproduce(){
 		((World) GetParent()).SpawnJoekel(Position, Dna.Noisified());

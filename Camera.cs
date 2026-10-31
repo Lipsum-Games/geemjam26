@@ -13,8 +13,7 @@ public partial class Camera : Camera2D
 		}
 		
 	public override void _UnhandledInput(InputEvent e)
-		{	
-			GD.Print(e.AsText());
+		{
 			if (e is InputEventMouseMotion m && (m.ButtonMask & MouseButtonMask.Left) != 0)
 				Position -= m.Relative / Zoom;
 			else if (e is InputEventMouseButton b && b.Pressed && b.ButtonIndex == MouseButton.WheelUp)
