@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bl7u7i0y4gvrt"]
+
+[ext_resource type="Script" uid="uid://c3t5vequq77a5" path="res://Joekel.cs" id="1_ctcih"]
+
+[node name="Entity" type="Node2D" unique_id=768585571]
+script = ExtResource("1_ctcih")
