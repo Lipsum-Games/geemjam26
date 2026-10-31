@@ -47,6 +47,13 @@ public partial class Joekel : CharacterBody2D
 	enum StuiterType { Garfield, Fumo, Kei, Gondola }
 	private StuiterType _stuiterType;
 
+	// geurtje
+	private float _ranzigBereik;
+	private float _ranzigKracht;
+	private float _geur;
+	private Area2D _aura;
+	public float Geur => _geur;
+
 	public Dna Dna;
 
 	private readonly Color[] _kleuren_bandjes = new Color[3];
@@ -75,6 +82,17 @@ public partial class Joekel : CharacterBody2D
 
 		float m = Karaktereigenschappen.Murigheid.Van(Dna);
 			_stuiterType = m < -0.4f ? StuiterType.Fumo : m < 0f ? StuiterType.Garfield : m < 0.4f ? StuiterType.Kei : StuiterType.Gondola;
+
+		// geur init
+		_ranzigBereik = Karaktereigenschappen.RanzigheidAuraBereik.Van(Dna);
+		_ranzigKracht = Karaktereigenschappen.RanzigheidAuraKracht.Van(Dna);
+		_geur = Karaktereigenschappen.RanzigheidAuraGeur.Van(Dna);
+		if (_ranzigKracht > 0)
+		{
+			_aura = new Area2D { Monitorable = false };
+			_aura.AddChild(new CollisionShape2D { Shape = new CircleShape2D { Radius = _ranzigBereik } });
+			AddChild(_aura);
+		}
 	}
 
 	public void RegelMuurStuiter(Vector2 voor) {
@@ -110,6 +128,26 @@ public partial class Joekel : CharacterBody2D
 				break;
 			}
 		}
+
+
+	private void RanzigeAura(float dt)
+	{
+		foreach (var body in _aura.GetOverlappingBodies())
+		{
+			if (body is not Joekel ander || ander == this) continue;
+
+			float afstand = GlobalPosition.DistanceTo(ander.GlobalPosition);
+			if (afstand >= _ranzigBereik) continue; // niet ranzig genoeg
+
+			// tot op welke hoogte je geroken kan worden, je geurkracht ofzo
+			float kan_ik_je_ruiken_hoeveelheid = 1 - afstand / _ranzigBereik;
+			// als jouw geur lijkt op die van de ander dan bentei ei misschien toch nie zo vies als ie dacht hé
+			float eigenlijk_toch_niet_zo_ranzigheid = Mathf.Clamp(Mathf.Abs(_geur - ander.Geur) / 0.5f, 0, 1);
+			// pas jouw ranzigheid toe op de gezondheid van de wederpartij
+			ander._huidigeGezonheid -= _ranzigKracht * kan_ik_je_ruiken_hoeveelheid * eigenlijk_toch_niet_zo_ranzigheid * dt;
+		}
+	}
+
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -157,6 +195,12 @@ public partial class Joekel : CharacterBody2D
 				// hier kan je op de andere joekel leuke code toepassen voor interacties.
 				// ze botsen voor meerdere frames dus dit moet denk ik niet te hoog
 				_huidigeGezonheid -= 6f * dt; // ook leuk idee om dit te scalen met een robuustheid ofzo wettewel
+		}
+
+		if (_ranzigKracht > 0) {
+			if (_aura != null) {
+				RanzigeAura(dt);
+			}
 		}
 
 		float t = 1 - _springTimer / SpringInterval;
