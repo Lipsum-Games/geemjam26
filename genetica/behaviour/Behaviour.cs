@@ -10,7 +10,7 @@ public class Behaviour
 	private Random _random = new Random();
 	private Plan _currentPlan = Plan.CHILL; 
 	private Vector2? _targetPosition = null;
-	private FoodSource? _targetFoodSource = null;
+	private Node? _targetNode = null;
 	
 	
 
@@ -21,6 +21,11 @@ public class Behaviour
 
 		float direction = 0.0f;
 		float speed = 0.0f;
+
+		if (_currentPlan == Plan.REPRODUCE && _targetNode is not null)
+		{
+			_targetPosition = ((Joekel)_targetNode).GetPosition();
+		}
 		
 		if (_currentPlan == Plan.CHILL)
 		{
@@ -55,10 +60,10 @@ public class Behaviour
 		var trek = Karaktereigenschappen.Trek.Van(joekel.Dna) * (joekel.HungerMax - joekel.HungerMin) + joekel.HungerMin;
 		var oehlalaigheid = Karaktereigenschappen.Oehlalalaigheid.Van(joekel.Dna);
 
-		if (_currentPlan == Plan.EAT && !GodotObject.IsInstanceValid(_targetFoodSource))
+		if ((_currentPlan == Plan.EAT || _currentPlan == Plan.REPRODUCE) && !GodotObject.IsInstanceValid(_targetNode))
 		{
 			_currentPlan = Plan.CHILL;
-			_targetFoodSource = null;
+			_targetNode = null;
 			_targetPosition = null;
 		} 
 		
@@ -76,7 +81,7 @@ public class Behaviour
 			{
 				// Go to foodsource
 				_targetPosition = food.Position;
-				_targetFoodSource = food;
+				_targetNode = food;
 				_currentPlan = Plan.EAT;
 			}
 
@@ -86,7 +91,7 @@ public class Behaviour
 		if (_currentPlan == Plan.EAT && joekel.GetHunger() < joekel.HungerMin * 1.1f)
 		{
 			_currentPlan = Plan.CHILL;
-			_targetFoodSource = null;
+			_targetNode = null;
 			_targetPosition = null;
 		}
 		
@@ -94,10 +99,11 @@ public class Behaviour
 		{
 			if (_random.NextSingle() < oehlalaigheid * dt * 0.8f)
 			{
-				_currentPlan = Plan.REPRODUCE;
 				Joekel? mate = ClosestJoekel(joekel);
 				if(mate != null){
+					_currentPlan = Plan.REPRODUCE;
 					_targetPosition = mate.Position;
+					_targetNode = mate;
 				}
 			} else if (introversie * dt * 0.2f > _random.NextSingle())
 			{
