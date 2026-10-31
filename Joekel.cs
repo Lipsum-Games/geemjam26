@@ -53,6 +53,7 @@ public partial class Joekel : CharacterBody2D
 	// Kei: harde stuiter en damage
 	enum StuiterType { Garfield, Fumo, Kei, Gondola }
 	private StuiterType _stuiterType;
+	public string StuiterNaam => _stuiterType.ToString(); // slop-hook: gelezen door slop/Statistiek + slop/Clusters
 
 	// geurtje
 	private float _ranzigBereik;
