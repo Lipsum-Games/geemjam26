@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class Entity : Node2D
+public partial class Joekel : Node2D
 {
 
 	[Export] public float HungerMax = 10f;

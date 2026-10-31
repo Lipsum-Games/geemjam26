@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bl7u7i0y4gvrt"]
 
-[ext_resource type="Script" uid="uid://c3t5vequq77a5" path="res://Entity.cs" id="1_ctcih"]
+[ext_resource type="Script" uid="uid://c3t5vequq77a5" path="res://Joekel.cs" id="1_ctcih"]
 [ext_resource type="Texture2D" uid="uid://bwikmnexjhooe" path="res://icon.svg" id="1_ql5c0"]
 
 [node name="Entity" type="Node2D" unique_id=768585571]
