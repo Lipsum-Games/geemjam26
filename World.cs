@@ -7,7 +7,7 @@ public partial class World : Node2D
 	[Export] public PackedScene EntityScene;
 	[Export] public PackedScene FoodSourceScene;
 	[Export] public int Count = 50;
-	[Export] public Vector2 WorldSize = new(3000, 2000);
+	public static readonly Vector2 WorldSize = new(3000, 2000);
 
 	void AddWall(StaticBody2D body, Vector2 normal, float distance)
 	{

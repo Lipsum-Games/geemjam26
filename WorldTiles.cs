@@ -49,8 +49,10 @@ public class WorldTile {
 
 public partial class WorldTiles : TileMapLayer
 {
-	public const int WORLD_SIZE_X = 100;
-	public const int WORLD_SIZE_Y = 100;
+	public static readonly int WORLD_AMOUNT_TILES_X = 100;
+	public static readonly int WORLD_AMOUNT_TILES_Y = 100;
+	public static readonly int WORLD_TILE_SIZE_X = ((int) World.WorldSize.X) / WORLD_AMOUNT_TILES_X;
+	public static readonly int WORLD_TILE_SIZE_Y = ((int) World.WorldSize.Y) / WORLD_AMOUNT_TILES_Y;
 	private static readonly List<WorldTile> The_Tiles = new List<WorldTile>();
 
 	private const int TILE_ATLAS_TILE_SET_SOURCE_ID = 0;
@@ -65,17 +67,19 @@ public partial class WorldTiles : TileMapLayer
 			return null;
 		}
 
-		if (x >= WORLD_SIZE_X || y >= WORLD_SIZE_Y) {
+		if (x >= WORLD_AMOUNT_TILES_X || y >= WORLD_AMOUNT_TILES_Y) {
 			return null;
 		}
 
-		return The_Tiles[y * WORLD_SIZE_X + x];
+		return The_Tiles[y * WORLD_AMOUNT_TILES_X + x];
 	}
 
 	public override void _Ready()
 	{
-		for (int y = 0; y < WORLD_SIZE_Y; y++) {
-			for (int x = 0; x < WORLD_SIZE_X; x++) {
+		TileSet.TileSize = new Vector2I(WORLD_TILE_SIZE_X, WORLD_TILE_SIZE_Y);
+
+		for (int y = 0; y < WORLD_AMOUNT_TILES_Y; y++) {
+			for (int x = 0; x < WORLD_AMOUNT_TILES_X; x++) {
 				// get atlas coordinates based on Noise value at this tile.
 				float noise       = _noiseSource.GetNoise2D(x, y); /* [-1,1] */
 				float noiseNormal = (noise + 1f) / 2f;             /* [ 0,1] */
