@@ -30,11 +30,12 @@ public class Behaviour
 		{
 			float distance = _targetPosition.Value.DistanceTo(joekel.Position);
 
-			var maxVel = joekel.GetVelocity().Length();
+			float maxVel = joekel.GetVelocityVal();
 
 			if (distance < maxVel)
 			{
-				speed = 0.5f * distance/maxVel;
+				speed = (float)Math.Clamp(0.5f * (distance / maxVel), 0, 1);
+
 			}
 			else
 			{
@@ -64,7 +65,6 @@ public class Behaviour
 		// Voedsel is heeeeeeel belangrijk
 		if (_currentPlan != Plan.EAT && joekel.GetHunger() > trek)
 		{   
-			// TODO: Get a food source
 			FoodSource? food = joekel.GetTree()
 				.GetNodesInGroup("FoodSource")
 				.Where(node => node.GetParent() is FoodSource)
@@ -107,7 +107,7 @@ public class Behaviour
 			}
 		}
 
-		if (_currentPlan == Plan.RUN_AWAY && _targetPosition is not null && joekel.Position.DistanceTo(_targetPosition.Value) < 2.0f)
+		if (_currentPlan == Plan.RUN_AWAY && _targetPosition is not null && joekel.Position.DistanceTo(_targetPosition.Value) < 100.0f)
 		{
 			_currentPlan = Plan.CHILL;
 			_targetPosition = null;
@@ -148,7 +148,7 @@ public class Behaviour
 			{
 				float distance = joekel.GlobalPosition.DistanceTo(other.GlobalPosition);
 
-				if (closestDistance == null || distance < closestDistance || other != joekel)
+				if ((closestDistance == null || distance < closestDistance || other != joekel) && other != joekel)
 				{
 					closestDistance = distance;
 					closest = other;
