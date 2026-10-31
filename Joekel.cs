@@ -167,7 +167,7 @@ public partial class Joekel : CharacterBody2D
 		}
 	}
 
-    // roep deze functie om de joekel op te ruimen
+	// roep deze functie om de joekel op te ruimen
 	public void MaakDoodEnRuimOp() {
 		if (_geselecteerd == this)
 		{
