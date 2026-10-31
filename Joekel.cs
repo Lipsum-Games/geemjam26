@@ -30,6 +30,12 @@ public partial class Joekel : CharacterBody2D
 	private float _huidigeGezonheid;
 	private float _chonkheid;
 	private float _springTimer;
+	// Garfield: zachte stuiter en heal
+	// Fumo: Harde stuiter en heal
+	// Kei: Harde stuiter en damage
+	// Gondola: zachte stuiter en damage
+	enum StuiterType { Garfield, Fumo, Kei, Gondola }
+	private StuiterType _stuiterType;
 
 	public Dna Dna;
 
@@ -56,7 +62,44 @@ public partial class Joekel : CharacterBody2D
 		GetNode<CollisionShape2D>("CollisionShape2D").Shape = new CircleShape2D { Radius = _chonkheid };
 		for (int r = 0; r < 3; r++)
 			_kleuren_bandjes[r] = new Color(Dna[r, 0], Dna[r, 1], Dna[r, 2]);
+
+		float m = Karaktereigenschappen.Murigheid.Van(Dna);
+		_stuiterType = m < 0.3f ? StuiterType.Fumo : m < 0.5f ? StuiterType.Garfield : m < 0.7f ? StuiterType.Kei : StuiterType.Gondola;
 	}
+
+	public void RegelMuurStuiter(Vector2 voor) {
+		for (int i = 0; i < GetSlideCollisionCount(); i++)
+			{
+				var botsing = GetSlideCollision(i);
+				if (botsing.GetCollider() is not StaticBody2D) continue;
+
+				var n = botsing.GetNormal();
+				float klap = -voor.Dot(n);
+
+				switch (_stuiterType)
+				{
+					case StuiterType.Garfield:
+						Velocity = voor.Bounce(n) * 0.3f;
+						_huidigeGezonheid = Mathf.Min(_huidigeGezonheid + 2f, _maximaleGezondheid);
+						break;
+					case StuiterType.Fumo:
+						Velocity = voor.Bounce(n) * 0.9f;
+						_huidigeGezonheid = Mathf.Min(_huidigeGezonheid + 2f, _maximaleGezondheid);
+						break;
+					case StuiterType.Kei:
+						Velocity = voor.Bounce(n) * 0.9f;
+						_huidigeGezonheid -= klap * 0.02f;
+						break;
+					case StuiterType.Gondola:
+						Velocity = voor.Bounce(n) * 0.3f;
+						_huidigeGezonheid -= klap * 0.02f;
+						break;
+				}
+
+				_volgendeHeading = voor.Bounce(n).Angle();
+				break;
+			}
+		}
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -86,7 +129,10 @@ public partial class Joekel : CharacterBody2D
 		}
 
 		Velocity *= Mathf.Exp(-Frictie * dt);
+		var voor = Velocity;
 		MoveAndSlide();
+
+		RegelMuurStuiter(voor);
 
 		foreach (var body in _detectionArea.GetOverlappingBodies())
 		{
@@ -187,7 +233,10 @@ public partial class Joekel : CharacterBody2D
 
 			s += "\n";
 			foreach (var k in Karaktereigenschap.Alle)
-				s += k.Naam + ": " + k.Van(Dna) + "\n";
+				if (k == Karaktereigenschappen.Murigheid)
+						s += "Murigheid: " + _stuiterType + "\n";
+					else
+						s += k.Naam + ": " + k.Van(Dna) + "\n";
 
 			s += "Gezond: " + _huidigeGezonheid + "/" + _maximaleGezondheid +"\n";
 
