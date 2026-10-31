@@ -1,3 +1,4 @@
+using System;
 using Geemjam26ShipsumEvolve.genetica;
 using Godot;
 using static Activations;
@@ -71,9 +72,18 @@ public partial class Joekel : CharacterBody2D
 			return;
 		}
 		float dt = (float)delta;
+
+		(float direction, float velocity) = _behaviour.DoeDingen(this);
+
+		if (_behaviour.CheckReproduce())
+		{
+			Reproduce();
+		}
+		
+		_heading = direction;
 		_heading += (float)GD.RandRange(-_turnJitter, _turnJitter) * dt;
 
-		Velocity = GetVelocityVector();
+		Velocity = velocity * GetVelocityVector();
 		MoveAndSlide();
 
 		foreach (var body in _detectionArea.GetOverlappingBodies())
@@ -134,10 +144,6 @@ public partial class Joekel : CharacterBody2D
 		{
 			_hunger -= _isEatingSource.eat(delta, HungerMax-_hunger);
 		}
-			if (_hunger < ReproductionHunger){
-			Reproduce();
-			_hunger = _hunger + ReproductionHungerCost;
-		}
 		_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
 		}
 
@@ -188,9 +194,14 @@ public partial class Joekel : CharacterBody2D
 		if (!IsNodeReady() || Dna == null || age < AgeOfConsent)
 			return;
 		((World) GetParent()).SpawnJoekel(Position, Dna.Noisified());
+		_hunger += ReproductionHungerCost;
 	}
 	public float GetHunger()
 	{
 		return _hunger;
+	}
+	public float getHeading()
+	{
+		return _heading;
 	}
 }
