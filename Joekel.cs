@@ -17,6 +17,7 @@ public partial class Joekel : CharacterBody2D
 	private float _heading;
 	private float _kachow;
 	private float _hunger;
+	private float _zwem;
 	private float _turnJitter;
 	private Area2D _detectionArea;
 	private FoodSource _isEatingSource;
@@ -32,7 +33,6 @@ public partial class Joekel : CharacterBody2D
 
 	public override void _Ready()
 	{
-		// Dna ??= Dna.Random();
 		_heading = GD.Randf() * Mathf.Tau;
 		_kachow = Karaktereigenschappen.Kachow.Van(Dna);
 		_turnJitter = Karaktereigenschappen.TurnJitter.Van(Dna);
@@ -70,7 +70,7 @@ public partial class Joekel : CharacterBody2D
 		float dt = (float)delta;
 		_heading += (float)GD.RandRange(-_turnJitter, _turnJitter) * dt;
 
-		Velocity = Vector2.FromAngle(_heading) * _kachow * (HungerMax + HungerMin - _hunger) / HungerMax;
+		Velocity = GetVelocityVector();
 		MoveAndSlide();
 
 		foreach (var body in _detectionArea.GetOverlappingBodies())
@@ -113,6 +113,17 @@ public partial class Joekel : CharacterBody2D
 		DrawColoredPolygon(Boog(Mathf.Tau - s, Mathf.Tau), _kleuren_bandjes[2]);
 
 	}
+
+	private Vector2 GetVelocityVector() {
+		var result = Vector2.FromAngle(_heading); 				    // unit vector 
+		result *= _kachow; 										    // joekel speed multiplier
+		result *= (HungerMax + HungerMin - _hunger) / HungerMax;    // hunger discount
+		var joekelTile = WorldTiles.GetTileAt(this.GlobalPosition);
+		if (joekelTile != null) {
+			result *= joekelTile.GetJoekelSpeedMultiplier(this); 	// modifier from the tile the joekel is on
+		}
+		return result;
+	}
 	
 	private void CalculateHunger(double delta)
 	{
@@ -120,12 +131,12 @@ public partial class Joekel : CharacterBody2D
 		{
 			_hunger -= _isEatingSource.eat(delta, HungerMax-_hunger);
 		}
-		if (_hunger < ReproductionHunger){
+			if (_hunger < ReproductionHunger){
 			Reproduce();
 			_hunger = _hunger + ReproductionHungerCost;
 		}
 		_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
-	}
+		}
 
 	private void OnAreaEntered(Area2D area)
 	{
@@ -167,7 +178,7 @@ public partial class Joekel : CharacterBody2D
 			var label = GetTree().CurrentScene.GetNode<Label>("%DnaLabel");
 			label.Text = s;
 			label.GetParent<Control>().Visible = true;
-		}
+	}
 
 	
 	private void Reproduce(){
