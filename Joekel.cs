@@ -134,9 +134,6 @@ public partial class Joekel : CharacterBody2D
 		{
 			Reproduce();
 		}
-		
-		_heading = direction;
-		_heading += (float)GD.RandRange(-_turnJitter, _turnJitter) * dt;
 
 		_springTimer -= dt;
 		if (_springTimer <= 0)
@@ -144,7 +141,7 @@ public partial class Joekel : CharacterBody2D
 			// jump!!
 			_heading = _volgendeHeading;
 			Velocity += velocity * GetVelocityVector();
-			_volgendeHeading = _heading + (float)GD.RandRange(-_turnJitter, _turnJitter);
+			_volgendeHeading = direction;
 			_springTimer = SpringInterval;
 		}
 
