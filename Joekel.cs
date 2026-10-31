@@ -178,7 +178,7 @@ public partial class Joekel : CharacterBody2D
 		if (_springTimer <= 0)
 		{
 			// jump!!
-			_heading = _volgendeHeading;
+			_heading = direction;
 			Velocity += velocity * GetVelocityVector();
 			_volgendeHeading = direction;
 			_springTimer = SpringInterval;
@@ -267,7 +267,7 @@ public partial class Joekel : CharacterBody2D
 	{
 		if (_isEatingSource != null)
 		{
-			_hunger -= _isEatingSource.eat(delta, HungerMax-_hunger);
+			_hunger -= _isEatingSource.eat(delta, _hunger - HungerMin);
 		}
 		_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
 		}
