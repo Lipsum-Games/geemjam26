@@ -24,10 +24,10 @@ public partial class Joekel : CharacterBody2D
 	private int age;
 	private float _maximaleGezondheid;
 	private float _huidigeGezonheid;
+	private float _chonkheid;
 
 	public Dna Dna;
 
-	[Export] public float joekel_tekenRadius = 10f;
 	private readonly Color[] _kleuren_bandjes = new Color[3];
 
 	public override void _Ready()
@@ -44,6 +44,9 @@ public partial class Joekel : CharacterBody2D
 		// Joekeltjes hun maximale gezondheid scalet gewoon lekker met het DoodgaansSnelheidEnAlgemeneGezondheid gen.
 		_maximaleGezondheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(Dna) * 100;
 		_huidigeGezonheid = _maximaleGezondheid;
+		_chonkheid = Karaktereigenschappen.Chonkheid.Van(Dna);
+		GetNode<CollisionShape2D>("Area2D/CollisionShape2D").Shape = new CircleShape2D { Radius = _chonkheid + 2 };
+		GetNode<CollisionShape2D>("CollisionShape2D").Shape = new CircleShape2D { Radius = _chonkheid };
 		for (int r = 0; r < 3; r++)
 			_kleuren_bandjes[r] = new Color(Dna[r, 0], Dna[r, 1], Dna[r, 2]);
 	}
@@ -69,20 +72,19 @@ public partial class Joekel : CharacterBody2D
 		Velocity = Vector2.FromAngle(_heading) * _kachow * (HungerMax + HungerMin - _hunger) / HungerMax;
 		MoveAndSlide();
 
-		for (int i = 0; i < GetSlideCollisionCount(); i++)
+		foreach (var body in _detectionArea.GetOverlappingBodies())
 		{
-			if (GetSlideCollision(i).GetCollider() is Joekel ander)
-			{
+			if (body is Joekel ander && ander != this)
 				// hier kan je op de andere joekel leuke code toepassen voor interacties.
 				// ze botsen voor meerdere frames dus dit moet denk ik niet te hoog
-				_huidigeGezonheid -= 0.1f; // ook leuk idee om dit te scalen met een robuustheid ofzo wettewel
-				}
+				_huidigeGezonheid -= 6f * dt; // ook leuk idee om dit te scalen met een robuustheid ofzo wettewel
 		}
 
 		Rotation = _heading;
 
 		CalculateHunger(delta);
 	}
+
 
 	public override void _Draw() {
 //	    DrawSetTransform(Vector2.Zero, Mathf.Pi / 4);
@@ -95,9 +97,20 @@ public partial class Joekel : CharacterBody2D
 //
 //        DrawSetTransform(Vector2.Zero);
 //        DrawArc(Vector2.Zero, Radius, 0, Mathf.Tau, 32, Colors.Black, 1.5f, true);
-		DrawCircle(Vector2.Zero, 10, _kleuren_bandjes[0]);
-		DrawCircle(Vector2.Zero, 7, _kleuren_bandjes[1]);
-		DrawCircle(Vector2.Zero, 4, _kleuren_bandjes[2]);
+		float r = _chonkheid;
+		float s = Mathf.DegToRad(150);
+		Vector2[] Boog(float a0, float a1)
+		{
+				const int n = 16;
+				var pts = new Vector2[n + 1];
+				for (int k = 0; k <= n; k++)
+						pts[k] = Vector2.FromAngle(Mathf.Lerp(a0, a1, k / (float)n)) * _chonkheid;
+				return pts;
+		}
+		DrawColoredPolygon(Boog(0, s), _kleuren_bandjes[0]);
+		DrawColoredPolygon([new Vector2(r, 0), ..Boog(s, Mathf.Tau - s)], _kleuren_bandjes[1]);
+		DrawColoredPolygon(Boog(Mathf.Tau - s, Mathf.Tau), _kleuren_bandjes[2]);
+
 	}
 	
 	private void CalculateHunger(double delta)

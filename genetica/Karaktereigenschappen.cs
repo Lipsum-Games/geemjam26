@@ -11,4 +11,7 @@ public static class Karaktereigenschappen
 
 	// ja je moet toch ooit dood gaan?
 	public static readonly Karaktereigenschap DoodgaansSnelheidEnAlgemeneGezondheid = new("DoodgaansSnelheidEnAlgemeneGezondheid", d => d[2, 2]);
+
+	// de chonkheid van de joeekel, hoe fatsig bente ei???
+	public static readonly Karaktereigenschap Chonkheid = new("Chonkheid", d => Range(5, 15, d.Diag() / 3 - 0.5f * d[0,1]));
 }
