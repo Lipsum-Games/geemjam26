@@ -1,0 +1,32 @@
+gitignore
+# Godot 4
+.godot/
+/android/
+*.translation
+export_presets.cfg   # holds export paths/keystore creds; drop this line if team shares presets
+/build/
+/export/
+
+# Godot 3 leftovers (harmless if unused)
+.import/
+*.tmp
+
+# C# / Mono (only if using C#)
+.mono/
+data_*/
+mono_crash.*.json
+
+# PyCharm / JetBrains
+.idea/
+*.iml
+out/
+
+# Python (if any tooling scripts)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
