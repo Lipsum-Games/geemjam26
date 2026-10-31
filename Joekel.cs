@@ -8,6 +8,8 @@ public partial class Joekel : CharacterBody2D
 	[Export] public float HungerMin = 1f;
 	[Export] public float ReproductionHunger = 2f;
 	[Export] public float ReproductionHungerCost = 4f;
+	[Export] public int AgeOfConsent = 200;
+
 
 	// de joekel die nu geselecteerd is, zodat we live health etc. kunnen opdaten in de window
 	static Joekel _geselecteerd;
@@ -17,9 +19,10 @@ public partial class Joekel : CharacterBody2D
 	private float _hunger;
 	private float _turnJitter;
 	private float _doodgaansSnelheidEnAlgemeneGezondheid;
+	private int age;
 	private float _maximaleGezondheid;
 	private float _huidigeGezonheid;
-	
+
 	public Dna Dna;
 
 	[Export] public float joekel_tekenRadius = 10f;
@@ -42,6 +45,7 @@ public partial class Joekel : CharacterBody2D
 
 	public override void _PhysicsProcess(double delta)
 	{
+		age += 1;
 		// Als deze joekel is selected update the toon window.
 		if (_geselecteerd == this) Toon();
 		if (_huidigeGezonheid <= 0) {
@@ -109,13 +113,12 @@ public partial class Joekel : CharacterBody2D
 		if (foodSourceClose)
 		{
 			_hunger = Mathf.Max(_hunger - 10 * (float)delta, HungerMin);
-		} else {
-			if (_hunger < ReproductionHunger){
+		}
+		if (_hunger < ReproductionHunger){
 			Reproduce();
 			_hunger = _hunger + ReproductionHungerCost;
 		}
 		_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
-		}
 	}
 
 	public override void _InputEvent(Viewport viewport, InputEvent e, int shapeIdx)
@@ -146,6 +149,8 @@ public partial class Joekel : CharacterBody2D
 
 	
 	private void Reproduce(){
+		if (!IsNodeReady() || Dna == null || age < AgeOfConsent)
+			return;
 		((World) GetParent()).SpawnJoekel(Position, Dna.Noisified());
 	}
 }
