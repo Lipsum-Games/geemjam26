@@ -1,6 +1,7 @@
 using Godot;
 using System;
 
+
 public partial class World : Node2D
 {
 	[Export] public PackedScene EntityScene;
@@ -13,13 +14,19 @@ public partial class World : Node2D
 
 			for (int i = 0; i < Count; i++)
 			{
-				var e = EntityScene.Instantiate<Node2D>();
+				SpawnJoekel(new Vector2(GD.Randf() * area.X, GD.Randf() * area.Y), Dna.Random());
 
-				e.Position = new Vector2(GD.Randf() * area.X, GD.Randf() * area.Y);
-				AddChild(e);
 			}
 	}
 
+	public void SpawnJoekel(Vector2 Position, Dna Dna){
+		// var e = new Joekel();
+		var e = EntityScene.Instantiate<Joekel>();
+		e.Position = Position;
+		e.Dna = Dna;
+		AddChild(e);
+
+	}
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{

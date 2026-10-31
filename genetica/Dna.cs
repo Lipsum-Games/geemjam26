@@ -5,6 +5,7 @@ public partial class Dna
 {
 	public const int N = 3;
 	public readonly float[,] M = new float[N, N];
+	[Export] public float MutationFactor = 0.1F;
 
 	public static Dna Random()
 	{
@@ -14,6 +15,14 @@ public partial class Dna
 				d.M[r, c] = (float)GD.Randfn(0f, 1f);
 		return d;
 	}
+
+	public Dna Noisified(){
+		var d = new Dna();
+		for (int r = 0; r < N; r++)
+			for (int c = 0; c < N; c++)
+				d.M[r, c] = M[r,c] + (float)GD.Randfn(0f, 1f) * MutationFactor;
+		return d;
+	} 
 
 	// d[1, 2] -> 6
 	public float this[int r, int c] => M[r, c];
