@@ -15,9 +15,9 @@ public class Behaviour
 	
 
 	// Besluit wat de joekel gaat doen en returnt een tuple van richting (radialen) en gewenste snelheid
-	public Tuple<float, float> DoeDingen(Joekel joekel)
+	public Tuple<float, float> DoeDingen(Joekel joekel, double dt)
 	{
-		_besluitPlan(joekel);
+		_besluitPlan(joekel, dt);
 
 		float direction = 0.0f;
 		float speed = 0.0f;
@@ -45,7 +45,7 @@ public class Behaviour
 		return new Tuple<float, float>(direction, speed);
 	}
 
-	private void _besluitPlan(Joekel joekel)
+	private void _besluitPlan(Joekel joekel, double dt)
 	{
 		var introversie = Karaktereigenschappen.Introversie.Van(joekel.Dna);
 		var trek = Karaktereigenschappen.Trek.Van(joekel.Dna) * (joekel.HungerMax - joekel.HungerMin) + joekel.HungerMin;
@@ -86,10 +86,10 @@ public class Behaviour
 		
 		if (_currentPlan == Plan.CHILL)
 		{
-			if (_random.NextSingle() < oehlalaigheid * 0.05f)
+			if (_random.NextSingle() < oehlalaigheid * dt * 0.2f)
 			{
 				_currentPlan = Plan.REPRODUCE;
-			} else if (introversie * 0.01f > _random.NextSingle())
+			} else if (introversie * dt * 0.2f > _random.NextSingle())
 			{
 				// TODO: Conditionz
 				_currentPlan = Plan.RUN_AWAY;
