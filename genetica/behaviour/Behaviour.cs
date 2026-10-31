@@ -95,6 +95,10 @@ public class Behaviour
 			if (_random.NextSingle() < oehlalaigheid * dt * 0.8f)
 			{
 				_currentPlan = Plan.REPRODUCE;
+				Joekel? mate = ClosestJoekel(joekel);
+				if(mate != null){
+					_targetPosition = mate.Position;
+				}
 			} else if (introversie * dt * 0.2f > _random.NextSingle())
 			{
 				// TODO: Conditionz
@@ -133,5 +137,24 @@ public class Behaviour
 		{
 			return false;
 		}
+	}
+
+	private Joekel? ClosestJoekel(Joekel joekel){
+		float? closestDistance = null;
+		Joekel? closest = null;
+		foreach (Node child in joekel.GetParent().GetChildren())
+		{
+			if (child is Joekel other)
+			{
+				float distance = joekel.GlobalPosition.DistanceTo(other.GlobalPosition);
+
+				if (closestDistance == null || distance < closestDistance)
+				{
+					closestDistance = distance;
+					closest = other;
+				}
+			}
+		}
+		return closest;
 	}
 }
