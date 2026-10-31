@@ -319,7 +319,7 @@ public partial class Joekel : CharacterBody2D
 			_huidigeGezonheid = Mathf.Min(_huidigeGezonheid, _maximaleGezondheid);
 			_hunger -= eating;
 		}
-		_hunger = Mathf.Min(_hunger + (float)delta / 10, HungerMax);
+		_hunger = Mathf.Min(_hunger + Karaktereigenschappen.Chonkheid.Van(Dna) * (float)delta / 100 , HungerMax);
 
 		float honger = (_hunger - HungerMin) / (HungerMax - HungerMin);
 		if(honger>0.7f){
