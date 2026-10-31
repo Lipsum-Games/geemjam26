@@ -10,6 +10,8 @@
 input_pickable = true
 motion_mode = 1
 script = ExtResource("1_ctcih")
+ReproductionHunger = 5.0
+ReproductionHungerCost = 2.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=277901733]
 shape = SubResource("CircleShape2D_0cgbl")

@@ -47,6 +47,14 @@ public partial class Joekel : CharacterBody2D
 	enum StuiterType { Garfield, Fumo, Kei, Gondola }
 	private StuiterType _stuiterType;
 
+	// geurtje
+	private float _ranzigBereik;
+	private float _ranzigKracht;
+	private float _geur;
+	private Area2D _aura;
+	public float Geur => _geur;
+	static readonly GradientTexture2D MistTextuur = MaakRanzigheidsMist();
+
 	public Dna Dna;
 
 	private readonly Color[] _kleuren_bandjes = new Color[3];
@@ -75,6 +83,17 @@ public partial class Joekel : CharacterBody2D
 
 		float m = Karaktereigenschappen.Murigheid.Van(Dna);
 			_stuiterType = m < -0.4f ? StuiterType.Fumo : m < 0f ? StuiterType.Garfield : m < 0.4f ? StuiterType.Kei : StuiterType.Gondola;
+
+		// geur init
+		_ranzigBereik = Karaktereigenschappen.RanzigheidAuraBereik.Van(Dna);
+		_ranzigKracht = Karaktereigenschappen.RanzigheidAuraKracht.Van(Dna);
+		_geur = Karaktereigenschappen.RanzigheidAuraGeur.Van(Dna);
+		if (_ranzigKracht > 0)
+		{
+			_aura = new Area2D { Monitorable = false };
+			_aura.AddChild(new CollisionShape2D { Shape = new CircleShape2D { Radius = _ranzigBereik } });
+			AddChild(_aura);
+		}
 	}
 
 	public void RegelMuurStuiter(Vector2 voor) {
@@ -111,6 +130,26 @@ public partial class Joekel : CharacterBody2D
 			}
 		}
 
+
+	private void RanzigeAura(float dt)
+	{
+		foreach (var body in _aura.GetOverlappingBodies())
+		{
+			if (body is not Joekel ander || ander == this) continue;
+
+			float afstand = GlobalPosition.DistanceTo(ander.GlobalPosition);
+			if (afstand >= _ranzigBereik) continue; // niet ranzig genoeg
+
+			// tot op welke hoogte je geroken kan worden, je geurkracht ofzo
+			float kan_ik_je_ruiken_hoeveelheid = 1 - afstand / _ranzigBereik;
+			// als jouw geur lijkt op die van de ander dan bentei ei misschien toch nie zo vies als ie dacht hé
+			float eigenlijk_toch_niet_zo_ranzigheid = Mathf.Clamp(Mathf.Abs(_geur - ander.Geur) / 0.5f, 0, 1);
+			// pas jouw ranzigheid toe op de gezondheid van de wederpartij
+			ander._huidigeGezonheid -= _ranzigKracht * kan_ik_je_ruiken_hoeveelheid * eigenlijk_toch_niet_zo_ranzigheid * dt;
+		}
+	}
+
+
 	public override void _PhysicsProcess(double delta)
 	{
 		age += 1;
@@ -128,7 +167,7 @@ public partial class Joekel : CharacterBody2D
 		}
 		float dt = (float)delta;
 
-		(float direction, float velocity) = _behaviour.DoeDingen(this);
+		(float direction, float velocity) = _behaviour.DoeDingen(this, dt);
 
 		if (_behaviour.CheckReproduce())
 		{
@@ -139,7 +178,7 @@ public partial class Joekel : CharacterBody2D
 		if (_springTimer <= 0)
 		{
 			// jump!!
-			_heading = _volgendeHeading;
+			_heading = direction;
 			Velocity += velocity * GetVelocityVector();
 			_volgendeHeading = direction;
 			_springTimer = SpringInterval;
@@ -159,24 +198,44 @@ public partial class Joekel : CharacterBody2D
 				_huidigeGezonheid -= 6f * dt; // ook leuk idee om dit te scalen met een robuustheid ofzo wettewel
 		}
 
+		if (_ranzigKracht > 0) {
+			if (_aura != null) {
+				RanzigeAura(dt);
+			}
+		}
+
 		float t = 1 - _springTimer / SpringInterval;
 		Rotation = Mathf.LerpAngle(_heading, _volgendeHeading, Mathf.SmoothStep(0.7f, 1f, t));
 
 		CalculateHunger(delta);
 	}
 
+	static GradientTexture2D MaakRanzigheidsMist()
+	{
+		var g = new Gradient();
+		g.Offsets = [0f, 0.25f, 0.5f, 0.75f, 1f];
+		g.Colors = [new Color(1, 1, 1, 1f), new Color(1, 1, 1, 0.82f), new Color(1, 1, 1, 0.46f), new Color(1, 1, 1, 0.17f), new Color(1, 1, 1, 0f)];
+		return new GradientTexture2D
+		{
+			Gradient = g,
+			Fill = GradientTexture2D.FillEnum.Radial,
+			FillFrom = new Vector2(0.5f, 0.5f),
+			FillTo = new Vector2(1f, 0.5f),
+			Width = 128,
+			Height = 128,
+		};
+	}
+
 
 	public override void _Draw() {
-//	    DrawSetTransform(Vector2.Zero, Mathf.Pi / 4);
-//	    float w = 2 * Radius / 3;
-//        for (int i = 0; i < 3; i++)
-//        {
-//            float x0 = -joekel_tekenRadius + i * w;
-//            DrawColoredPolygon(Strip(x0, x0 + w), _kleuren_bandjes[i]);
-//        }
-//
-//        DrawSetTransform(Vector2.Zero);
-//        DrawArc(Vector2.Zero, Radius, 0, Mathf.Tau, 32, Colors.Black, 1.5f, true);
+
+		if (_ranzigKracht > 0)
+		{
+			var geurKleur = Color.FromHsv((_geur + 1) / 2 * 0.8f, 0.7f, 1f);
+			geurKleur.A = _ranzigKracht / 8 * 0.5f;
+			DrawTextureRect(MistTextuur, new Rect2(-_ranzigBereik, -_ranzigBereik, _ranzigBereik * 2, _ranzigBereik * 2), false, geurKleur);
+		}
+
 		float r = _chonkheid;
 		float s = Mathf.DegToRad(150);
 		Vector2[] Boog(float a0, float a1)
@@ -208,7 +267,7 @@ public partial class Joekel : CharacterBody2D
 	{
 		if (_isEatingSource != null)
 		{
-			_hunger -= _isEatingSource.eat(delta, HungerMax-_hunger);
+			_hunger -= _isEatingSource.eat(delta, _hunger - HungerMin);
 		}
 		_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
 		}

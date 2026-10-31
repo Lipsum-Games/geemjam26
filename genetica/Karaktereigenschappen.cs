@@ -45,4 +45,9 @@ public static class Karaktereigenschappen
 	// de murigheid bepaalt hoe de joekel met de muur interact
 	public static readonly Karaktereigenschap Murigheid = new("Murigheid", d => d.Cells((0, 2), (1, 1), (2, 0), (0, 1)) / 4);
 
+	// RANZIG???? OUTTA HEREEEE
+	public static readonly Karaktereigenschap RanzigheidAuraBereik = new("RanzigheidAuraBereik", d => Range(0, 150, Sigmoid((d[1, 0] + d[2, 1]) / 2 * 3)));
+	public static readonly Karaktereigenschap RanzigheidAuraKracht = new("RanzigheidAuraKracht", d => Relu(d[0, 2]) * 8);
+	public static readonly Karaktereigenschap RanzigheidAuraGeur = new("RanzigheidAuraGeur", d => d[1, 1]);
+
 }

@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://dc2bpk7i71c7l" path="res://assets/tiles_atlas.png" id="4_tlwt5"]
 [ext_resource type="Script" uid="uid://mum8l4sa63mq" path="res://WorldTiles.cs" id="5_aqk2v"]
 [ext_resource type="Script" uid="uid://epkggmoygl7k" path="res://Camera.cs" id="6_dwbse"]
+[ext_resource type="Script" uid="uid://clapvvycaxpvn" path="res://SimKnopjes.cs" id="7_pkg7o"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_aqk2v"]
 resource_name = "tile_atlas"
@@ -223,7 +224,6 @@ use_texture_padding = false
 12:13/0 = 0
 13:13/0 = 0
 14:13/0 = 0
-
 [sub_resource type="TileSet" id="TileSet_asv5b"]
 sources/0 = SubResource("TileSetAtlasSource_aqk2v")
 
@@ -237,6 +237,7 @@ tile_set = SubResource("TileSet_asv5b")
 script = ExtResource("5_aqk2v")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1964326112]
+process_mode = 3
 script = ExtResource("6_dwbse")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1002194165]
@@ -253,6 +254,11 @@ grow_horizontal = 0
 [node name="DnaLabel" type="Label" parent="CanvasLayer/PanelContainer" unique_id=207551446]
 unique_name_in_owner = true
 layout_mode = 2
+
+[node name="SimKnopjes" type="HBoxContainer" parent="CanvasLayer" unique_id=108282055]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("7_pkg7o")
 
 [node name="CanvasLayer2" type="CanvasLayer" parent="." unique_id=1800354796]
 layer = -1

@@ -31,7 +31,7 @@ public partial class World : Node2D
 		AddWall(walls, new Vector2(-1, 0), -WorldSize.X);
 
 		var area = WorldSize;
-		for (int i = 0; i < Count/5; i++)
+		for (int i = 0; i < Count; i++)
 		{
 			SpawnFoodSource(new Vector2(GD.Randf() * area.X, GD.Randf() * area.Y));
 
