@@ -348,7 +348,6 @@ public partial class Joekel : CharacterBody2D
 		if (!IsNodeReady() || Dna == null || age < AgeOfConsent || _hunger > ReproductionHunger)
 			return;
 		((World) GetParent()).SpawnJoekel(Position, Dna.Combine(Dna, other.Dna));
-		GD.Print("reproduce");
 		_hunger += ReproductionHungerCost;
 	}
 	public float GetHunger()
