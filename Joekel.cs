@@ -167,7 +167,7 @@ public partial class Joekel : CharacterBody2D
 		}
 		float dt = (float)delta;
 
-		(float direction, float velocity) = _behaviour.DoeDingen(this);
+		(float direction, float velocity) = _behaviour.DoeDingen(this, dt);
 
 		if (_behaviour.CheckReproduce())
 		{
