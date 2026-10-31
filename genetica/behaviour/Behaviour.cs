@@ -66,7 +66,7 @@ public class Behaviour
                 .GetNodesInGroup("FoodSource")
                 .Where(node => node.GetParent() is FoodSource)
                 .Select(node => node.GetParent<FoodSource>())
-                .FirstOrDefault(fs => fs.Position.DistanceTo(joekel.Position) <= 300.0f);
+                .FirstOrDefault(fs => fs.Position.DistanceTo(joekel.Position) <= 600.0f);
 
             if (food is not null)
             {
