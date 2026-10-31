@@ -385,6 +385,8 @@ public partial class Joekel : CharacterBody2D
 	private void Reproduce(Joekel other){
 		if (!IsNodeReady() || Dna == null || age < AgeOfConsent || _hunger > ReproductionHunger)
 			return;
+		if(Dna.Similarity(Dna, other.Dna) < 4 && GD.Randf() < 0.6f)
+			return;
 		((World) GetParent()).SpawnJoekel(Position, Dna.Combine(Dna, other.Dna));
 		_hunger += ReproductionHungerCost;
 	}
