@@ -246,7 +246,7 @@ public partial class Joekel : CharacterBody2D
 
 		if (_ranzigKracht > 0) {
 			if (_auraVraag != null) {
-			    // scale de aura per time delta
+				// scale de aura per time delta
 				_auraTijd += dt;
 				if (_auraTijd >= AuraInterval) {
 					RanzigeAura(_auraTijd); // schade over de echt verstreken tijd
