@@ -22,6 +22,8 @@ public partial class World : Node2D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		Slop.Installeer(this); // slop: stats-scherm + clusters, zie slop/
+
 		// mooie muurtjes waar joekels niet doorheen kennen!!
 		var walls = new StaticBody2D();
 		AddChild(walls);
