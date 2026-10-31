@@ -6,6 +6,10 @@ public partial class Joekel : CharacterBody2D
 
 	[Export] public float HungerMax = 10f;
 	[Export] public float HungerMin = 1f;
+	[Export] public float ReproductionHunger = 2f;
+	[Export] public float ReproductionHungerCost = 4f;
+	[Export] public int AgeOfConsent = 200;
+
 
 	private float _heading;
 	private float _kachow;
@@ -13,7 +17,8 @@ public partial class Joekel : CharacterBody2D
 	private float _turnJitter;
 	private Area2D _detectionArea;
 	private bool _isEating;
-	
+	private float _doodgaansSnelheidEnAlgemeneGezondheid;
+	private int age;
 	public Dna Dna;
 
 	[Export] public float joekel_tekenRadius = 10f;
@@ -21,20 +26,22 @@ public partial class Joekel : CharacterBody2D
 
 	public override void _Ready()
 	{
-		Dna ??= Dna.Random();
+		// Dna ??= Dna.Random();
 		_heading = GD.Randf() * Mathf.Tau;
 		_kachow = Karaktereigenschappen.Kachow.Van(Dna);
 		_turnJitter = Karaktereigenschappen.TurnJitter.Van(Dna);
-		_hunger = HungerMin;
 		_detectionArea = GetNode<Area2D>("Area2D");
 		_detectionArea.AreaEntered += OnAreaEntered;
 		_isEating = false;
+		_hunger = (HungerMin + HungerMax) / 2;
+		_doodgaansSnelheidEnAlgemeneGezondheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(Dna);
 		for (int r = 0; r < 3; r++)
-			_kleuren_bandjes[r] = new Color(Sigmoid(Dna[r, 0]), Sigmoid(Dna[r, 1]), Sigmoid(Dna[r, 2]));
+			_kleuren_bandjes[r] = new Color(Dna[r, 0], Dna[r, 1], Dna[r, 2]);
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
+		age += 1;
 		float dt = (float)delta;
 		_heading += (float)GD.RandRange(-_turnJitter, _turnJitter) * dt;
 
@@ -78,9 +85,12 @@ public partial class Joekel : CharacterBody2D
 		if (_isEating)
 		{
 			_hunger = Mathf.Max(_hunger - 10 * (float)delta, HungerMin);
-		} else {
-			_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
 		}
+		if (_hunger < ReproductionHunger){
+			Reproduce();
+			_hunger = _hunger + ReproductionHungerCost;
+		}
+		_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
 	}
 
 	private void OnAreaEntered(Area2D area)
@@ -99,4 +109,31 @@ public partial class Joekel : CharacterBody2D
 		}
 	}
 
+	public override void _InputEvent(Viewport viewport, InputEvent e, int shapeIdx)
+	{
+		if (e is InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true })
+			Toon();
+	}
+
+	void Toon()
+		{
+			var s = "DNA\n";
+			for (int r = 0; r < Dna.N; r++)
+				s += Dna[r, 0].ToString("F2") + "  " + Dna[r, 1].ToString("F2") + "  " + Dna[r, 2].ToString("F2") + "\n";
+
+			s += "\n";
+			foreach (var k in Karaktereigenschap.Alle)
+				s += k.Naam + ": " + k.Van(Dna) + "\n";
+
+			var label = GetTree().CurrentScene.GetNode<Label>("%DnaLabel");
+			label.Text = s;
+			label.GetParent<Control>().Visible = true;
+		}
+
+	
+	private void Reproduce(){
+		if (!IsNodeReady() || Dna == null || age < AgeOfConsent)
+			return;
+		((World) GetParent()).SpawnJoekel(Position, Dna.Noisified());
+	}
 }
