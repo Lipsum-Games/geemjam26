@@ -29,9 +29,12 @@ public class Behaviour
 		} else if (_targetPosition is not null)
 		{
 			float distance = _targetPosition.Value.DistanceTo(joekel.Position);
-			if (distance < 1.0f)
+
+			var maxVel = joekel.GetVelocity().Length();
+
+			if (distance < maxVel)
 			{
-				speed = distance;
+				speed = 0.5f * distance/maxVel;
 			}
 			else
 			{
