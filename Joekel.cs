@@ -296,7 +296,12 @@ public partial class Joekel : CharacterBody2D
 			_hunger -= _isEatingSource.eat(delta, _hunger - HungerMin);
 		}
 		_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
-		}
+
+		float honger = (_hunger - HungerMin) / (HungerMax - HungerMin);
+		//if(honger>0.5f){
+			//_huidigeGezonheid -= 1f * (float)delta * honger*honger;
+		//}
+	}
 
 	private void OnAreaEntered(Area2D area)
 	{
