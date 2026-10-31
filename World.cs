@@ -3,6 +3,7 @@ using System;
 
 public partial class World : Node2D
 {
+	
 	[Export] public PackedScene EntityScene;
 	[Export] public PackedScene FoodSourceScene;
 	[Export] public int Count = 50;
