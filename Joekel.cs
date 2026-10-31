@@ -1,7 +1,7 @@
 using Godot;
 using static Activations;
 
-public partial class Joekel : Node2D
+public partial class Joekel : CharacterBody2D
 {
 
 	[Export] public float HungerMax = 10f;
@@ -28,11 +28,23 @@ public partial class Joekel : Node2D
 			_kleuren_bandjes[r] = new Color(Sigmoid(Dna[r, 0]), Sigmoid(Dna[r, 1]), Sigmoid(Dna[r, 2]));
 	}
 
-	public override void _Process(double delta)
+	public override void _PhysicsProcess(double delta)
 	{
 		float dt = (float)delta;
 		_heading += (float)GD.RandRange(-_turnJitter, _turnJitter) * dt;
-		Position += Vector2.FromAngle(_heading) * _kachow * dt * (HungerMax + HungerMin - _hunger)/HungerMax;
+
+		Velocity = Vector2.FromAngle(_heading) * _kachow * (HungerMax + HungerMin - _hunger) / HungerMax;
+		MoveAndSlide();
+
+		for (int i = 0; i < GetSlideCollisionCount(); i++)
+		{
+			if (GetSlideCollision(i).GetCollider() is Joekel ander)
+			{
+				continue;
+				// hier kan je op de andere joekel leuke code toepassen voor interacties.
+				}
+		}
+
 		Rotation = _heading;
 
 		var area = GetViewportRect().Size;
