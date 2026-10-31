@@ -3,6 +3,17 @@ using System;
 
 public partial class Camera : Camera2D
 {
+
+	[Export] public float VolgZoom = 2f;
+	Joekel _volg;
+	Vector2? _zoomDoel;
+
+	public void Volg(Joekel joekel)
+	{
+		_volg = joekel;
+		_zoomDoel = new Vector2(VolgZoom, VolgZoom);
+	}
+
 	 void ZoomAt(float factor)
 		{
 			var oldZoom = Zoom;
@@ -30,4 +41,20 @@ public partial class Camera : Camera2D
 			System.Math.Clamp(Position.Y, 0, WorldTiles.WORLD_TILE_SIZE_Y * WorldTiles.WORLD_AMOUNT_TILES_Y)
 		);
 	}
+
+	public override void _Process(double delta)
+	{
+		if (_volg == null) return;
+		if (!IsInstanceValid(_volg)) { _volg = null; return; }
+
+		float dt = (float)delta;
+		Position = Position.Lerp(_volg.GlobalPosition, 1 - Mathf.Exp(-5 * dt));
+
+		if (_zoomDoel is Vector2 doel)
+		{
+			Zoom = Zoom.Lerp(doel, 1 - Mathf.Exp(-3 * dt));
+			if (Zoom.DistanceTo(doel) < 0.02f) _zoomDoel = null;
+		}
+	}
+
 }

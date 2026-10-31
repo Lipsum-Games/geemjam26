@@ -18,6 +18,20 @@ public partial class DnaPaneel : PanelContainer
 		};
 		sluit.Pressed += Sluit;
 		AddChild(sluit);
+
+		var volg = new Button
+		{
+			Text = "Volg",
+			FocusMode = FocusModeEnum.None,
+			SizeFlagsHorizontal = SizeFlags.ShrinkEnd,
+			SizeFlagsVertical = SizeFlags.ShrinkEnd,
+		};
+		volg.Pressed += () =>
+		{
+			if (Joekel.Geselecteerd != null)
+				(GetViewport().GetCamera2D() as Camera)?.Volg(Joekel.Geselecteerd);
+		};
+		AddChild(volg);
 	}
 
 	void Sluit()

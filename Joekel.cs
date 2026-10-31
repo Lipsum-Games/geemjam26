@@ -29,6 +29,7 @@ public partial class Joekel : CharacterBody2D
 
 	// de joekel die nu geselecteerd is, zodat we live health etc. kunnen opdaten in de window
 	static Joekel _geselecteerd;
+	public static Joekel Geselecteerd => _geselecteerd;
 
 	private float _heading;
 	private float _volgendeHeading;
@@ -167,7 +168,7 @@ public partial class Joekel : CharacterBody2D
 		}
 	}
 
-    // roep deze functie om de joekel op te ruimen
+	// roep deze functie om de joekel op te ruimen
 	public void MaakDoodEnRuimOp() {
 		if (_geselecteerd == this)
 		{
