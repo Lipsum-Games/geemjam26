@@ -76,8 +76,6 @@ public partial class Joekel : CharacterBody2D
 
 		Rotation = _heading;
 
-		var area = GetViewportRect().Size;
-		Position = new Vector2(Mathf.PosMod(Position.X, area.X), Mathf.PosMod(Position.Y, area.Y));
 		CalculateHunger(delta);
 	}
 
