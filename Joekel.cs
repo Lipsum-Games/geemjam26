@@ -13,6 +13,7 @@ public partial class Joekel : CharacterBody2D
 	private float _kachow;
 	private float _hunger;
 	private float _turnJitter;
+	private float _doodgaansSnelheidEnAlgemeneGezondheid;
 	
 	public Dna Dna;
 
@@ -26,6 +27,7 @@ public partial class Joekel : CharacterBody2D
 		_kachow = Karaktereigenschappen.Kachow.Van(Dna);
 		_turnJitter = Karaktereigenschappen.TurnJitter.Van(Dna);
 		_hunger = (HungerMin + HungerMax) / 2;
+		_doodgaansSnelheidEnAlgemeneGezondheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(Dna);
 		for (int r = 0; r < 3; r++)
 			_kleuren_bandjes[r] = new Color(Sigmoid(Dna[r, 0]), Sigmoid(Dna[r, 1]), Sigmoid(Dna[r, 2]));
 	}
@@ -109,7 +111,7 @@ public partial class Joekel : CharacterBody2D
 
 			s += "\n";
 			foreach (var k in Karaktereigenschap.Alle)
-			    s += k.Naam + ": " + {k.Van(Dna)}
+				s += k.Naam + ": " + k.Van(Dna) + "\n";
 
 			var label = GetTree().CurrentScene.GetNode<Label>("%DnaLabel");
 			label.Text = s;

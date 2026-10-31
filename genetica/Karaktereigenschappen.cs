@@ -8,4 +8,7 @@ public static class Karaktereigenschappen
 
 	// turn jitter is een some van de tweede rij * 2
 	public static readonly Karaktereigenschap TurnJitter = new("TurnJitter", d => d.Row(1) * 2);
+
+	// ja je moet toch ooit dood gaan?
+	public static readonly Karaktereigenschap DoodgaansSnelheidEnAlgemeneGezondheid = new("DoodgaansSnelheidEnAlgemeneGezondheid", d => d[2, 2]);
 }
