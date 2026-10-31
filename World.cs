@@ -55,11 +55,39 @@ public partial class World : Node2D
 
 	public void SpawnJoekel(Vector2 Position, Dna Dna){
 		// var e = new Joekel();
-		var e = EntityScene.Instantiate<Joekel>();
-		e.Position = Position;
-		e.Dna = Dna;
-		AddChild(e);
 
+		
+		var radius = Karaktereigenschappen.Chonkheid.Van(Dna);
+		
+		var space = GetWorld2D().DirectSpaceState;
+		var success = false;
+		var finalPosition = Position;
+		GD.Print("joekel poging");
+
+		for (int i = 0; i < 5; i++){
+			var dir = GD.Randf() * Math.Tau;
+			var candidatePosition = Position + new Vector2(((float) Math.Cos(dir)) * (radius * 2.1f), ((float) Math.Sin(dir)) * (radius * 2.1F));
+			var query = new PhysicsShapeQueryParameters2D();
+			query.Shape = new CircleShape2D {
+				Radius = radius,
+			};
+			query.CollideWithBodies = true;
+			query.CollideWithAreas = false;
+			query.Transform = new Transform2D(0, candidatePosition);
+			var result = space.CollideShape(query, 10);
+			if (result.Count == 0){
+				finalPosition = candidatePosition;
+				success = true;
+				break;
+			}
+		}
+		if (success) {
+			GD.Print("joekel gemaakt");
+			var e = EntityScene.Instantiate<Joekel>();
+			e.Dna = Dna;
+			e.Position = finalPosition;
+			AddChild(e);
+		}
 	}
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)

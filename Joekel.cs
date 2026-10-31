@@ -11,12 +11,21 @@ public partial class Joekel : CharacterBody2D
 	[Export] public float ReproductionHunger = 2f;
 	[Export] public float ReproductionHungerCost = 4f;
 	[Export] public int AgeOfConsent = 200;
+	[Export] public float SpringInterval = 2.6f;
+	[Export] public float Frictie = 1f;
+
+	// Muur stuiter dingetjes
+	[Export] public float ZachteStuiter = 0.4f;
+	[Export] public float HardeStuiter = 2.5f;
+	[Export] public float MuurHeal = 2f;
+	[Export] public float MuurSchade = 0.02f;
 
 
 	// de joekel die nu geselecteerd is, zodat we live health etc. kunnen opdaten in de window
 	static Joekel _geselecteerd;
 
 	private float _heading;
+	private float _volgendeHeading;
 	private float _kachow;
 	private float _hunger;
 	private float _zwem;
@@ -30,6 +39,13 @@ public partial class Joekel : CharacterBody2D
 	private float _maximaleGezondheid;
 	private float _huidigeGezonheid;
 	private float _chonkheid;
+	private float _springTimer;
+	// Fumo: harde stuiter en heal
+	// Garfield: zachte stuiter en heal
+	// Gondola: zachte stuiter en damage
+	// Kei: harde stuiter en damage
+	enum StuiterType { Garfield, Fumo, Kei, Gondola }
+	private StuiterType _stuiterType;
 
 	public Dna Dna;
 
@@ -38,6 +54,8 @@ public partial class Joekel : CharacterBody2D
 	public override void _Ready()
 	{
 		_heading = GD.Randf() * Mathf.Tau;
+		_volgendeHeading = _heading;
+		_springTimer = GD.Randf() * SpringInterval;
 		_kachow = Karaktereigenschappen.Kachow.Van(Dna);
 		_turnJitter = Karaktereigenschappen.TurnJitter.Van(Dna);
 		_detectionArea = GetNode<Area2D>("Area2D");
@@ -54,7 +72,44 @@ public partial class Joekel : CharacterBody2D
 		GetNode<CollisionShape2D>("CollisionShape2D").Shape = new CircleShape2D { Radius = _chonkheid };
 		for (int r = 0; r < 3; r++)
 			_kleuren_bandjes[r] = new Color(Dna[r, 0], Dna[r, 1], Dna[r, 2]);
+
+		float m = Karaktereigenschappen.Murigheid.Van(Dna);
+		_stuiterType = m < 0.3f ? StuiterType.Fumo : m < 0.5f ? StuiterType.Garfield : m < 0.7f ? StuiterType.Kei : StuiterType.Gondola;
 	}
+
+	public void RegelMuurStuiter(Vector2 voor) {
+		for (int i = 0; i < GetSlideCollisionCount(); i++)
+			{
+				var botsing = GetSlideCollision(i);
+				if (botsing.GetCollider() is not StaticBody2D) continue;
+
+				var n = botsing.GetNormal();
+				float klap = -voor.Dot(n);
+
+				switch (_stuiterType)
+				{
+					case StuiterType.Garfield:
+						Velocity = voor.Bounce(n) * HardeStuiter;
+						_huidigeGezonheid = Mathf.Min(_huidigeGezonheid + MuurHeal, _maximaleGezondheid);
+						break;
+					case StuiterType.Fumo:
+						Velocity = voor.Bounce(n) * ZachteStuiter;
+						_huidigeGezonheid = Mathf.Min(_huidigeGezonheid + MuurHeal, _maximaleGezondheid);
+						break;
+					case StuiterType.Kei:
+						Velocity = voor.Bounce(n) * ZachteStuiter;
+						_huidigeGezonheid -= klap * MuurSchade;
+						break;
+					case StuiterType.Gondola:
+						Velocity = voor.Bounce(n) * HardeStuiter;
+						_huidigeGezonheid -= klap * MuurSchade;
+						break;
+				}
+
+				_volgendeHeading = voor.Bounce(n).Angle();
+				break;
+			}
+		}
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -83,8 +138,21 @@ public partial class Joekel : CharacterBody2D
 		_heading = direction;
 		_heading += (float)GD.RandRange(-_turnJitter, _turnJitter) * dt;
 
-		Velocity = velocity * GetVelocityVector();
+		_springTimer -= dt;
+		if (_springTimer <= 0)
+		{
+			// jump!!
+			_heading = _volgendeHeading;
+			Velocity += velocity * GetVelocityVector();
+			_volgendeHeading = _heading + (float)GD.RandRange(-_turnJitter, _turnJitter);
+			_springTimer = SpringInterval;
+		}
+
+		Velocity *= Mathf.Exp(-Frictie * dt);
+		var voor = Velocity;
 		MoveAndSlide();
+
+		RegelMuurStuiter(voor);
 
 		foreach (var body in _detectionArea.GetOverlappingBodies())
 		{
@@ -94,7 +162,8 @@ public partial class Joekel : CharacterBody2D
 				_huidigeGezonheid -= 6f * dt; // ook leuk idee om dit te scalen met een robuustheid ofzo wettewel
 		}
 
-		Rotation = _heading;
+		float t = 1 - _springTimer / SpringInterval;
+		Rotation = Mathf.LerpAngle(_heading, _volgendeHeading, Mathf.SmoothStep(0.7f, 1f, t));
 
 		CalculateHunger(delta);
 	}
@@ -180,7 +249,10 @@ public partial class Joekel : CharacterBody2D
 
 			s += "\n";
 			foreach (var k in Karaktereigenschap.Alle)
-				s += k.Naam + ": " + k.Van(Dna) + "\n";
+				if (k == Karaktereigenschappen.Murigheid)
+						s += "Murigheid: " + _stuiterType + "\n";
+					else
+						s += k.Naam + ": " + k.Van(Dna) + "\n";
 
 			s += "Gezond: " + _huidigeGezonheid + "/" + _maximaleGezondheid +"\n";
 
