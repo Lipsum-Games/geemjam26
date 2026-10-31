@@ -77,7 +77,9 @@ public class Behaviour
 			}
 
 			return;
-		} if (_currentPlan == Plan.EAT && joekel.GetHunger() < joekel.HungerMin * 1.1f)
+		} 
+		
+		if (_currentPlan == Plan.EAT && joekel.GetHunger() < joekel.HungerMin * 1.1f)
 		{
 			_currentPlan = Plan.CHILL;
 			_targetFoodSource = null;
@@ -86,7 +88,7 @@ public class Behaviour
 		
 		if (_currentPlan == Plan.CHILL)
 		{
-			if (_random.NextSingle() < oehlalaigheid * dt * 0.2f)
+			if (_random.NextSingle() < oehlalaigheid * dt * 0.8f)
 			{
 				_currentPlan = Plan.REPRODUCE;
 			} else if (introversie * dt * 0.2f > _random.NextSingle())
