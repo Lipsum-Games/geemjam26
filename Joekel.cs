@@ -53,6 +53,7 @@ public partial class Joekel : CharacterBody2D
 	private float _geur;
 	private Area2D _aura;
 	public float Geur => _geur;
+	static readonly GradientTexture2D MistTextuur = MaakRanzigheidsMist();
 
 	public Dna Dna;
 
@@ -209,16 +210,30 @@ public partial class Joekel : CharacterBody2D
 		CalculateHunger(delta);
 	}
 
+	static GradientTexture2D MaakRanzigheidsMist()
+	{
+		var g = new Gradient();
+		g.Offsets = [0f, 0.25f, 0.5f, 0.75f, 1f];
+		g.Colors = [new Color(1, 1, 1, 1f), new Color(1, 1, 1, 0.82f), new Color(1, 1, 1, 0.46f), new Color(1, 1, 1, 0.17f), new Color(1, 1, 1, 0f)];
+		return new GradientTexture2D
+		{
+			Gradient = g,
+			Fill = GradientTexture2D.FillEnum.Radial,
+			FillFrom = new Vector2(0.5f, 0.5f),
+			FillTo = new Vector2(1f, 0.5f),
+			Width = 128,
+			Height = 128,
+		};
+	}
+
 
 	public override void _Draw() {
 
 		if (_ranzigKracht > 0)
 		{
 			var geurKleur = Color.FromHsv((_geur + 1) / 2 * 0.8f, 0.7f, 1f);
-			geurKleur.A = _ranzigKracht / 8 * 0.06f;
-			const int lagen = 8;
-			for (int i = 0; i < lagen; i++)
-				DrawCircle(Vector2.Zero, _ranzigBereik * (1 - i / (float)lagen), geurKleur);
+			geurKleur.A = _ranzigKracht / 8 * 0.5f;
+			DrawTextureRect(MistTextuur, new Rect2(-_ranzigBereik, -_ranzigBereik, _ranzigBereik * 2, _ranzigBereik * 2), false, geurKleur);
 		}
 
 		float r = _chonkheid;
