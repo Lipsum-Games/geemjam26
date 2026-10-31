@@ -167,7 +167,7 @@ public partial class Joekel : CharacterBody2D
 		}
 	}
 
-    // roep deze functie om de joekel op te ruimen
+	// roep deze functie om de joekel op te ruimen
 	public void MaakDoodEnRuimOp() {
 		if (_geselecteerd == this)
 		{
@@ -192,11 +192,6 @@ public partial class Joekel : CharacterBody2D
 
 		(float direction, float velocity) = _behaviour.DoeDingen(this, dt);
 
-		if (_behaviour.CheckReproduce())
-		{
-			Reproduce();
-		}
-
 		_springTimer -= dt;
 		if (_springTimer <= 0)
 		{
@@ -216,6 +211,10 @@ public partial class Joekel : CharacterBody2D
 		foreach (var body in _detectionArea.GetOverlappingBodies())
 		{
 			if (body is Joekel ander && ander != this)
+				if (_behaviour.CheckReproduce())
+				{
+					Reproduce(ander);
+				}
 				continue;
 				// hier kan je op de andere joekel leuke code toepassen voor interacties.
 				// ze botsen voor meerdere frames dus dit moet denk ik niet te hoog
@@ -345,10 +344,11 @@ public partial class Joekel : CharacterBody2D
 	}
 
 	
-	private void Reproduce(){
+	private void Reproduce(Joekel other){
 		if (!IsNodeReady() || Dna == null || age < AgeOfConsent || _hunger > ReproductionHunger)
 			return;
-		((World) GetParent()).SpawnJoekel(Position, Dna.Noisified());
+		((World) GetParent()).SpawnJoekel(Position, Dna.Combine(Dna, other.Dna));
+		GD.Print("reproduce");
 		_hunger += ReproductionHungerCost;
 	}
 	public float GetHunger()
