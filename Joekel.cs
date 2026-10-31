@@ -49,7 +49,7 @@ public partial class Joekel : CharacterBody2D
 
 		var area = GetViewportRect().Size;
 		Position = new Vector2(Mathf.PosMod(Position.X, area.X), Mathf.PosMod(Position.Y, area.Y));
-		_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
+		CalculateHunger(delta);
 	}
 
 	public override void _Draw() {
@@ -67,4 +67,26 @@ public partial class Joekel : CharacterBody2D
 		DrawCircle(Vector2.Zero, 7, _kleuren_bandjes[1]);
 		DrawCircle(Vector2.Zero, 4, _kleuren_bandjes[2]);
 	}
+	
+	private void CalculateHunger(double delta)
+	{
+		bool foodSourceClose = false;
+		foreach (Node2D source in GetTree().GetNodesInGroup("FoodSource"))
+		{
+			float distance = GlobalPosition.DistanceTo(source.GlobalPosition);
+
+			if (distance < 200)
+			{
+				foodSourceClose = true;
+				break;
+			}
+		}
+		if (foodSourceClose)
+		{
+			_hunger = Mathf.Max(_hunger - 10 * (float)delta, HungerMin);
+		} else {
+			_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
+		}
+	}
+
 }
