@@ -62,7 +62,6 @@ public partial class World : Node2D
 		var space = GetWorld2D().DirectSpaceState;
 		var success = false;
 		var finalPosition = Position;
-		GD.Print("joekel poging");
 
 		for (int i = 0; i < 5; i++){
 			var dir = GD.Randf() * Math.Tau;
@@ -82,7 +81,6 @@ public partial class World : Node2D
 			}
 		}
 		if (success) {
-			GD.Print("joekel gemaakt");
 			var e = EntityScene.Instantiate<Joekel>();
 			e.Dna = Dna;
 			e.Position = finalPosition;
