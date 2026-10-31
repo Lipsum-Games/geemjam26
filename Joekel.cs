@@ -65,16 +65,16 @@ public partial class Joekel : CharacterBody2D
 		_hunger = (HungerMin + HungerMax) / 2;
 		_doodgaansSnelheidEnAlgemeneGezondheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(Dna);
 		// Joekeltjes hun maximale gezondheid scalet gewoon lekker met het DoodgaansSnelheidEnAlgemeneGezondheid gen.
-		_maximaleGezondheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(Dna) * 100;
+		_maximaleGezondheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(Dna);
 		_huidigeGezonheid = _maximaleGezondheid;
 		_chonkheid = Karaktereigenschappen.Chonkheid.Van(Dna);
 		GetNode<CollisionShape2D>("Area2D/CollisionShape2D").Shape = new CircleShape2D { Radius = _chonkheid + 2 };
 		GetNode<CollisionShape2D>("CollisionShape2D").Shape = new CircleShape2D { Radius = _chonkheid };
 		for (int r = 0; r < 3; r++)
-			_kleuren_bandjes[r] = new Color(Dna[r, 0], Dna[r, 1], Dna[r, 2]);
+			_kleuren_bandjes[r] = new Color((Dna[r, 0] + 1) / 2, (Dna[r, 1] + 1) / 2, (Dna[r, 2] + 1) / 2);
 
 		float m = Karaktereigenschappen.Murigheid.Van(Dna);
-		_stuiterType = m < 0.3f ? StuiterType.Fumo : m < 0.5f ? StuiterType.Garfield : m < 0.7f ? StuiterType.Kei : StuiterType.Gondola;
+			_stuiterType = m < -0.4f ? StuiterType.Fumo : m < 0f ? StuiterType.Garfield : m < 0.4f ? StuiterType.Kei : StuiterType.Gondola;
 	}
 
 	public void RegelMuurStuiter(Vector2 voor) {
