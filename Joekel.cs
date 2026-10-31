@@ -10,7 +10,7 @@ public partial class Joekel : CharacterBody2D
 	[Export] public float HungerMin = 1f;
 	[Export] public float ReproductionHunger = 2f;
 	[Export] public float ReproductionHungerCost = 4f;
-	[Export] public int AgeOfConsent = 200;
+	[Export] public float AgeOfConsent = 200f / 60f; // age of consent gaat omhoog met de time delta
 	[Export] public float SpringInterval = 2.6f;
 	[Export] public float Frictie = 1f;
 	// performance: onder deze snelheid (px/s) staat een joekel stil en slaan we MoveAndSlide over.
@@ -28,8 +28,8 @@ public partial class Joekel : CharacterBody2D
 	[Export] public float GeurVolleSchade = 0.5f;
 	[Export] public float GeurHealKracht = 0.3f;
 
-	// optimization, niet elke frame aura applying is goedkoper
-	[Export] public int AuraElkeNFrames = 16;
+	// optimization, niet elke frame aura applying is goedkoper. Dit gaat per frame.
+	[Export] public float AuraInterval = 16f / 60f;
 
 
 	// de joekel die nu geselecteerd is, zodat we live health etc. kunnen opdaten in de window
@@ -47,7 +47,7 @@ public partial class Joekel : CharacterBody2D
 	private Area2D _detectionArea;
 	private FoodSource _isEatingSource;
 	private float _doodgaansSnelheidEnAlgemeneGezondheid;
-	private int age;
+	private float age;
 	private float _maximaleGezondheid;
 	private float _huidigeGezonheid;
 	private float _chonkheid;
@@ -106,7 +106,7 @@ public partial class Joekel : CharacterBody2D
 		if (_ranzigKracht > 0)
 		{
 			_auraVraag = new PhysicsShapeQueryParameters2D { Shape = new CircleShape2D { Radius = _ranzigBereik }, CollideWithAreas = false };
-			_auraTeller = GD.RandRange(0, AuraElkeNFrames - 1); // spreiden: niet alle joekels in hetzelfde frame and gaat perfromance kaduk
+			_auraTijd = GD.Randf() * AuraInterval; // spreiden: niet alle joekels in hetzelfde frame and gaat perfromance kaduk
 		}
 	}
 
@@ -157,7 +157,7 @@ public partial class Joekel : CharacterBody2D
 
 
 	private PhysicsShapeQueryParameters2D _auraVraag;
-	private int _auraTeller;
+	private float _auraTijd;
 
 	private void RanzigeAura(float dt)
 	{
@@ -192,7 +192,7 @@ public partial class Joekel : CharacterBody2D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		age += 1;
+		age += (float)delta;
 		// Als deze joekel is selected update the toon window.
 		if (_geselecteerd == this) Toon();
 		if (_huidigeGezonheid <= 0) {
@@ -233,8 +233,9 @@ public partial class Joekel : CharacterBody2D
 					Reproduce(ander);
 				} else if (Dna.Similarity(Dna, ander.Dna) > 6){
 					// ATTACK
-					ander._huidigeGezonheid -= _chonkheid;
-					_hunger -= Math.Max((_vleeslustigheid - 0.5f), 0);
+					// scale de hunger per dt en 60 fps game
+					ander._huidigeGezonheid -= _chonkheid * 60f * dt;
+					_hunger -= Math.Max((_vleeslustigheid - 0.5f), 0) * 60f * dt;
 				}
 				continue;
 				// hier kan je op de andere joekel leuke code toepassen voor interacties.
@@ -244,9 +245,13 @@ public partial class Joekel : CharacterBody2D
 		}
 
 		if (_ranzigKracht > 0) {
-			if (_auraVraag != null && ++_auraTeller >= AuraElkeNFrames) {
-				_auraTeller = 0;
-				RanzigeAura(dt * AuraElkeNFrames);
+			if (_auraVraag != null) {
+				// scale de aura per time delta
+				_auraTijd += dt;
+				if (_auraTijd >= AuraInterval) {
+					RanzigeAura(_auraTijd); // schade over de echt verstreken tijd
+					_auraTijd = 0;
+				}
 			}
 		}
 
@@ -384,6 +389,8 @@ public partial class Joekel : CharacterBody2D
 	
 	private void Reproduce(Joekel other){
 		if (!IsNodeReady() || Dna == null || age < AgeOfConsent || _hunger > ReproductionHunger)
+			return;
+		if(Dna.Similarity(Dna, other.Dna) < 4 && GD.Randf() < 0.6f)
 			return;
 		((World) GetParent()).SpawnJoekel(Position, Dna.Combine(Dna, other.Dna));
 		_hunger += ReproductionHungerCost;
