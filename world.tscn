@@ -14,7 +14,6 @@
 resource_name = "tile_atlas"
 texture = ExtResource("4_tlwt5")
 texture_region_size = Vector2i(100, 100)
-use_texture_padding = false
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
@@ -225,6 +224,7 @@ use_texture_padding = false
 12:13/0 = 0
 13:13/0 = 0
 14:13/0 = 0
+
 [sub_resource type="TileSet" id="TileSet_asv5b"]
 sources/0 = SubResource("TileSetAtlasSource_aqk2v")
 

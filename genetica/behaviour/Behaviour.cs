@@ -29,9 +29,12 @@ public class Behaviour
 		} else if (_targetPosition is not null)
 		{
 			float distance = _targetPosition.Value.DistanceTo(joekel.Position);
-			if (distance < 1.0f)
+
+			var maxVel = joekel.GetVelocity().Length();
+
+			if (distance < maxVel)
 			{
-				speed = distance;
+				speed = 0.5f * distance/maxVel;
 			}
 			else
 			{
@@ -66,7 +69,8 @@ public class Behaviour
 				.GetNodesInGroup("FoodSource")
 				.Where(node => node.GetParent() is FoodSource)
 				.Select(node => node.GetParent<FoodSource>())
-				.FirstOrDefault(fs => fs.Position.DistanceTo(joekel.Position) <= 600.0f);
+				.Where(fs => fs.Position.DistanceTo(joekel.Position) <= 600.0f)
+				.MinBy(fs => fs.Position.DistanceTo(joekel.Position) + _random.NextSingle() * 100.0);
 
 			if (food is not null)
 			{

@@ -29,6 +29,7 @@ public partial class Joekel : CharacterBody2D
 
 	// de joekel die nu geselecteerd is, zodat we live health etc. kunnen opdaten in de window
 	static Joekel _geselecteerd;
+	public static Joekel Geselecteerd => _geselecteerd;
 
 	private float _heading;
 	private float _volgendeHeading;
@@ -324,6 +325,8 @@ public partial class Joekel : CharacterBody2D
 	{
 		_geselecteerd = this;
 		Toon();
+		if (GetViewport().GetCamera2D() is Camera camera && camera.VolgtIemand)
+				camera.Volg(this);
 	}
 
 	public static void Deselecteer() => _geselecteerd = null;
@@ -353,7 +356,6 @@ public partial class Joekel : CharacterBody2D
 		if (!IsNodeReady() || Dna == null || age < AgeOfConsent || _hunger > ReproductionHunger)
 			return;
 		((World) GetParent()).SpawnJoekel(Position, Dna.Combine(Dna, other.Dna));
-		GD.Print("reproduce");
 		_hunger += ReproductionHungerCost;
 	}
 	public float GetHunger()
