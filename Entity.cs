@@ -14,9 +14,12 @@ public partial class Entity : Node2D
 	private float _heading;
 	private float _speed;
 	private float _hunger;
+	
+	public Dna Dna;
 
 	public override void _Ready()
 	{
+		Dna ??= Dna.Random();
 		_heading = GD.Randf() * Mathf.Tau;
 		_speed = (float)GD.RandRange(MinSpeed, MaxSpeed);
 		_hunger = HungerMin;
