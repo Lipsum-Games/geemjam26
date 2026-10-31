@@ -7,9 +7,11 @@ public partial class Camera : Camera2D
 	[Export] public float VolgZoom = 2f;
 	Joekel _volg;
 	Vector2? _zoomDoel;
+	Vector2 _volgOffset;
 
 	public void Volg(Joekel joekel)
 	{
+		_volgOffset = Vector2.Zero;
 		_volg = joekel;
 		_zoomDoel = new Vector2(VolgZoom, VolgZoom);
 	}
@@ -20,7 +22,9 @@ public partial class Camera : Camera2D
 			Zoom = Zoom * factor;
 
 			var offset = GetViewport().GetMousePosition() - GetViewportRect().Size / 2;
-			Position += offset / oldZoom - offset / Zoom;
+			var verschuiving = offset / oldZoom - offset / Zoom;
+			Position += verschuiving;
+			if (_volg != null) _volgOffset += verschuiving;
 		}
 		
 	public override void _UnhandledInput(InputEvent e)
