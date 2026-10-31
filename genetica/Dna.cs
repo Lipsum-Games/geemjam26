@@ -15,6 +15,20 @@ public partial class Dna
 				d.M[r, c] = (float)GD.Randf();
 		return d;
 	}
+	
+	public static Dna Combine(Dna parent1, Dna parent2)
+	{
+		var d = new Dna();
+		for (int r = 0; r < N; r++)
+			for (int c = 0; c < N; c++)
+				var choice = (float) 2*GD.Randf();
+				if(choice < 1.0f){
+					d.M[r, c] = parent1.M[r, c]
+				} else{
+					d.M[r, c] = parent2.M[r, c]
+				}
+		return d.Noisified();
+	}
 
 	public Dna Noisified(){
 		var d = new Dna();
