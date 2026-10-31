@@ -83,4 +83,13 @@ public partial class Dna
 		foreach (var (r, c) in cells) s += M[r, c];
 		return s;
 	}
+
+	public float Similarity(Dna D1, Dna D2){
+		var Similarity = 0f;
+		for (int r = 0; r < N; r++)
+			for (int c = 0; c < N; c++)
+				Similarity += Math.Abs(D1[r,c] - D2[r,c]);
+
+		return Similarity;
+	}
 }

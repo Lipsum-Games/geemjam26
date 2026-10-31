@@ -13,6 +13,8 @@ public partial class Joekel : CharacterBody2D
 	[Export] public int AgeOfConsent = 200;
 	[Export] public float SpringInterval = 2.6f;
 	[Export] public float Frictie = 1f;
+	// performance: onder deze snelheid (px/s) staat een joekel stil en slaan we MoveAndSlide over.
+	[Export] public float RustDrempel = 10f;
 
 	// Muur stuiter dingetjes
 	[Export] public float ZachteStuiter = 0.4f;
@@ -25,6 +27,9 @@ public partial class Joekel : CharacterBody2D
 	[Export] public float GeurPlateau = 0.05f;
 	[Export] public float GeurVolleSchade = 0.5f;
 	[Export] public float GeurHealKracht = 0.3f;
+
+	// optimization, niet elke frame aura applying is goedkoper
+	[Export] public int AuraElkeNFrames = 16;
 
 
 	// de joekel die nu geselecteerd is, zodat we live health etc. kunnen opdaten in de window
@@ -47,18 +52,19 @@ public partial class Joekel : CharacterBody2D
 	private float _huidigeGezonheid;
 	private float _chonkheid;
 	private float _springTimer;
+	private float _vleeslustigheid;
 	// Fumo: harde stuiter en heal
 	// Garfield: zachte stuiter en heal
 	// Gondola: zachte stuiter en damage
 	// Kei: harde stuiter en damage
 	enum StuiterType { Garfield, Fumo, Kei, Gondola }
 	private StuiterType _stuiterType;
+	public string StuiterNaam => _stuiterType.ToString(); // slop-hook: gelezen door slop/Statistiek + slop/Clusters
 
 	// geurtje
 	private float _ranzigBereik;
 	private float _ranzigKracht;
 	private float _geur;
-	private Area2D _aura;
 	public float Geur => _geur;
 	static readonly GradientTexture2D MistTextuur = MaakRanzigheidsMist();
 
@@ -77,6 +83,7 @@ public partial class Joekel : CharacterBody2D
 		_detectionArea = GetNode<Area2D>("Area2D");
 		_detectionArea.AreaEntered += OnAreaEntered;
 		_detectionArea.AreaExited += OnAreaExited;
+		_vleeslustigheid = Karaktereigenschappen.Vleeslustigheid.Van(Dna);
 		_isEatingSource = null;
 		_hunger = (HungerMin + HungerMax) / 2;
 		_doodgaansSnelheidEnAlgemeneGezondheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(Dna);
@@ -98,9 +105,8 @@ public partial class Joekel : CharacterBody2D
 		_geur = Karaktereigenschappen.RanzigheidAuraGeur.Van(Dna);
 		if (_ranzigKracht > 0)
 		{
-			_aura = new Area2D { Monitorable = false };
-			_aura.AddChild(new CollisionShape2D { Shape = new CircleShape2D { Radius = _ranzigBereik } });
-			AddChild(_aura);
+			_auraVraag = new PhysicsShapeQueryParameters2D { Shape = new CircleShape2D { Radius = _ranzigBereik }, CollideWithAreas = false };
+			_auraTeller = GD.RandRange(0, AuraElkeNFrames - 1); // spreiden: niet alle joekels in hetzelfde frame and gaat perfromance kaduk
 		}
 	}
 
@@ -149,11 +155,16 @@ public partial class Joekel : CharacterBody2D
 		}
 
 
+
+	private PhysicsShapeQueryParameters2D _auraVraag;
+	private int _auraTeller;
+
 	private void RanzigeAura(float dt)
 	{
-		foreach (var body in _aura.GetOverlappingBodies())
+		_auraVraag.Transform = new Transform2D(0, GlobalPosition);
+		foreach (var raak in GetWorld2D().DirectSpaceState.IntersectShape(_auraVraag, 64))
 		{
-			if (body is not Joekel ander || ander == this) continue;
+			if (raak["collider"].AsGodotObject() is not Joekel ander || ander == this) continue;
 
 			float afstand = GlobalPosition.DistanceTo(ander.GlobalPosition);
 			if (afstand >= _ranzigBereik) continue; // niet ranzig genoeg
@@ -204,17 +215,26 @@ public partial class Joekel : CharacterBody2D
 		}
 
 		Velocity *= Mathf.Exp(-Frictie * dt);
-		var voor = Velocity;
-		MoveAndSlide();
-
-		RegelMuurStuiter(voor);
+		if (Velocity.Length() > RustDrempel)
+		{
+			var voor = Velocity;
+			MoveAndSlide();
+			// alleen na een echte MoveAndSlide: anders leest hij de oude botsing van vorige keer opnieuw
+			RegelMuurStuiter(voor);
+		}
+		// Zet de velocity op nul als we al langzaam genoeg gaan.
+		else Velocity = Vector2.Zero;
 
 		foreach (var body in _detectionArea.GetOverlappingBodies())
 		{
 			if (body is Joekel ander && ander != this)
-				if (_behaviour.CheckReproduce())
+				if (_behaviour.CheckReproduce() && Dna.Similarity(Dna, ander.Dna) < 6)
 				{
 					Reproduce(ander);
+				} else if (Dna.Similarity(Dna, ander.Dna) > 6){
+					// ATTACK
+					ander._huidigeGezonheid -= _chonkheid;
+					_hunger -= Math.Max((_vleeslustigheid - 0.5f), 0);
 				}
 				continue;
 				// hier kan je op de andere joekel leuke code toepassen voor interacties.
@@ -224,8 +244,9 @@ public partial class Joekel : CharacterBody2D
 		}
 
 		if (_ranzigKracht > 0) {
-			if (_aura != null) {
-				RanzigeAura(dt);
+			if (_auraVraag != null && ++_auraTeller >= AuraElkeNFrames) {
+				_auraTeller = 0;
+				RanzigeAura(dt * AuraElkeNFrames);
 			}
 		}
 
@@ -277,9 +298,9 @@ public partial class Joekel : CharacterBody2D
 
 	}
 
-	private Vector2 GetVelocityVector() {
-		var result = Vector2.FromAngle(_heading); 				    // unit vector
-		result *= _kachow; 										    // joekel speed multiplier
+	public float GetVelocityVal()
+	{
+		float result = _kachow; 										    // joekel speed multiplier
 		float honger = (_hunger - HungerMin) / (HungerMax - HungerMin);
 		// 100-50% gevuld is geen penatly, daarna linear van 100% naar 70% speed
 		result *= 1f - 0.3f * Mathf.Clamp((honger - 0.5f) / 0.5f, 0f, 1f);    // hunger discount
@@ -289,15 +310,29 @@ public partial class Joekel : CharacterBody2D
 		}
 		return result;
 	}
+
+	private Vector2 GetVelocityVector() {
+		var result = Vector2.FromAngle(_heading); 				    // unit vector
+		result *= GetVelocityVal();
+		return result;
+	}
 	
 	private void CalculateHunger(double delta)
 	{
 		if (_isEatingSource != null)
 		{
-			_hunger -= _isEatingSource.eat(delta, _hunger - HungerMin);
+			var eating = _isEatingSource.eat(delta, (_hunger - HungerMin) * Math.Max(((_vleeslustigheid - 0.5f) * - 1), 0)) ;
+			_huidigeGezonheid += 2f*eating;
+			_huidigeGezonheid = Mathf.Min(_huidigeGezonheid, _maximaleGezondheid);
+			_hunger -= eating;
 		}
-		_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
+		_hunger = Mathf.Min(_hunger + Karaktereigenschappen.Chonkheid.Van(Dna) * (float)delta / 100 , HungerMax);
+
+		float honger = (_hunger - HungerMin) / (HungerMax - HungerMin);
+		if(honger>0.7f){
+			_huidigeGezonheid -= 5f * (float)delta * honger*honger;
 		}
+	}
 
 	private void OnAreaEntered(Area2D area)
 	{
