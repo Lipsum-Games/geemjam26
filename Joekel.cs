@@ -17,6 +17,7 @@ public partial class Joekel : CharacterBody2D
 	static Joekel _geselecteerd;
 
 	private float _heading;
+	private float _volgendeHeading;
 	private float _kachow;
 	private float _hunger;
 	private float _zwem;
@@ -37,6 +38,7 @@ public partial class Joekel : CharacterBody2D
 	public override void _Ready()
 	{
 		_heading = GD.Randf() * Mathf.Tau;
+		_volgendeHeading = _heading;
 		_springTimer = GD.Randf() * SpringInterval;
 		_kachow = Karaktereigenschappen.Kachow.Van(Dna);
 		_turnJitter = Karaktereigenschappen.TurnJitter.Van(Dna);
@@ -76,8 +78,10 @@ public partial class Joekel : CharacterBody2D
 		_springTimer -= dt;
 		if (_springTimer <= 0)
 		{
-			_heading += (float)GD.RandRange(-_turnJitter, _turnJitter);
+			// jump!!
+			_heading = _volgendeHeading;
 			Velocity += GetVelocityVector();
+			_volgendeHeading = _heading + (float)GD.RandRange(-_turnJitter, _turnJitter);
 			_springTimer = SpringInterval;
 		}
 
@@ -92,7 +96,8 @@ public partial class Joekel : CharacterBody2D
 				_huidigeGezonheid -= 6f * dt; // ook leuk idee om dit te scalen met een robuustheid ofzo wettewel
 		}
 
-		Rotation = _heading;
+		float t = 1 - _springTimer / SpringInterval;
+		Rotation = Mathf.LerpAngle(_heading, _volgendeHeading, Mathf.SmoothStep(0.7f, 1f, t));
 
 		CalculateHunger(delta);
 	}
