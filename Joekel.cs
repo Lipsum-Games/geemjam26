@@ -9,6 +9,8 @@ public partial class Joekel : CharacterBody2D
 	[Export] public float ReproductionHunger = 2f;
 	[Export] public float ReproductionHungerCost = 4f;
 	[Export] public int AgeOfConsent = 200;
+	[Export] public float SpringInterval = 2.6f;
+	[Export] public float Frictie = 1f;
 
 
 	// de joekel die nu geselecteerd is, zodat we live health etc. kunnen opdaten in de window
@@ -26,6 +28,7 @@ public partial class Joekel : CharacterBody2D
 	private float _maximaleGezondheid;
 	private float _huidigeGezonheid;
 	private float _chonkheid;
+	private float _springTimer;
 
 	public Dna Dna;
 
@@ -34,6 +37,7 @@ public partial class Joekel : CharacterBody2D
 	public override void _Ready()
 	{
 		_heading = GD.Randf() * Mathf.Tau;
+		_springTimer = GD.Randf() * SpringInterval;
 		_kachow = Karaktereigenschappen.Kachow.Van(Dna);
 		_turnJitter = Karaktereigenschappen.TurnJitter.Van(Dna);
 		_detectionArea = GetNode<Area2D>("Area2D");
@@ -68,9 +72,16 @@ public partial class Joekel : CharacterBody2D
 			return;
 		}
 		float dt = (float)delta;
-		_heading += (float)GD.RandRange(-_turnJitter, _turnJitter) * dt;
 
-		Velocity = GetVelocityVector();
+		_springTimer -= dt;
+		if (_springTimer <= 0)
+		{
+			_heading += (float)GD.RandRange(-_turnJitter, _turnJitter);
+			Velocity += GetVelocityVector();
+			_springTimer = SpringInterval;
+		}
+
+		Velocity *= Mathf.Exp(-Frictie * dt);
 		MoveAndSlide();
 
 		foreach (var body in _detectionArea.GetOverlappingBodies())
