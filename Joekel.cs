@@ -46,6 +46,7 @@ public partial class Joekel : CharacterBody2D
 	private float _huidigeGezonheid;
 	private float _chonkheid;
 	private float _springTimer;
+	private float _vleeslustigheid;
 	// Fumo: harde stuiter en heal
 	// Garfield: zachte stuiter en heal
 	// Gondola: zachte stuiter en damage
@@ -76,6 +77,7 @@ public partial class Joekel : CharacterBody2D
 		_detectionArea = GetNode<Area2D>("Area2D");
 		_detectionArea.AreaEntered += OnAreaEntered;
 		_detectionArea.AreaExited += OnAreaExited;
+		_vleeslustigheid = Karaktereigenschappen.Vleeslustigheid.Van(Dna);
 		_isEatingSource = null;
 		_hunger = (HungerMin + HungerMax) / 2;
 		_doodgaansSnelheidEnAlgemeneGezondheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(Dna);
@@ -294,7 +296,7 @@ public partial class Joekel : CharacterBody2D
 	{
 		if (_isEatingSource != null)
 		{
-			_hunger -= _isEatingSource.eat(delta, _hunger - HungerMin);
+			_hunger -= _isEatingSource.eat(delta, (_hunger - HungerMin) * Math.Max(((_vleeslustigheid - 0.5f) * - 1), 0)) ;
 		}
 		_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
 		}
