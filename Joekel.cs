@@ -8,13 +8,16 @@ public partial class Joekel : CharacterBody2D
 	[Export] public float HungerMin = 1f;
 	[Export] public float ReproductionHunger = 2f;
 	[Export] public float ReproductionHungerCost = 4f;
+	[Export] public int AgeOfConsent = 200;
+
 
 	private float _heading;
 	private float _kachow;
 	private float _hunger;
 	private float _zwem;
 	private float _turnJitter;
-	
+	private float _doodgaansSnelheidEnAlgemeneGezondheid;
+	private int age;
 	public Dna Dna;
 
 	[Export] public float joekel_tekenRadius = 10f;
@@ -26,12 +29,14 @@ public partial class Joekel : CharacterBody2D
 		_kachow = Karaktereigenschappen.Kachow.Van(Dna);
 		_turnJitter = Karaktereigenschappen.TurnJitter.Van(Dna);
 		_hunger = (HungerMin + HungerMax) / 2;
+		_doodgaansSnelheidEnAlgemeneGezondheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(Dna);
 		for (int r = 0; r < 3; r++)
-			_kleuren_bandjes[r] = new Color(Sigmoid(Dna[r, 0]), Sigmoid(Dna[r, 1]), Sigmoid(Dna[r, 2]));
+			_kleuren_bandjes[r] = new Color(Dna[r, 0], Dna[r, 1], Dna[r, 2]);
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
+		age += 1;
 		float dt = (float)delta;
 		_heading += (float)GD.RandRange(-_turnJitter, _turnJitter) * dt;
 
@@ -71,11 +76,14 @@ public partial class Joekel : CharacterBody2D
 	}
 
 	private Vector2 GetVelocityVector() {
-		var result = Vector2.FromAngle(_heading) 				// unit vector 
-		result *= _kachow 										// joekel speed multiplier
-		result *= (HungerMax + HungerMin - _hunger) / HungerMax // hunger discount
-		result *= WorldTiles.GetTileAt(this.GlobalPosition);  // discount from the tile the joekel is on
-		return result 
+		var result = Vector2.FromAngle(_heading); 				    // unit vector 
+		result *= _kachow; 										    // joekel speed multiplier
+		result *= (HungerMax + HungerMin - _hunger) / HungerMax;    // hunger discount
+		var joekelTile = WorldTiles.GetTileAt(this.GlobalPosition);
+		if (joekelTile != null) {
+			result *= joekelTile.GetJoekelSpeedMultiplier(this); 	// modifier from the tile the joekel is on
+		}
+		return result;
 	}
 	
 	private void CalculateHunger(double delta)
@@ -97,18 +105,38 @@ public partial class Joekel : CharacterBody2D
 		if (foodSourceClose)
 		{
 			_hunger = Mathf.Max(_hunger - 10 * (float)delta, HungerMin);
-		} else {
+		}
 			if (_hunger < ReproductionHunger){
 			Reproduce();
 			_hunger = _hunger + ReproductionHungerCost;
 		}
 		_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
 		}
+
+	public override void _InputEvent(Viewport viewport, InputEvent e, int shapeIdx)
+	{
+		if (e is InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true })
+			Toon();
+	}
+
+	void Toon()
+		{
+			var s = "DNA\n";
+			for (int r = 0; r < Dna.N; r++)
+				s += Dna[r, 0].ToString("F2") + "  " + Dna[r, 1].ToString("F2") + "  " + Dna[r, 2].ToString("F2") + "\n";
+
+			s += "\n";
+			foreach (var k in Karaktereigenschap.Alle)
+				s += k.Naam + ": " + k.Van(Dna) + "\n";
+
+			var label = GetTree().CurrentScene.GetNode<Label>("%DnaLabel");
+			label.Text = s;
+			label.GetParent<Control>().Visible = true;
 	}
 
 	
 	private void Reproduce(){
-		if (!IsNodeReady() || Dna == null)
+		if (!IsNodeReady() || Dna == null || age < AgeOfConsent)
 			return;
 		((World) GetParent()).SpawnJoekel(Position, Dna.Noisified());
 	}
