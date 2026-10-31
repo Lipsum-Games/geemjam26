@@ -1,3 +1,5 @@
+using System;
+using Geemjam26ShipsumEvolve.genetica;
 using Godot;
 using static Activations;
 
@@ -28,6 +30,8 @@ public partial class Joekel : CharacterBody2D
 	private float _hunger;
 	private float _zwem;
 	private float _turnJitter;
+	private Behaviour _behaviour = new Behaviour();
+	
 	private Area2D _detectionArea;
 	private FoodSource _isEatingSource;
 	private float _doodgaansSnelheidEnAlgemeneGezondheid;
@@ -124,13 +128,20 @@ public partial class Joekel : CharacterBody2D
 		}
 		float dt = (float)delta;
 
+		(float direction, float velocity) = _behaviour.DoeDingen(this);
+
+		if (_behaviour.CheckReproduce())
+		{
+			Reproduce();
+		}
+
 		_springTimer -= dt;
 		if (_springTimer <= 0)
 		{
 			// jump!!
 			_heading = _volgendeHeading;
-			Velocity += GetVelocityVector();
-			_volgendeHeading = _heading + (float)GD.RandRange(-_turnJitter, _turnJitter);
+			Velocity += velocity * GetVelocityVector();
+			_volgendeHeading = direction;
 			_springTimer = SpringInterval;
 		}
 
@@ -199,10 +210,6 @@ public partial class Joekel : CharacterBody2D
 		{
 			_hunger -= _isEatingSource.eat(delta, HungerMax-_hunger);
 		}
-			if (_hunger < ReproductionHunger){
-			Reproduce();
-			_hunger = _hunger + ReproductionHungerCost;
-		}
 		_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
 		}
 
@@ -256,5 +263,14 @@ public partial class Joekel : CharacterBody2D
 		if (!IsNodeReady() || Dna == null || age < AgeOfConsent)
 			return;
 		((World) GetParent()).SpawnJoekel(Position, Dna.Noisified());
+		_hunger += ReproductionHungerCost;
+	}
+	public float GetHunger()
+	{
+		return _hunger;
+	}
+	public float getHeading()
+	{
+		return _heading;
 	}
 }

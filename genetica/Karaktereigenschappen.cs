@@ -10,6 +10,15 @@ public static class Karaktereigenschappen
 
 	// turn jitter is dikke cirkel wiskunde weettewel
 	public static readonly Karaktereigenschap TurnJitter = new("TurnJitter", d => Range(0, Mathf.Pi / 2, Sigmoid(d.Row(1))));
+	
+	// Hoen hekel Joekels hebben aan andere Joekels
+	public static readonly Karaktereigenschap Introversie = new("Introversie", d => Sigmoid(d.Col(2) * 2 - 2 * d.AntiDiag()));
+	
+	// Hoe snel de joekels besluiten dat de honger teveel is en ze moeten vreten
+	public static readonly Karaktereigenschap Trek = new("Trek", d => d.Col(2) * 2 - 2 * d.AntiDiag());
+
+	// Hoe enthousiast the joekels zijn om, uhhh, "gezellige" dingen te doen die mogelijk kunnen leiden tot de creatie van nageslacht
+	public static readonly Karaktereigenschap Oehlalalaigheid = new("Oehlalalaigheid", d => Sigmoid(1.0f * d.Col(0) - 0.5f * (d.Col(1) + d.Col(2))));
 
 	// hoe goed dit joekeltje kan zwemmen (of misschien kan hij het niet)
 	public static readonly Karaktereigenschap Zwemdiplomas = new("Zwemdiplomas", dna => {
