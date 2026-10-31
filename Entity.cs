@@ -4,16 +4,13 @@ using System;
 public partial class Entity : Node2D
 {
 
-	[Export] public float MinSpeed = 50f;
-	[Export] public float MaxSpeed = 150f;
-	[Export] public float TurnJitter = 10f;
 	[Export] public float HungerMax = 10f;
 	[Export] public float HungerMin = 1f;
-	
 
 	private float _heading;
-	private float _speed;
+	private float _kachow;
 	private float _hunger;
+	private float _turnJitter;
 	
 	public Dna Dna;
 
@@ -21,7 +18,8 @@ public partial class Entity : Node2D
 	{
 		Dna ??= Dna.Random();
 		_heading = GD.Randf() * Mathf.Tau;
-		_speed = (float)GD.RandRange(MinSpeed, MaxSpeed);
+		_kachow = Karaktereigenschappen.Kachow.Van(Dna);
+		_turnJitter = Karaktereigenschappen.TurnJitter.Van(Dna);
 		_hunger = HungerMin;
 	}
 
