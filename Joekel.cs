@@ -13,6 +13,8 @@ public partial class Joekel : CharacterBody2D
 	[Export] public int AgeOfConsent = 200;
 	[Export] public float SpringInterval = 2.6f;
 	[Export] public float Frictie = 1f;
+	// performance: onder deze snelheid (px/s) staat een joekel stil en slaan we MoveAndSlide over.
+	[Export] public float RustDrempel = 10f;
 
 	// Muur stuiter dingetjes
 	[Export] public float ZachteStuiter = 0.4f;
@@ -207,10 +209,15 @@ public partial class Joekel : CharacterBody2D
 		}
 
 		Velocity *= Mathf.Exp(-Frictie * dt);
-		var voor = Velocity;
-		MoveAndSlide();
-
-		RegelMuurStuiter(voor);
+		if (Velocity.Length() > RustDrempel)
+		{
+			var voor = Velocity;
+			MoveAndSlide();
+			// alleen na een echte MoveAndSlide: anders leest hij de oude botsing van vorige keer opnieuw
+			RegelMuurStuiter(voor);
+		}
+		// Zet de velocity op nul als we al langzaam genoeg gaan.
+		else Velocity = Vector2.Zero;
 
 		foreach (var body in _detectionArea.GetOverlappingBodies())
 		{
