@@ -11,6 +11,9 @@ public partial class Joekel : CharacterBody2D
 	[Export] public int AgeOfConsent = 200;
 
 
+	// de joekel die nu geselecteerd is, zodat we live health etc. kunnen opdaten in de window
+	static Joekel _geselecteerd;
+
 	private float _heading;
 	private float _kachow;
 	private float _hunger;
@@ -19,6 +22,9 @@ public partial class Joekel : CharacterBody2D
 	private bool _isEating;
 	private float _doodgaansSnelheidEnAlgemeneGezondheid;
 	private int age;
+	private float _maximaleGezondheid;
+	private float _huidigeGezonheid;
+
 	public Dna Dna;
 
 	[Export] public float joekel_tekenRadius = 10f;
@@ -35,6 +41,9 @@ public partial class Joekel : CharacterBody2D
 		_isEating = false;
 		_hunger = (HungerMin + HungerMax) / 2;
 		_doodgaansSnelheidEnAlgemeneGezondheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(Dna);
+		// Joekeltjes hun maximale gezondheid scalet gewoon lekker met het DoodgaansSnelheidEnAlgemeneGezondheid gen.
+		_maximaleGezondheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(Dna) * 100;
+		_huidigeGezonheid = _maximaleGezondheid;
 		for (int r = 0; r < 3; r++)
 			_kleuren_bandjes[r] = new Color(Dna[r, 0], Dna[r, 1], Dna[r, 2]);
 	}
@@ -42,6 +51,18 @@ public partial class Joekel : CharacterBody2D
 	public override void _PhysicsProcess(double delta)
 	{
 		age += 1;
+		// Als deze joekel is selected update the toon window.
+		if (_geselecteerd == this) Toon();
+		if (_huidigeGezonheid <= 0) {
+			// DOOD!!!!!
+			if (_geselecteerd == this)
+			{
+				_geselecteerd = null;
+				GetTree().CurrentScene.GetNode<Control>("%DnaLabel").GetParent<Control>().Visible = false;
+			}
+			QueueFree();
+			return;
+		}
 		float dt = (float)delta;
 		_heading += (float)GD.RandRange(-_turnJitter, _turnJitter) * dt;
 
@@ -52,15 +73,14 @@ public partial class Joekel : CharacterBody2D
 		{
 			if (GetSlideCollision(i).GetCollider() is Joekel ander)
 			{
-				continue;
 				// hier kan je op de andere joekel leuke code toepassen voor interacties.
+				// ze botsen voor meerdere frames dus dit moet denk ik niet te hoog
+				_huidigeGezonheid -= 0.1f; // ook leuk idee om dit te scalen met een robuustheid ofzo wettewel
 				}
 		}
 
 		Rotation = _heading;
 
-		var area = GetViewportRect().Size;
-		Position = new Vector2(Mathf.PosMod(Position.X, area.X), Mathf.PosMod(Position.Y, area.Y));
 		CalculateHunger(delta);
 	}
 
@@ -112,7 +132,10 @@ public partial class Joekel : CharacterBody2D
 	public override void _InputEvent(Viewport viewport, InputEvent e, int shapeIdx)
 	{
 		if (e is InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true })
+		{
+			_geselecteerd = this;
 			Toon();
+		}
 	}
 
 	void Toon()
@@ -124,6 +147,8 @@ public partial class Joekel : CharacterBody2D
 			s += "\n";
 			foreach (var k in Karaktereigenschap.Alle)
 				s += k.Naam + ": " + k.Van(Dna) + "\n";
+
+			s += "Gezond: " + _huidigeGezonheid + "/" + _maximaleGezondheid +"\n";
 
 			var label = GetTree().CurrentScene.GetNode<Label>("%DnaLabel");
 			label.Text = s;
