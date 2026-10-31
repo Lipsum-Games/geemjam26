@@ -92,7 +92,7 @@ public class Behaviour
             {
                 // TODO: Conditionz
                 _currentPlan = Plan.RUN_AWAY;
-                _targetPosition = new Vector2(_random.NextSingle(), _random.NextSingle()) * joekel.GetParent<World>().WorldSize;
+                _targetPosition = new Vector2(_random.NextSingle(), _random.NextSingle()) * World.WorldSize;
             }
         }
 

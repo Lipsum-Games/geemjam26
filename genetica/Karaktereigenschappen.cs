@@ -24,8 +24,11 @@ public static class Karaktereigenschappen
 	public static readonly Karaktereigenschap Zwemdiplomas = new("Zwemdiplomas", dna => {
 		const float ZWEM_MAX = 3.0f; // je kan niet beter dan 3 floats zijn in zwemmen (elke 1f is een zwemdiploma).
 		
+		// range [-4, 4]
 		float aanleg = dna.Cells((2,1), (0,2), DNA_CELL_DOODGAANS_SNELHEID_EN_ALGEMENE_GEZONDHEID, (1, 1));
-		float hoeveel_zwemdiplomas = Range(0, ZWEM_MAX, Sigmoid(aanleg));
+		float aanlegNormaal = (aanleg + 4.0f) / 8.0f;
+
+		float hoeveel_zwemdiplomas = aanlegNormaal * ZWEM_MAX;
 
 		bool kanJeZwemmen = hoeveel_zwemdiplomas >= 1f; // je moet ten minste 1 zwemdiploma hebben om te kunnen zwemmen.
 
@@ -33,7 +36,8 @@ public static class Karaktereigenschappen
 	});
 
 	// ja je moet toch ooit dood gaan?
-	public static readonly Karaktereigenschap DoodgaansSnelheidEnAlgemeneGezondheid = new("DoodgaansSnelheidEnAlgemeneGezondheid", d => Range(20, 100, Sigmoid(d.Cells(DNA_CELL_DOODGAANS_SNELHEID_EN_ALGEMENE_GEZONDHEID) * 3)));
+	public static readonly Karaktereigenschap DoodgaansSnelheidEnAlgemeneGezondheid = new("DoodgaansSnelheidEnAlgemeneGezondheid", d => 
+	Range(20, 100, Sigmoid(d.Cells(DNA_CELL_DOODGAANS_SNELHEID_EN_ALGEMENE_GEZONDHEID) * 3)));
 
 	// de chonkheid van de joeekel, hoe fatsig bente ei???
 	public static readonly Karaktereigenschap Chonkheid = new("Chonkheid", d => Range(5, 15, Sigmoid(d.Diag() - 0.5f * d[0, 1])));

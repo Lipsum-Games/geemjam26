@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://b2jc2gmlj0nno" path="res://World.cs" id="1_f3sb7"]
 [ext_resource type="PackedScene" uid="uid://bl7u7i0y4gvrt" path="res://Joekel.tscn" id="2_fj7yv"]
 [ext_resource type="PackedScene" uid="uid://gwdklirbt6pu" path="res://FoodSource.tscn" id="3_tlwt5"]
+[ext_resource type="Texture2D" uid="uid://cqbvagux6qm4b" path="res://assets/melkweg.jpg" id="4_pkg7o"]
 [ext_resource type="Texture2D" uid="uid://dc2bpk7i71c7l" path="res://assets/tiles_atlas.png" id="4_tlwt5"]
 [ext_resource type="Script" uid="uid://mum8l4sa63mq" path="res://WorldTiles.cs" id="5_aqk2v"]
 [ext_resource type="Script" uid="uid://epkggmoygl7k" path="res://Camera.cs" id="6_dwbse"]
@@ -224,19 +225,12 @@ use_texture_padding = false
 14:13/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_asv5b"]
-tile_size = Vector2i(100, 100)
 sources/0 = SubResource("TileSetAtlasSource_aqk2v")
 
 [node name="World" type="Node2D" unique_id=945096617]
 script = ExtResource("1_f3sb7")
 EntityScene = ExtResource("2_fj7yv")
 FoodSourceScene = ExtResource("3_tlwt5")
-
-[node name="Background" type="ColorRect" parent="." unique_id=642256518]
-offset_right = 1152.0
-offset_bottom = 640.0
-mouse_filter = 2
-color = Color(0.78431374, 1, 1, 1)
 
 [node name="WorldTiles" type="TileMapLayer" parent="." unique_id=896166233]
 tile_set = SubResource("TileSet_asv5b")
@@ -259,3 +253,14 @@ grow_horizontal = 0
 [node name="DnaLabel" type="Label" parent="CanvasLayer/PanelContainer" unique_id=207551446]
 unique_name_in_owner = true
 layout_mode = 2
+
+[node name="CanvasLayer2" type="CanvasLayer" parent="." unique_id=1800354796]
+layer = -1
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer2" unique_id=754152482]
+offset_left = -45.0
+offset_top = -38.0
+offset_right = 1238.0
+offset_bottom = 711.0
+texture = ExtResource("4_pkg7o")
+expand_mode = 1

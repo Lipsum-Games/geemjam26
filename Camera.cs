@@ -13,16 +13,21 @@ public partial class Camera : Camera2D
 		}
 		
 	public override void _UnhandledInput(InputEvent e)
-		{
-			if (e is InputEventMouseMotion m && (m.ButtonMask & MouseButtonMask.Left) != 0)
-				Position -= m.Relative / Zoom;
-			else if (e is InputEventMouseButton b && b.Pressed && b.ButtonIndex == MouseButton.WheelUp)
-				ZoomAt(1.1f);
-			else if (e is InputEventMouseButton b2 && b2.Pressed && b2.ButtonIndex == MouseButton.WheelDown)
-				ZoomAt(1 / 1.1f);
-			else if (e is InputEventMagnifyGesture g)
-				ZoomAt(g.Factor);
-			else if (e is InputEventPanGesture p)
-				ZoomAt(1f - p.Delta.Y * 0.05f);
-		}
+	{
+		if (e is InputEventMouseMotion m && (m.ButtonMask & MouseButtonMask.Left) != 0)
+			Position -= m.Relative / Zoom;
+		else if (e is InputEventMouseButton b && b.Pressed && b.ButtonIndex == MouseButton.WheelUp)
+			ZoomAt(1.1f);
+		else if (e is InputEventMouseButton b2 && b2.Pressed && b2.ButtonIndex == MouseButton.WheelDown)
+			ZoomAt(1 / 1.1f);
+		else if (e is InputEventMagnifyGesture g)
+			ZoomAt(g.Factor);
+		else if (e is InputEventPanGesture p)
+			ZoomAt(1f - p.Delta.Y * 0.05f);
+
+		this.Position = new Vector2(
+			System.Math.Clamp(Position.X, 0, WorldTiles.WORLD_TILE_SIZE_X * WorldTiles.WORLD_AMOUNT_TILES_X),
+			System.Math.Clamp(Position.Y, 0, WorldTiles.WORLD_TILE_SIZE_Y * WorldTiles.WORLD_AMOUNT_TILES_Y)
+		);
+	}
 }
