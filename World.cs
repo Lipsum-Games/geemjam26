@@ -56,12 +56,13 @@ public partial class World : Node2D
 	public void SpawnJoekel(Vector2 Position, Dna Dna){
 		// var e = new Joekel();
 
-		//TODO echte size ofzo ik snap het niet helemaal
-		var radius = 20F;
+		
+		var radius = Karaktereigenschappen.Chonkheid.Van(Dna);
 		
 		var space = GetWorld2D().DirectSpaceState;
 		var success = false;
 		var finalPosition = Position;
+		GD.Print("joekel poging");
 
 		for (int i = 0; i < 5; i++){
 			var dir = GD.Randf() * Math.Tau;
@@ -81,6 +82,7 @@ public partial class World : Node2D
 			}
 		}
 		if (success) {
+			GD.Print("joekel gemaakt");
 			var e = EntityScene.Instantiate<Joekel>();
 			e.Dna = Dna;
 			e.Position = finalPosition;
