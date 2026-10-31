@@ -28,6 +28,9 @@ public partial class Joekel : CharacterBody2D
 	[Export] public float GeurVolleSchade = 0.5f;
 	[Export] public float GeurHealKracht = 0.3f;
 
+	// optimization, niet elke frame aura applying is goedkoper
+    [Export] public int AuraElkeNFrames = 16;
+
 
 	// de joekel die nu geselecteerd is, zodat we live health etc. kunnen opdaten in de window
 	static Joekel _geselecteerd;
@@ -62,7 +65,6 @@ public partial class Joekel : CharacterBody2D
 	private float _ranzigBereik;
 	private float _ranzigKracht;
 	private float _geur;
-	private Area2D _aura;
 	public float Geur => _geur;
 	static readonly GradientTexture2D MistTextuur = MaakRanzigheidsMist();
 
@@ -103,9 +105,8 @@ public partial class Joekel : CharacterBody2D
 		_geur = Karaktereigenschappen.RanzigheidAuraGeur.Van(Dna);
 		if (_ranzigKracht > 0)
 		{
-			_aura = new Area2D { Monitorable = false };
-			_aura.AddChild(new CollisionShape2D { Shape = new CircleShape2D { Radius = _ranzigBereik } });
-			AddChild(_aura);
+			_auraVraag = new PhysicsShapeQueryParameters2D { Shape = new CircleShape2D { Radius = _ranzigBereik }, CollideWithAreas = false };
+			_auraTeller = GD.RandRange(0, AuraElkeNFrames - 1); // spreiden: niet alle joekels in hetzelfde frame and gaat perfromance kaduk
 		}
 	}
 
@@ -154,11 +155,16 @@ public partial class Joekel : CharacterBody2D
 		}
 
 
+
+	private PhysicsShapeQueryParameters2D _auraVraag;
+	private int _auraTeller;
+
 	private void RanzigeAura(float dt)
 	{
-		foreach (var body in _aura.GetOverlappingBodies())
+		_auraVraag.Transform = new Transform2D(0, GlobalPosition);
+		foreach (var raak in GetWorld2D().DirectSpaceState.IntersectShape(_auraVraag, 64))
 		{
-			if (body is not Joekel ander || ander == this) continue;
+			if (raak["collider"].AsGodotObject() is not Joekel ander || ander == this) continue;
 
 			float afstand = GlobalPosition.DistanceTo(ander.GlobalPosition);
 			if (afstand >= _ranzigBereik) continue; // niet ranzig genoeg
@@ -238,8 +244,9 @@ public partial class Joekel : CharacterBody2D
 		}
 
 		if (_ranzigKracht > 0) {
-			if (_aura != null) {
-				RanzigeAura(dt);
+			if (_auraVraag != null && ++_auraTeller >= AuraElkeNFrames) {
+				_auraTeller = 0;
+				RanzigeAura(dt * AuraElkeNFrames);
 			}
 		}
 
