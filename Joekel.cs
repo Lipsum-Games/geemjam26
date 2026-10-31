@@ -21,7 +21,6 @@ public partial class Joekel : CharacterBody2D
 
 	public override void _Ready()
 	{
-		// Dna ??= Dna.Random();
 		_heading = GD.Randf() * Mathf.Tau;
 		_kachow = Karaktereigenschappen.Kachow.Van(Dna);
 		_turnJitter = Karaktereigenschappen.TurnJitter.Van(Dna);
@@ -72,6 +71,9 @@ public partial class Joekel : CharacterBody2D
 	
 	private void CalculateHunger(double delta)
 	{
+		if (!IsNodeReady())
+			return;
+
 		bool foodSourceClose = false;
 		foreach (Node2D source in GetTree().GetNodesInGroup("FoodSource"))
 		{
@@ -97,6 +99,11 @@ public partial class Joekel : CharacterBody2D
 
 	
 	private void Reproduce(){
+		if (!IsNodeReady() || Dna == null)
+			return;
+		GD.Print("parent world", ((World) GetParent()));
+		GD.Print("dna", Dna);
+		GD.Print();
 		((World) GetParent()).SpawnJoekel(Position, Dna.Noisified());
 	}
 }
