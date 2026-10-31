@@ -12,7 +12,7 @@ public partial class Dna
 		var d = new Dna();
 		for (int r = 0; r < N; r++)
 			for (int c = 0; c < N; c++)
-				d.M[r, c] = (float)GD.Randf();
+				d.M[r, c] = (float)GD.RandRange(-1.0, 1.0);
 		return d;
 	}
 	
@@ -37,7 +37,7 @@ public partial class Dna
 		var d = new Dna();
 		for (int r = 0; r < N; r++)
 			for (int c = 0; c < N; c++)
-				d.M[r, c] = (1 - MutationFactor) * M[r,c] + (float)GD.Randf() * MutationFactor;
+				d.M[r, c] = (1 - MutationFactor) * M[r,c] + (float)GD.RandRange(-1.0, 1.0) * MutationFactor;
 		return d;
 	} 
 

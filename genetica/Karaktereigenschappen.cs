@@ -8,8 +8,17 @@ public static class Karaktereigenschappen
 	// speed (oftewel kachow) is een sigmoid van de eerste rij over de range van 40-200 gestretched.
 	public static readonly Karaktereigenschap Kachow = new("Kachow", d => Range(200, 1000, Sigmoid(d.Row(0))));
 
-	// turn jitter is een some van de tweede rij * 2
-	public static readonly Karaktereigenschap TurnJitter = new("TurnJitter", d => d.Row(1) * 2);
+	// turn jitter is dikke cirkel wiskunde weettewel
+	public static readonly Karaktereigenschap TurnJitter = new("TurnJitter", d => Range(0, Mathf.Pi / 2, Sigmoid(d.Row(1))));
+	
+	// Hoen hekel Joekels hebben aan andere Joekels
+	public static readonly Karaktereigenschap Introversie = new("Introversie", d => Sigmoid(d.Col(2) * 2 - 2 * d.AntiDiag()));
+	
+	// Hoe snel de joekels besluiten dat de honger teveel is en ze moeten vreten
+	public static readonly Karaktereigenschap Trek = new("Trek", d => d.Col(2) * 2 - 2 * d.AntiDiag());
+
+	// Hoe enthousiast the joekels zijn om, uhhh, "gezellige" dingen te doen die mogelijk kunnen leiden tot de creatie van nageslacht
+	public static readonly Karaktereigenschap Oehlalalaigheid = new("Oehlalalaigheid", d => Sigmoid(1.0f * d.Col(0) - 0.5f * (d.Col(1) + d.Col(2))));
 
 	// hoe goed dit joekeltje kan zwemmen (of misschien kan hij het niet)
 	public static readonly Karaktereigenschap Zwemdiplomas = new("Zwemdiplomas", dna => {
@@ -24,10 +33,10 @@ public static class Karaktereigenschappen
 	});
 
 	// ja je moet toch ooit dood gaan?
-	public static readonly Karaktereigenschap DoodgaansSnelheidEnAlgemeneGezondheid = new("DoodgaansSnelheidEnAlgemeneGezondheid", d => d.Cells(DNA_CELL_DOODGAANS_SNELHEID_EN_ALGEMENE_GEZONDHEID));
+	public static readonly Karaktereigenschap DoodgaansSnelheidEnAlgemeneGezondheid = new("DoodgaansSnelheidEnAlgemeneGezondheid", d => Range(20, 100, Sigmoid(d.Cells(DNA_CELL_DOODGAANS_SNELHEID_EN_ALGEMENE_GEZONDHEID) * 3)));
 
 	// de chonkheid van de joeekel, hoe fatsig bente ei???
-	public static readonly Karaktereigenschap Chonkheid = new("Chonkheid", d => Range(5, 15, d.Diag() / 3 - 0.5f * d[0,1]));
+	public static readonly Karaktereigenschap Chonkheid = new("Chonkheid", d => Range(5, 15, Sigmoid(d.Diag() - 0.5f * d[0, 1])));
 
 	// de murigheid bepaalt hoe de joekel met de muur interact
 	public static readonly Karaktereigenschap Murigheid = new("Murigheid", d => d.Cells((0, 2), (1, 1), (2, 0), (0, 1)) / 4);
