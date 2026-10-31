@@ -8,6 +8,8 @@ public partial class Entity : Node2D
 	[Export] public float MaxSpeed = 150f;
 	[Export] public float TurnJitter = 10f;
 	[Export] public float HungerMax = 10f;
+	[Export] public float HungerMin = 1f;
+	
 
 	private float _heading;
 	private float _speed;
@@ -17,14 +19,14 @@ public partial class Entity : Node2D
 	{
 		_heading = GD.Randf() * Mathf.Tau;
 		_speed = (float)GD.RandRange(MinSpeed, MaxSpeed);
-		_hunger = 0f;
+		_hunger = HungerMin;
 	}
 
 	public override void _Process(double delta)
 	{
 		float dt = (float)delta;
 		_heading += (float)GD.RandRange(-TurnJitter, TurnJitter) * dt;
-		Position += Vector2.FromAngle(_heading) * _speed * dt * (HungerMax - _hunger)/HungerMax;
+		Position += Vector2.FromAngle(_heading) * _speed * dt * (HungerMax + HungerMin - _hunger)/HungerMax;
 		Rotation = _heading;
 
 		var area = GetViewportRect().Size;
