@@ -30,9 +30,6 @@ public partial class World : Node2D
 		AddWall(walls, new Vector2(0, -1), -WorldSize.Y);
 		AddWall(walls, new Vector2(-1, 0), -WorldSize.X);
 
-		var fs = FoodSourceScene.Instantiate<Node2D>();
-		AddChild(fs);
-
 		var area = GetViewportRect().Size;
 		for (int i = 0; i < Count/5; i++)
 		{
