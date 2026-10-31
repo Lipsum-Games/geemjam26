@@ -6,7 +6,7 @@ public static class Karaktereigenschappen
 	public static readonly (int, int) DNA_CELL_DOODGAANS_SNELHEID_EN_ALGEMENE_GEZONDHEID = (2, 2);
 
 	// speed (oftewel kachow) is een sigmoid van de eerste rij over de range van 40-200 gestretched.
-	public static readonly Karaktereigenschap Kachow = new("Kachow", d => Range(200, 1000, Sigmoid(d.Row(0))));
+	public static readonly Karaktereigenschap Kachow = new("Kachow", d => Range(40, 200, Sigmoid(d.Row(0))));
 
 	// turn jitter is dikke cirkel wiskunde weettewel
 	public static readonly Karaktereigenschap TurnJitter = new("TurnJitter", d => Range(0, Mathf.Pi / 2, Sigmoid(d.Row(1))));

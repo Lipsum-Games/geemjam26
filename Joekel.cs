@@ -253,9 +253,11 @@ public partial class Joekel : CharacterBody2D
 	}
 
 	private Vector2 GetVelocityVector() {
-		var result = Vector2.FromAngle(_heading); 				    // unit vector 
+		var result = Vector2.FromAngle(_heading); 				    // unit vector
 		result *= _kachow; 										    // joekel speed multiplier
-		result *= (HungerMax + HungerMin - _hunger) / HungerMax;    // hunger discount
+		float honger = (_hunger - HungerMin) / (HungerMax - HungerMin);
+		// 100-50% gevuld is geen penatly, daarna linear van 100% naar 70% speed
+		result *= 1f - 0.3f * Mathf.Clamp((honger - 0.5f) / 0.5f, 0f, 1f);    // hunger discount
 		var joekelTile = WorldTiles.GetTileAt(this.GlobalPosition);
 		if (joekelTile != null) {
 			result *= joekelTile.GetJoekelSpeedMultiplier(this); 	// modifier from the tile the joekel is on
