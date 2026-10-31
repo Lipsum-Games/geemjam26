@@ -5,6 +5,7 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_0cgbl"]
 
 [node name="Joekel" type="CharacterBody2D" unique_id=1321837734]
+input_pickable = true
 motion_mode = 1
 script = ExtResource("1_ctcih")
 

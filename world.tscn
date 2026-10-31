@@ -244,3 +244,18 @@ script = ExtResource("5_aqk2v")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1964326112]
 script = ExtResource("6_dwbse")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1002194165]
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer" unique_id=1597441110]
+visible = false
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 40.0
+grow_horizontal = 0
+
+[node name="DnaLabel" type="Label" parent="CanvasLayer/PanelContainer" unique_id=207551446]
+unique_name_in_owner = true
+layout_mode = 2
