@@ -38,6 +38,7 @@ public partial class DnaPaneel : PanelContainer
 	{
 		Joekel.Deselecteer();
 		Visible = false;
+		(GetViewport().GetCamera2D() as Camera)?.StopVolgen();
 	}
 
 	public override void _UnhandledInput(InputEvent e)

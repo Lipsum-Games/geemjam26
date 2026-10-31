@@ -321,6 +321,8 @@ public partial class Joekel : CharacterBody2D
 	{
 		_geselecteerd = this;
 		Toon();
+		if (GetViewport().GetCamera2D() is Camera camera && camera.VolgtIemand)
+				camera.Volg(this);
 	}
 
 	public static void Deselecteer() => _geselecteerd = null;

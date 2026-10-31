@@ -16,6 +16,9 @@ public partial class Camera : Camera2D
 		_zoomDoel = new Vector2(VolgZoom, VolgZoom);
 	}
 
+	public void StopVolgen() => _volg = null;
+	public bool VolgtIemand => _volg != null;
+
 	 void ZoomAt(float factor)
 		{
 			var oldZoom = Zoom;
