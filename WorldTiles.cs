@@ -58,7 +58,6 @@ public partial class WorldTiles : TileMapLayer
 	private const int TILE_ATLAS_TILE_SET_SOURCE_ID = 0;
 	private readonly FastNoiseLite _noiseSource = initNoiseSource();
 
-
 	public static WorldTile GetTileAt(Vector2 pos) {
 		int x = (int) pos.X;
 		int y = (int) pos.Y;
@@ -77,6 +76,18 @@ public partial class WorldTiles : TileMapLayer
 	public override void _Ready()
 	{
 		TileSet.TileSize = new Vector2I(WORLD_TILE_SIZE_X, WORLD_TILE_SIZE_Y);
+		var atlas = (TileSetAtlasSource)TileSet.GetSource(0);
+		atlas.Texture = GenerateResizedAtlasTexture(atlas.Texture);
+
+		TileSet.TileSize = new Vector2I(
+			WORLD_TILE_SIZE_X,
+			WORLD_TILE_SIZE_Y
+		);
+
+		atlas.TextureRegionSize = new Vector2I(
+			WORLD_TILE_SIZE_X,
+			WORLD_TILE_SIZE_Y
+		);
 
 		for (int y = 0; y < WORLD_AMOUNT_TILES_Y; y++) {
 			for (int x = 0; x < WORLD_AMOUNT_TILES_X; x++) {
@@ -112,5 +123,52 @@ public partial class WorldTiles : TileMapLayer
 		n.Seed = (int)GD.Randi();
 
 		return n;
+	}
+
+	private ImageTexture GenerateResizedAtlasTexture(Texture2D originalAtlasTexture)
+	{
+		int originalTileSize = 100;
+
+		int amountTilesX = originalAtlasTexture.GetWidth() / originalTileSize;
+		int amountTilesY = originalAtlasTexture.GetHeight() / originalTileSize;
+
+		var originalImage = originalAtlasTexture.GetImage();
+
+		var resizedAtlasTexture = Image.CreateEmpty(
+			amountTilesX * WORLD_TILE_SIZE_X,
+			amountTilesY * WORLD_TILE_SIZE_Y,
+			false,
+			Image.Format.Rgba8
+		);
+
+		for (int y = 0; y < amountTilesY; y++)
+		{
+			for (int x = 0; x < amountTilesX; x++)
+			{
+				var tile = originalImage.GetRegion(new Rect2I(
+					x * originalTileSize,
+					y * originalTileSize,
+					originalTileSize,
+					originalTileSize
+				));
+
+				tile.Resize(
+					WORLD_TILE_SIZE_X,
+					WORLD_TILE_SIZE_Y,
+					Image.Interpolation.Nearest
+				);
+
+				resizedAtlasTexture.BlitRect(
+					tile,
+					new Rect2I(0, 0, WORLD_TILE_SIZE_X, WORLD_TILE_SIZE_Y),
+					new Vector2I(
+						x * WORLD_TILE_SIZE_X,
+						y * WORLD_TILE_SIZE_Y
+					)
+				);
+			}
+		}
+
+		return ImageTexture.CreateFromImage(resizedAtlasTexture);
 	}
 }

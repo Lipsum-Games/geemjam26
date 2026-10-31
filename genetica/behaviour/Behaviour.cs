@@ -29,9 +29,12 @@ public class Behaviour
 		} else if (_targetPosition is not null)
 		{
 			float distance = _targetPosition.Value.DistanceTo(joekel.Position);
-			if (distance < 1.0f)
+
+			var maxVel = joekel.GetVelocity().Length();
+
+			if (distance < maxVel)
 			{
-				speed = distance;
+				speed = 0.5f * distance/maxVel;
 			}
 			else
 			{
@@ -66,7 +69,8 @@ public class Behaviour
 				.GetNodesInGroup("FoodSource")
 				.Where(node => node.GetParent() is FoodSource)
 				.Select(node => node.GetParent<FoodSource>())
-				.FirstOrDefault(fs => fs.Position.DistanceTo(joekel.Position) <= 600.0f);
+				.Where(fs => fs.Position.DistanceTo(joekel.Position) <= 600.0f)
+				.MinBy(fs => fs.Position.DistanceTo(joekel.Position) + _random.NextSingle() * 100.0);
 
 			if (food is not null)
 			{
@@ -91,6 +95,10 @@ public class Behaviour
 			if (_random.NextSingle() < oehlalaigheid * dt * 0.8f)
 			{
 				_currentPlan = Plan.REPRODUCE;
+				Joekel? mate = ClosestJoekel(joekel);
+				if(mate != null){
+					_targetPosition = mate.Position;
+				}
 			} else if (introversie * dt * 0.2f > _random.NextSingle())
 			{
 				// TODO: Conditionz
@@ -129,5 +137,24 @@ public class Behaviour
 		{
 			return false;
 		}
+	}
+
+	private Joekel? ClosestJoekel(Joekel joekel){
+		float? closestDistance = null;
+		Joekel? closest = null;
+		foreach (Node child in joekel.GetParent().GetChildren())
+		{
+			if (child is Joekel other)
+			{
+				float distance = joekel.GlobalPosition.DistanceTo(other.GlobalPosition);
+
+				if (closestDistance == null || distance < closestDistance || other != joekel)
+				{
+					closestDistance = distance;
+					closest = other;
+				}
+			}
+		}
+		return closest;
 	}
 }

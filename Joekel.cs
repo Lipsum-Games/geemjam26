@@ -29,6 +29,7 @@ public partial class Joekel : CharacterBody2D
 
 	// de joekel die nu geselecteerd is, zodat we live health etc. kunnen opdaten in de window
 	static Joekel _geselecteerd;
+	public static Joekel Geselecteerd => _geselecteerd;
 
 	private float _heading;
 	private float _volgendeHeading;
@@ -169,7 +170,7 @@ public partial class Joekel : CharacterBody2D
 		}
 	}
 
-    // roep deze functie om de joekel op te ruimen
+	// roep deze functie om de joekel op te ruimen
 	public void MaakDoodEnRuimOp() {
 		if (_geselecteerd == this)
 		{
@@ -194,11 +195,6 @@ public partial class Joekel : CharacterBody2D
 
 		(float direction, float velocity) = _behaviour.DoeDingen(this, dt);
 
-		if (_behaviour.CheckReproduce())
-		{
-			Reproduce();
-		}
-
 		_springTimer -= dt;
 		if (_springTimer <= 0)
 		{
@@ -218,6 +214,10 @@ public partial class Joekel : CharacterBody2D
 		foreach (var body in _detectionArea.GetOverlappingBodies())
 		{
 			if (body is Joekel ander && ander != this)
+				if (_behaviour.CheckReproduce())
+				{
+					Reproduce(ander);
+				}
 				continue;
 				// hier kan je op de andere joekel leuke code toepassen voor interacties.
 				// ze botsen voor meerdere frames dus dit moet denk ik niet te hoog
@@ -299,7 +299,12 @@ public partial class Joekel : CharacterBody2D
 			_hunger -= _isEatingSource.eat(delta, (_hunger - HungerMin) * Math.Max(((_vleeslustigheid - 0.5f) * - 1), 0)) ;
 		}
 		_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
-		}
+
+		float honger = (_hunger - HungerMin) / (HungerMax - HungerMin);
+		//if(honger>0.5f){
+			//_huidigeGezonheid -= 1f * (float)delta * honger*honger;
+		//}
+	}
 
 	private void OnAreaEntered(Area2D area)
 	{
@@ -322,6 +327,8 @@ public partial class Joekel : CharacterBody2D
 	{
 		_geselecteerd = this;
 		Toon();
+		if (GetViewport().GetCamera2D() is Camera camera && camera.VolgtIemand)
+				camera.Volg(this);
 	}
 
 	public static void Deselecteer() => _geselecteerd = null;
@@ -347,10 +354,10 @@ public partial class Joekel : CharacterBody2D
 	}
 
 	
-	private void Reproduce(){
+	private void Reproduce(Joekel other){
 		if (!IsNodeReady() || Dna == null || age < AgeOfConsent || _hunger > ReproductionHunger)
 			return;
-		((World) GetParent()).SpawnJoekel(Position, Dna.Noisified());
+		((World) GetParent()).SpawnJoekel(Position, Dna.Combine(Dna, other.Dna));
 		_hunger += ReproductionHungerCost;
 	}
 	public float GetHunger()
