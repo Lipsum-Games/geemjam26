@@ -1,3 +1,4 @@
+using Geemjam26ShipsumEvolve.genetica;
 using Godot;
 using static Activations;
 
@@ -13,6 +14,7 @@ public partial class Joekel : CharacterBody2D
 	private float _kachow;
 	private float _hunger;
 	private float _turnJitter;
+	private Behaviour _behaviour = new Behaviour();
 	
 	public Dna Dna;
 
@@ -98,5 +100,9 @@ public partial class Joekel : CharacterBody2D
 	
 	private void Reproduce(){
 		((World) GetParent()).SpawnJoekel(Position, Dna.Noisified());
+	}
+	public float GetHunger()
+	{
+		return _hunger;
 	}
 }
