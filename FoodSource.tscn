@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://gwdklirbt6pu"]
+
+[ext_resource type="Script" uid="uid://ck51liabtthqo" path="res://FoodSource.cs" id="1_fwco3"]
+[ext_resource type="Texture2D" uid="uid://coe0w5wngdwqj" path="res://FoodSource.png" id="2_0n8qs"]
+
+[node name="FoodSource" type="Node2D" unique_id=47268483]
+script = ExtResource("1_fwco3")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1240789112]
+texture = ExtResource("2_0n8qs")
