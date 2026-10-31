@@ -47,6 +47,7 @@ public partial class Joekel : CharacterBody2D
 	private float _huidigeGezonheid;
 	private float _chonkheid;
 	private float _springTimer;
+	private float _vleeslustigheid;
 	// Fumo: harde stuiter en heal
 	// Garfield: zachte stuiter en heal
 	// Gondola: zachte stuiter en damage
@@ -78,6 +79,7 @@ public partial class Joekel : CharacterBody2D
 		_detectionArea = GetNode<Area2D>("Area2D");
 		_detectionArea.AreaEntered += OnAreaEntered;
 		_detectionArea.AreaExited += OnAreaExited;
+		_vleeslustigheid = Karaktereigenschappen.Vleeslustigheid.Van(Dna);
 		_isEatingSource = null;
 		_hunger = (HungerMin + HungerMax) / 2;
 		_doodgaansSnelheidEnAlgemeneGezondheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(Dna);
@@ -213,9 +215,13 @@ public partial class Joekel : CharacterBody2D
 		foreach (var body in _detectionArea.GetOverlappingBodies())
 		{
 			if (body is Joekel ander && ander != this)
-				if (_behaviour.CheckReproduce())
+				if (_behaviour.CheckReproduce() && Dna.Similarity(Dna, ander.Dna) < 6)
 				{
 					Reproduce(ander);
+				} else if (Dna.Similarity(Dna, ander.Dna) > 6){
+					// ATTACK
+					ander._huidigeGezonheid -= _chonkheid;
+					_hunger -= Math.Max((_vleeslustigheid - 0.5f), 0);
 				}
 				continue;
 				// hier kan je op de andere joekel leuke code toepassen voor interacties.
@@ -278,9 +284,9 @@ public partial class Joekel : CharacterBody2D
 
 	}
 
-	private Vector2 GetVelocityVector() {
-		var result = Vector2.FromAngle(_heading); 				    // unit vector
-		result *= _kachow; 										    // joekel speed multiplier
+	public float GetVelocityVal()
+	{
+		float result = _kachow; 										    // joekel speed multiplier
 		float honger = (_hunger - HungerMin) / (HungerMax - HungerMin);
 		// 100-50% gevuld is geen penatly, daarna linear van 100% naar 70% speed
 		result *= 1f - 0.3f * Mathf.Clamp((honger - 0.5f) / 0.5f, 0f, 1f);    // hunger discount
@@ -290,19 +296,28 @@ public partial class Joekel : CharacterBody2D
 		}
 		return result;
 	}
+
+	private Vector2 GetVelocityVector() {
+		var result = Vector2.FromAngle(_heading); 				    // unit vector
+		result *= GetVelocityVal();
+		return result;
+	}
 	
 	private void CalculateHunger(double delta)
 	{
 		if (_isEatingSource != null)
 		{
-			_hunger -= _isEatingSource.eat(delta, _hunger - HungerMin);
+			var eating = _isEatingSource.eat(delta, (_hunger - HungerMin) * Math.Max(((_vleeslustigheid - 0.5f) * - 1), 0)) ;
+			_huidigeGezonheid += 2f*eating;
+			_huidigeGezonheid = Mathf.Min(_huidigeGezonheid, _maximaleGezondheid);
+			_hunger -= eating;
 		}
-		_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
+		_hunger = Mathf.Min(_hunger + (float)delta / 10, HungerMax);
 
 		float honger = (_hunger - HungerMin) / (HungerMax - HungerMin);
-		//if(honger>0.5f){
-			//_huidigeGezonheid -= 1f * (float)delta * honger*honger;
-		//}
+		if(honger>0.7f){
+			_huidigeGezonheid -= 5f * (float)delta * honger*honger;
+		}
 	}
 
 	private void OnAreaEntered(Area2D area)
