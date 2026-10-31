@@ -75,9 +75,16 @@ public partial class ClusterLijst : Control
 				DrawRect(new Rect2(14, y + 8 + b * 18, 40, 16), g.Banden[b]);
 
 			float pct = totaal > 0 ? 100f * g.Aantal / totaal : 0;
-			string titel = $"Groep {g.Id}  —  {g.Aantal} joekels ({pct:0}%)";
-			DrawString(font, new Vector2(64, y + 22), titel, HorizontalAlignment.Left, -1, 15, g.Kleur);
-			Info(64 + font.GetStringSize(titel, HorizontalAlignment.Left, -1, 15).X + 12, y + 17);
+			// naam groot, groepnummer klein en grijs erachter, dan de grootte
+			string naam = GroepNamen.Naam(g.Id, Bron.Wijze);
+			float x = 64;
+			DrawString(font, new Vector2(x, y + 22), naam, HorizontalAlignment.Left, -1, 15, g.Kleur);
+			x += font.GetStringSize(naam, HorizontalAlignment.Left, -1, 15).X + 3;
+			DrawString(font, new Vector2(x, y + 15), g.Id.ToString(), HorizontalAlignment.Left, -1, 10, Colors.Gray);
+			x += font.GetStringSize(g.Id.ToString(), HorizontalAlignment.Left, -1, 10).X;
+			string grootte = $"  —  {g.Aantal} joekels ({pct:0}%)";
+			DrawString(font, new Vector2(x, y + 22), grootte, HorizontalAlignment.Left, -1, 15, g.Kleur);
+			Info(x + font.GetStringSize(grootte, HorizontalAlignment.Left, -1, 15).X + 12, y + 17);
 
 			Info(71, y + 40);
 			DrawString(font, new Vector2(84, y + 44), g.Kenmerken, HorizontalAlignment.Left, Size.X - 84 - 3 * CelB - 20, 12, Colors.White);

@@ -134,7 +134,7 @@ public partial class StatsScherm : Window
 			vinkje.Text = $"{grafiek.Status(naam, data)}   {naam}";
 		foreach (var (id, data) in _clusters.GrootteHistorie)
 			if (!_groepGroottes.Lijnen.Exists(l => l.data == data))
-				_groepGroottes.Lijnen.Add(($"Groep {id}", Clusters.KleurVan(id), data));
+				_groepGroottes.Lijnen.Add(($"{GroepNamen.Naam(id, _clusters.Wijze)} ({id})", Clusters.KleurVan(id), data));
 	}
 
 	static (Grafiek, VBoxContainer) MaakTab(TabContainer tabs, string naam, bool elkEigenSchaal)
