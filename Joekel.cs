@@ -38,6 +38,7 @@ public partial class Joekel : CharacterBody2D
 		_turnJitter = Karaktereigenschappen.TurnJitter.Van(Dna);
 		_detectionArea = GetNode<Area2D>("Area2D");
 		_detectionArea.AreaEntered += OnAreaEntered;
+		_detectionArea.AreaExited += OnAreaExited;
 		_isEatingSource = null;
 		_hunger = (HungerMin + HungerMax) / 2;
 		_doodgaansSnelheidEnAlgemeneGezondheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(Dna);
