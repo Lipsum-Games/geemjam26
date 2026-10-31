@@ -11,7 +11,8 @@ public partial class Joekel : CharacterBody2D
 	private float _kachow;
 	private float _hunger;
 	private float _turnJitter;
-	private Area2D detectionArea;
+	private Area2D _detectionArea;
+	private bool _isEating;
 	
 	public Dna Dna;
 
@@ -25,8 +26,9 @@ public partial class Joekel : CharacterBody2D
 		_kachow = Karaktereigenschappen.Kachow.Van(Dna);
 		_turnJitter = Karaktereigenschappen.TurnJitter.Van(Dna);
 		_hunger = HungerMin;
-		detectionArea = GetNode<Area2D>("Area2D");
-		detectionArea.AreaEntered += OnAreaEntered;
+		_detectionArea = GetNode<Area2D>("Area2D");
+		_detectionArea.AreaEntered += OnAreaEntered;
+		_isEating = false;
 		for (int r = 0; r < 3; r++)
 			_kleuren_bandjes[r] = new Color(Sigmoid(Dna[r, 0]), Sigmoid(Dna[r, 1]), Sigmoid(Dna[r, 2]));
 	}
@@ -73,7 +75,7 @@ public partial class Joekel : CharacterBody2D
 	
 	private void CalculateHunger(double delta)
 	{
-		bool foodSourceClose = false;
+		// bool foodSourceClose = false;
 		//foreach (Node2D body in GetOverlappingBodies())
 		//{
 			//if (body.IsInGroup("FoodSource"))
@@ -81,17 +83,17 @@ public partial class Joekel : CharacterBody2D
 				//GD.Print("An enemy is overlapping!");
 			//}
 		//}
-		foreach (Node2D source in GetTree().GetNodesInGroup("FoodSource"))
-		{
-			float distance = GlobalPosition.DistanceTo(source.GlobalPosition);
+		// foreach (Node2D source in GetTree().GetNodesInGroup("FoodSource"))
+		// {
+		// 	float distance = GlobalPosition.DistanceTo(source.GlobalPosition);
 
-			if (distance < 200)
-			{
-				foodSourceClose = true;
-				break;
-			}
-		}
-		if (foodSourceClose)
+		// 	if (distance < 200)
+		// 	{
+		// 		foodSourceClose = true;
+		// 		break;
+		// 	}
+		// }
+		if (_isEating)
 		{
 			_hunger = Mathf.Max(_hunger - 10 * (float)delta, HungerMin);
 		} else {
@@ -103,7 +105,15 @@ public partial class Joekel : CharacterBody2D
 	{
 		if (area.IsInGroup("FoodSource"))
 		{
-			GD.Print("Overlapping an enemy area!");
+			_isEating = true;
+		}
+	}
+
+	private void OnAreaExited(Area2D area)
+	{
+		if (area.IsInGroup("FoodSource"))
+		{
+			_isEating = false;
 		}
 	}
 
