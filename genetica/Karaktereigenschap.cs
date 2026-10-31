@@ -14,6 +14,5 @@ public partial class Karaktereigenschap
 		_expressie = expressie;
 	}
 
-
-	public float Van(Dna d) => _expressie(d.M);
+	public float Van(Dna d) => _expressie(d);
 }
