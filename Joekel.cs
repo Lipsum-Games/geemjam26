@@ -75,24 +75,6 @@ public partial class Joekel : CharacterBody2D
 	
 	private void CalculateHunger(double delta)
 	{
-		// bool foodSourceClose = false;
-		//foreach (Node2D body in GetOverlappingBodies())
-		//{
-			//if (body.IsInGroup("FoodSource"))
-			//{
-				//GD.Print("An enemy is overlapping!");
-			//}
-		//}
-		// foreach (Node2D source in GetTree().GetNodesInGroup("FoodSource"))
-		// {
-		// 	float distance = GlobalPosition.DistanceTo(source.GlobalPosition);
-
-		// 	if (distance < 200)
-		// 	{
-		// 		foodSourceClose = true;
-		// 		break;
-		// 	}
-		// }
 		if (_isEating)
 		{
 			_hunger = Mathf.Max(_hunger - 10 * (float)delta, HungerMin);
