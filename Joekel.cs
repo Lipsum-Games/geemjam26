@@ -20,9 +20,16 @@ public partial class Joekel : CharacterBody2D
 	[Export] public float MuurHeal = 2f;
 	[Export] public float MuurSchade = 0.02f;
 
+	// geur exports voor wanneer heal en plateau enzo
+	[Export] public float GeurHealZone = 0.1f;
+	[Export] public float GeurPlateau = 0.05f;
+	[Export] public float GeurVolleSchade = 0.5f;
+	[Export] public float GeurHealKracht = 0.3f;
+
 
 	// de joekel die nu geselecteerd is, zodat we live health etc. kunnen opdaten in de window
 	static Joekel _geselecteerd;
+	public static Joekel Geselecteerd => _geselecteerd;
 
 	private float _heading;
 	private float _volgendeHeading;
@@ -54,6 +61,7 @@ public partial class Joekel : CharacterBody2D
 	private Area2D _aura;
 	public float Geur => _geur;
 	static readonly GradientTexture2D MistTextuur = MaakRanzigheidsMist();
+
 
 	public Dna Dna;
 
@@ -130,6 +138,16 @@ public partial class Joekel : CharacterBody2D
 			}
 		}
 
+	private float LynxEffect(float verschil)
+		{
+			// de lynx effect scalet geur damage/heal accoridng to exported values helemaal boven
+			if (verschil < GeurHealZone)
+				return -GeurHealKracht * (1 - verschil / GeurHealZone);
+
+			float start = GeurHealZone + GeurPlateau;
+			return Mathf.Max(0f, (verschil - start) / (GeurVolleSchade - start));
+		}
+
 
 	private void RanzigeAura(float dt)
 	{
@@ -143,10 +161,21 @@ public partial class Joekel : CharacterBody2D
 			// tot op welke hoogte je geroken kan worden, je geurkracht ofzo
 			float kan_ik_je_ruiken_hoeveelheid = 1 - afstand / _ranzigBereik;
 			// als jouw geur lijkt op die van de ander dan bentei ei misschien toch nie zo vies als ie dacht hé
-			float eigenlijk_toch_niet_zo_ranzigheid = Mathf.Clamp(Mathf.Abs(_geur - ander.Geur) / 0.5f, 0, 1);
+			float eigenlijk_toch_niet_zo_ranzigheid = LynxEffect(Mathf.Abs(_geur - ander.Geur));
 			// pas jouw ranzigheid toe op de gezondheid van de wederpartij
 			ander._huidigeGezonheid -= _ranzigKracht * kan_ik_je_ruiken_hoeveelheid * eigenlijk_toch_niet_zo_ranzigheid * dt;
+			ander._huidigeGezonheid = Mathf.Min(ander._huidigeGezonheid, ander._maximaleGezondheid);
 		}
+	}
+
+	// roep deze functie om de joekel op te ruimen
+	public void MaakDoodEnRuimOp() {
+		if (_geselecteerd == this)
+		{
+			_geselecteerd = null;
+			GetTree().CurrentScene.GetNode<Control>("%DnaLabel").GetParent<Control>().Visible = false;
+		}
+		QueueFree();
 	}
 
 
@@ -157,22 +186,12 @@ public partial class Joekel : CharacterBody2D
 		if (_geselecteerd == this) Toon();
 		if (_huidigeGezonheid <= 0) {
 			// DOOD!!!!!
-			if (_geselecteerd == this)
-			{
-				_geselecteerd = null;
-				GetTree().CurrentScene.GetNode<Control>("%DnaLabel").GetParent<Control>().Visible = false;
-			}
-			QueueFree();
+			MaakDoodEnRuimOp();
 			return;
 		}
 		float dt = (float)delta;
 
 		(float direction, float velocity) = _behaviour.DoeDingen(this, dt);
-
-		if (_behaviour.CheckReproduce())
-		{
-			Reproduce();
-		}
 
 		_springTimer -= dt;
 		if (_springTimer <= 0)
@@ -193,6 +212,10 @@ public partial class Joekel : CharacterBody2D
 		foreach (var body in _detectionArea.GetOverlappingBodies())
 		{
 			if (body is Joekel ander && ander != this)
+				if (_behaviour.CheckReproduce())
+				{
+					Reproduce(ander);
+				}
 				continue;
 				// hier kan je op de andere joekel leuke code toepassen voor interacties.
 				// ze botsen voor meerdere frames dus dit moet denk ik niet te hoog
@@ -292,14 +315,16 @@ public partial class Joekel : CharacterBody2D
 		}
 	}
 
-	public override void _InputEvent(Viewport viewport, InputEvent e, int shapeIdx)
+	// selecteren gaat via DnaPaneel (physics-query), zodat het ook tijdens pauze werkt
+	public void Selecteer()
 	{
-		if (e is InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true })
-		{
-			_geselecteerd = this;
-			Toon();
-		}
+		_geselecteerd = this;
+		Toon();
+		if (GetViewport().GetCamera2D() is Camera camera && camera.VolgtIemand)
+				camera.Volg(this);
 	}
+
+	public static void Deselecteer() => _geselecteerd = null;
 
 	void Toon()
 		{
@@ -322,10 +347,10 @@ public partial class Joekel : CharacterBody2D
 	}
 
 	
-	private void Reproduce(){
+	private void Reproduce(Joekel other){
 		if (!IsNodeReady() || Dna == null || age < AgeOfConsent || _hunger > ReproductionHunger)
 			return;
-		((World) GetParent()).SpawnJoekel(Position, Dna.Noisified());
+		((World) GetParent()).SpawnJoekel(Position, Dna.Combine(Dna, other.Dna));
 		_hunger += ReproductionHungerCost;
 	}
 	public float GetHunger()
