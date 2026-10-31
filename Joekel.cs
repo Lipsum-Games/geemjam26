@@ -1,5 +1,5 @@
 using Godot;
-using System;
+using static Activations;
 
 public partial class Joekel : Node2D
 {
@@ -14,6 +14,9 @@ public partial class Joekel : Node2D
 	
 	public Dna Dna;
 
+	[Export] public float joekel_tekenRadius = 10f;
+	private readonly Color[] _kleuren_bandjes = new Color[3];
+
 	public override void _Ready()
 	{
 		Dna ??= Dna.Random();
@@ -21,6 +24,8 @@ public partial class Joekel : Node2D
 		_kachow = Karaktereigenschappen.Kachow.Van(Dna);
 		_turnJitter = Karaktereigenschappen.TurnJitter.Van(Dna);
 		_hunger = HungerMin;
+		for (int r = 0; r < 3; r++)
+			_kleuren_bandjes[r] = new Color(Sigmoid(Dna[r, 0]), Sigmoid(Dna[r, 1]), Sigmoid(Dna[r, 2]));
 	}
 
 	public override void _Process(double delta)
@@ -33,5 +38,21 @@ public partial class Joekel : Node2D
 		var area = GetViewportRect().Size;
 		Position = new Vector2(Mathf.PosMod(Position.X, area.X), Mathf.PosMod(Position.Y, area.Y));
 		_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
+	}
+
+	public override void _Draw() {
+//	    DrawSetTransform(Vector2.Zero, Mathf.Pi / 4);
+//	    float w = 2 * Radius / 3;
+//        for (int i = 0; i < 3; i++)
+//        {
+//            float x0 = -joekel_tekenRadius + i * w;
+//            DrawColoredPolygon(Strip(x0, x0 + w), _kleuren_bandjes[i]);
+//        }
+//
+//        DrawSetTransform(Vector2.Zero);
+//        DrawArc(Vector2.Zero, Radius, 0, Mathf.Tau, 32, Colors.Black, 1.5f, true);
+		DrawCircle(Vector2.Zero, 10, _kleuren_bandjes[0]);
+		DrawCircle(Vector2.Zero, 7, _kleuren_bandjes[1]);
+		DrawCircle(Vector2.Zero, 4, _kleuren_bandjes[2]);
 	}
 }
