@@ -27,7 +27,7 @@ public partial class Entity : Node2D
 	{
 		float dt = (float)delta;
 		_heading += (float)GD.RandRange(-TurnJitter, TurnJitter) * dt;
-		Position += Vector2.FromAngle(_heading) * _speed * dt * (HungerMax + HungerMin - _hunger)/HungerMax;
+		Position += Vector2.FromAngle(_heading) * _kachow * dt * (HungerMax + HungerMin - _hunger)/HungerMax;
 		Rotation = _heading;
 
 		var area = GetViewportRect().Size;
