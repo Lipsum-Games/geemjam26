@@ -20,8 +20,6 @@ public partial class FoodSource : Node2D
 		res = Mathf.Min(res, maxRes);
 		resourceCount -= res;
 		if(resourceCount == 0 && res > 0){
-			var area = World.WorldSize;
-			GetParent<World>().SpawnFoodSource(new Vector2(GD.Randf() * area.X, GD.Randf() * area.Y));
 			QueueFree();
 		}
 		return res;

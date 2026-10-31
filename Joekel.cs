@@ -29,7 +29,7 @@ public partial class Joekel : CharacterBody2D
 	[Export] public float GeurHealKracht = 0.3f;
 
 	// optimization, niet elke frame aura applying is goedkoper
-    [Export] public int AuraElkeNFrames = 16;
+	[Export] public int AuraElkeNFrames = 16;
 
 
 	// de joekel die nu geselecteerd is, zodat we live health etc. kunnen opdaten in de window

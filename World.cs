@@ -7,6 +7,9 @@ public partial class World : Node2D
 	[Export] public PackedScene EntityScene;
 	[Export] public PackedScene FoodSourceScene;
 	[Export] public int Count = 50;
+	// Zoveel seconde tot er een nieuwe voedsel item spawnt. geen cap (no cap)
+	[Export] public float VoedselInterval = 2f;
+	private float _voedselTimer;
 	public static readonly Vector2 WorldSize = new(3000, 2000);
 
 	void AddWall(StaticBody2D body, Vector2 normal, float distance)
@@ -89,5 +92,11 @@ public partial class World : Node2D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
+		_voedselTimer -= (float)delta;
+		if (_voedselTimer <= 0)
+		{
+			_voedselTimer = VoedselInterval;
+			SpawnFoodSource(new Vector2(GD.Randf() * WorldSize.X, GD.Randf() * WorldSize.Y));
+		}
 	}
 }
