@@ -193,9 +193,11 @@ public partial class Joekel : CharacterBody2D
 		foreach (var body in _detectionArea.GetOverlappingBodies())
 		{
 			if (body is Joekel ander && ander != this)
+				continue;
 				// hier kan je op de andere joekel leuke code toepassen voor interacties.
 				// ze botsen voor meerdere frames dus dit moet denk ik niet te hoog
-				_huidigeGezonheid -= 6f * dt; // ook leuk idee om dit te scalen met een robuustheid ofzo wettewel
+				// uitgecomment want was beetje te veel nu
+//				_huidigeGezonheid -= 6f * dt; // ook leuk idee om dit te scalen met een robuustheid ofzo wettewel
 		}
 
 		if (_ranzigKracht > 0) {
@@ -253,9 +255,11 @@ public partial class Joekel : CharacterBody2D
 	}
 
 	private Vector2 GetVelocityVector() {
-		var result = Vector2.FromAngle(_heading); 				    // unit vector 
+		var result = Vector2.FromAngle(_heading); 				    // unit vector
 		result *= _kachow; 										    // joekel speed multiplier
-		result *= (HungerMax + HungerMin - _hunger) / HungerMax;    // hunger discount
+		float honger = (_hunger - HungerMin) / (HungerMax - HungerMin);
+		// 100-50% gevuld is geen penatly, daarna linear van 100% naar 70% speed
+		result *= 1f - 0.3f * Mathf.Clamp((honger - 0.5f) / 0.5f, 0f, 1f);    // hunger discount
 		var joekelTile = WorldTiles.GetTileAt(this.GlobalPosition);
 		if (joekelTile != null) {
 			result *= joekelTile.GetJoekelSpeedMultiplier(this); 	// modifier from the tile the joekel is on
