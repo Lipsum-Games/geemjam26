@@ -12,6 +12,12 @@ public partial class Joekel : CharacterBody2D
 	[Export] public float SpringInterval = 2.6f;
 	[Export] public float Frictie = 1f;
 
+	// Muur stuiter dingetjes
+	[Export] public float ZachteStuiter = 0.4f;
+	[Export] public float HardeStuiter = 2.5f;
+	[Export] public float MuurHeal = 2f;
+	[Export] public float MuurSchade = 0.02f;
+
 
 	// de joekel die nu geselecteerd is, zodat we live health etc. kunnen opdaten in de window
 	static Joekel _geselecteerd;
@@ -30,10 +36,10 @@ public partial class Joekel : CharacterBody2D
 	private float _huidigeGezonheid;
 	private float _chonkheid;
 	private float _springTimer;
+	// Fumo: harde stuiter en heal
 	// Garfield: zachte stuiter en heal
-	// Fumo: Harde stuiter en heal
-	// Kei: Harde stuiter en damage
 	// Gondola: zachte stuiter en damage
+	// Kei: harde stuiter en damage
 	enum StuiterType { Garfield, Fumo, Kei, Gondola }
 	private StuiterType _stuiterType;
 
@@ -79,20 +85,20 @@ public partial class Joekel : CharacterBody2D
 				switch (_stuiterType)
 				{
 					case StuiterType.Garfield:
-						Velocity = voor.Bounce(n) * 0.3f;
-						_huidigeGezonheid = Mathf.Min(_huidigeGezonheid + 2f, _maximaleGezondheid);
+						Velocity = voor.Bounce(n) * HardeStuiter;
+						_huidigeGezonheid = Mathf.Min(_huidigeGezonheid + MuurHeal, _maximaleGezondheid);
 						break;
 					case StuiterType.Fumo:
-						Velocity = voor.Bounce(n) * 0.9f;
-						_huidigeGezonheid = Mathf.Min(_huidigeGezonheid + 2f, _maximaleGezondheid);
+						Velocity = voor.Bounce(n) * ZachteStuiter;
+						_huidigeGezonheid = Mathf.Min(_huidigeGezonheid + MuurHeal, _maximaleGezondheid);
 						break;
 					case StuiterType.Kei:
-						Velocity = voor.Bounce(n) * 0.9f;
-						_huidigeGezonheid -= klap * 0.02f;
+						Velocity = voor.Bounce(n) * ZachteStuiter;
+						_huidigeGezonheid -= klap * MuurSchade;
 						break;
 					case StuiterType.Gondola:
-						Velocity = voor.Bounce(n) * 0.3f;
-						_huidigeGezonheid -= klap * 0.02f;
+						Velocity = voor.Bounce(n) * HardeStuiter;
+						_huidigeGezonheid -= klap * MuurSchade;
 						break;
 				}
 
