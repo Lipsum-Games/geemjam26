@@ -167,6 +167,16 @@ public partial class Joekel : CharacterBody2D
 		}
 	}
 
+    // roep deze functie om de joekel op te ruimen
+	public void MaakDoodEnRuimOp() {
+		if (_geselecteerd == this)
+		{
+			_geselecteerd = null;
+			GetTree().CurrentScene.GetNode<Control>("%DnaLabel").GetParent<Control>().Visible = false;
+		}
+		QueueFree();
+	}
+
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -175,12 +185,7 @@ public partial class Joekel : CharacterBody2D
 		if (_geselecteerd == this) Toon();
 		if (_huidigeGezonheid <= 0) {
 			// DOOD!!!!!
-			if (_geselecteerd == this)
-			{
-				_geselecteerd = null;
-				GetTree().CurrentScene.GetNode<Control>("%DnaLabel").GetParent<Control>().Visible = false;
-			}
-			QueueFree();
+			MaakDoodEnRuimOp();
 			return;
 		}
 		float dt = (float)delta;
