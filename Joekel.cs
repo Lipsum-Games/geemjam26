@@ -195,7 +195,8 @@ public partial class Joekel : CharacterBody2D
 			if (body is Joekel ander && ander != this)
 				// hier kan je op de andere joekel leuke code toepassen voor interacties.
 				// ze botsen voor meerdere frames dus dit moet denk ik niet te hoog
-				_huidigeGezonheid -= 6f * dt; // ook leuk idee om dit te scalen met een robuustheid ofzo wettewel
+				// uitgecomment want was beetje te veel nu
+//				_huidigeGezonheid -= 6f * dt; // ook leuk idee om dit te scalen met een robuustheid ofzo wettewel
 		}
 
 		if (_ranzigKracht > 0) {
