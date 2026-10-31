@@ -154,7 +154,7 @@ public class Behaviour
 			{
 				float distance = joekel.GlobalPosition.DistanceTo(other.GlobalPosition);
 
-				if ((closestDistance == null || distance < closestDistance || other != joekel) && other != joekel)
+				if ((closestDistance == null || distance < closestDistance) && other != joekel)
 				{
 					closestDistance = distance;
 					closest = other;
