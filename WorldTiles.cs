@@ -35,7 +35,7 @@ public partial class WorldTiles : TileMapLayer
 				float noise = _perlinNoiseSource.GetNoise2D(x, y);
 				float noiseNormal = (noise + 1f) / 2f;
 				int perlI = (int) (noiseNormal * (WorldTileAtlasCoords.List.Count));
-				GD.Print("noisNorm", noiseNormal, "perli is ", perlI);
+				// GD.Print("noisNorm", noiseNormal, "perli is ", perlI);
 				var atlasCoords = WorldTileAtlasCoords.List[perlI];
 
 				this.SetCell(
