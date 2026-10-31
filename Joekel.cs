@@ -22,10 +22,10 @@ public partial class Joekel : CharacterBody2D
 	private int age;
 	private float _maximaleGezondheid;
 	private float _huidigeGezonheid;
+	private float _chonkheid;
 
 	public Dna Dna;
 
-	[Export] public float joekel_tekenRadius = 10f;
 	private readonly Color[] _kleuren_bandjes = new Color[3];
 
 	public override void _Ready()
@@ -39,6 +39,8 @@ public partial class Joekel : CharacterBody2D
 		// Joekeltjes hun maximale gezondheid scalet gewoon lekker met het DoodgaansSnelheidEnAlgemeneGezondheid gen.
 		_maximaleGezondheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(Dna) * 100;
 		_huidigeGezonheid = _maximaleGezondheid;
+		_chonkheid = Karaktereigenschappen.Chonkheid.Van(Dna);
+		GetNode<CollisionShape2D>("CollisionShape2D").Shape = new CircleShape2D { Radius = _chonkheid };
 		for (int r = 0; r < 3; r++)
 			_kleuren_bandjes[r] = new Color(Dna[r, 0], Dna[r, 1], Dna[r, 2]);
 	}
@@ -90,9 +92,9 @@ public partial class Joekel : CharacterBody2D
 //
 //        DrawSetTransform(Vector2.Zero);
 //        DrawArc(Vector2.Zero, Radius, 0, Mathf.Tau, 32, Colors.Black, 1.5f, true);
-		DrawCircle(Vector2.Zero, 10, _kleuren_bandjes[0]);
-		DrawCircle(Vector2.Zero, 7, _kleuren_bandjes[1]);
-		DrawCircle(Vector2.Zero, 4, _kleuren_bandjes[2]);
+		DrawCircle(Vector2.Zero, _chonkheid, _kleuren_bandjes[0]);
+		DrawCircle(Vector2.Zero, _chonkheid * 0.7f, _kleuren_bandjes[1]);
+		DrawCircle(Vector2.Zero, _chonkheid * 0.4f, _kleuren_bandjes[2]);
 	}
 	
 	private void CalculateHunger(double delta)
