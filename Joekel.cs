@@ -18,6 +18,8 @@ public partial class Joekel : CharacterBody2D
 	private float _kachow;
 	private float _hunger;
 	private float _turnJitter;
+	private Area2D _detectionArea;
+	private bool _isEating;
 	private float _doodgaansSnelheidEnAlgemeneGezondheid;
 	private int age;
 	private float _maximaleGezondheid;
@@ -34,6 +36,9 @@ public partial class Joekel : CharacterBody2D
 		_heading = GD.Randf() * Mathf.Tau;
 		_kachow = Karaktereigenschappen.Kachow.Van(Dna);
 		_turnJitter = Karaktereigenschappen.TurnJitter.Van(Dna);
+		_detectionArea = GetNode<Area2D>("Area2D");
+		_detectionArea.AreaEntered += OnAreaEntered;
+		_isEating = false;
 		_hunger = (HungerMin + HungerMax) / 2;
 		_doodgaansSnelheidEnAlgemeneGezondheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(Dna);
 		// Joekeltjes hun maximale gezondheid scalet gewoon lekker met het DoodgaansSnelheidEnAlgemeneGezondheid gen.
@@ -99,18 +104,7 @@ public partial class Joekel : CharacterBody2D
 	
 	private void CalculateHunger(double delta)
 	{
-		bool foodSourceClose = false;
-		foreach (Node2D source in GetTree().GetNodesInGroup("FoodSource"))
-		{
-			float distance = GlobalPosition.DistanceTo(source.GlobalPosition);
-
-			if (distance < 200)
-			{
-				foodSourceClose = true;
-				break;
-			}
-		}
-		if (foodSourceClose)
+		if (_isEating)
 		{
 			_hunger = Mathf.Max(_hunger - 10 * (float)delta, HungerMin);
 		}
@@ -119,6 +113,22 @@ public partial class Joekel : CharacterBody2D
 			_hunger = _hunger + ReproductionHungerCost;
 		}
 		_hunger = Mathf.Min(_hunger + (float)delta, HungerMax);
+	}
+
+	private void OnAreaEntered(Area2D area)
+	{
+		if (area.IsInGroup("FoodSource"))
+		{
+			_isEating = true;
+		}
+	}
+
+	private void OnAreaExited(Area2D area)
+	{
+		if (area.IsInGroup("FoodSource"))
+		{
+			_isEating = false;
+		}
 	}
 
 	public override void _InputEvent(Viewport viewport, InputEvent e, int shapeIdx)
