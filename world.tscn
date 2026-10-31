@@ -5,10 +5,14 @@
 [ext_resource type="PackedScene" uid="uid://gwdklirbt6pu" path="res://FoodSource.tscn" id="3_tlwt5"]
 [ext_resource type="Texture2D" uid="uid://cqbvagux6qm4b" path="res://assets/melkweg.jpg" id="4_pkg7o"]
 [ext_resource type="Texture2D" uid="uid://dc2bpk7i71c7l" path="res://assets/tiles_atlas.png" id="4_tlwt5"]
+[ext_resource type="Shader" uid="uid://ckso216ga0kff" path="res://tileshader.gdshader" id="4_wse8f"]
 [ext_resource type="Script" uid="uid://mum8l4sa63mq" path="res://WorldTiles.cs" id="5_aqk2v"]
 [ext_resource type="Script" uid="uid://epkggmoygl7k" path="res://Camera.cs" id="6_dwbse"]
 [ext_resource type="Script" uid="uid://clapvvycaxpvn" path="res://SimKnopjes.cs" id="7_pkg7o"]
-[ext_resource type="Script" path="res://DnaPaneel.cs" id="8_dnapaneel"]
+[ext_resource type="Script" uid="uid://317bommuewgp" path="res://DnaPaneel.cs" id="8_dnapaneel"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ioo17"]
+shader = ExtResource("4_wse8f")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_aqk2v"]
 resource_name = "tile_atlas"
@@ -234,6 +238,7 @@ EntityScene = ExtResource("2_fj7yv")
 FoodSourceScene = ExtResource("3_tlwt5")
 
 [node name="WorldTiles" type="TileMapLayer" parent="." unique_id=896166233]
+material = SubResource("ShaderMaterial_ioo17")
 tile_set = SubResource("TileSet_asv5b")
 script = ExtResource("5_aqk2v")
 
