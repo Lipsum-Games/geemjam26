@@ -211,16 +211,16 @@ public partial class Joekel : CharacterBody2D
 
 
 	public override void _Draw() {
-//	    DrawSetTransform(Vector2.Zero, Mathf.Pi / 4);
-//	    float w = 2 * Radius / 3;
-//        for (int i = 0; i < 3; i++)
-//        {
-//            float x0 = -joekel_tekenRadius + i * w;
-//            DrawColoredPolygon(Strip(x0, x0 + w), _kleuren_bandjes[i]);
-//        }
-//
-//        DrawSetTransform(Vector2.Zero);
-//        DrawArc(Vector2.Zero, Radius, 0, Mathf.Tau, 32, Colors.Black, 1.5f, true);
+
+		if (_ranzigKracht > 0)
+		{
+			var geurKleur = Color.FromHsv((_geur + 1) / 2 * 0.8f, 0.7f, 1f);
+			geurKleur.A = _ranzigKracht / 8 * 0.06f;
+			const int lagen = 8;
+			for (int i = 0; i < lagen; i++)
+				DrawCircle(Vector2.Zero, _ranzigBereik * (1 - i / (float)lagen), geurKleur);
+		}
+
 		float r = _chonkheid;
 		float s = Mathf.DegToRad(150);
 		Vector2[] Boog(float a0, float a1)
