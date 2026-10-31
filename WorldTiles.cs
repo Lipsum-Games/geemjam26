@@ -40,7 +40,7 @@ public class WorldTile {
 			case WorldTileType.Forest:
 				return 0.7f; // todo: boomklimmen karaktereigenschap ofzo iets koesls
 			case WorldTileType.Water:
-				return Karaktereigenschappen.Zwem.Van(j.Dna);
+				return Karaktereigenschappen.Zwemdiplomas.Van(j.Dna);
 		}
 
 		return 1f;
@@ -69,7 +69,6 @@ public partial class WorldTiles : TileMapLayer
 			return null;
 		}
 
-		GD.Print("fetching tile at ", x, ", ", y);
 		return The_Tiles[y * WORLD_SIZE_X + x];
 	}
 

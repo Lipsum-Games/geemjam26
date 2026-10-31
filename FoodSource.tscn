@@ -2,9 +2,20 @@
 
 [ext_resource type="Script" uid="uid://ck51liabtthqo" path="res://FoodSource.cs" id="1_fwco3"]
 [ext_resource type="Texture2D" uid="uid://coe0w5wngdwqj" path="res://FoodSource.png" id="2_0n8qs"]
+[ext_resource type="Script" uid="uid://diayvaxa2t0av" path="res://Area2dFoodSource.cs" id="2_wrqga"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_g0sgr"]
 
 [node name="FoodSource" type="Node2D" unique_id=47268483]
 script = ExtResource("1_fwco3")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1240789112]
+[node name="Area2D" type="Area2D" parent="." unique_id=614668852]
+script = ExtResource("2_wrqga")
+
+[node name="Sprite2D" type="Sprite2D" parent="Area2D" unique_id=1240789112]
 texture = ExtResource("2_0n8qs")
+region_enabled = true
+region_rect = Rect2(0, 0, 20, 20)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1954389805]
+shape = SubResource("RectangleShape2D_g0sgr")

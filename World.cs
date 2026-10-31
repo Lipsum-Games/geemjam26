@@ -29,10 +29,13 @@ public partial class World : Node2D
 		AddWall(walls, new Vector2(1, 0), 0);
 		AddWall(walls, new Vector2(0, -1), -WorldSize.Y);
 		AddWall(walls, new Vector2(-1, 0), -WorldSize.X);
-
+			
 		var area = GetViewportRect().Size;
-		var fs = FoodSourceScene.Instantiate<Node2D>();
-		AddChild(fs);
+		for (int i = 0; i < Count/5; i++)
+		{
+			SpawnFoodSource(new Vector2(GD.Randf() * area.X, GD.Randf() * area.Y));
+
+		}
 
 			for (int i = 0; i < Count; i++)
 			{
@@ -45,6 +48,12 @@ public partial class World : Node2D
 			e.Position = new Vector2(GD.Randf() * WorldSize.X, GD.Randf() * WorldSize.Y);
 			AddChild(e);
 		}
+	}
+	
+	public void SpawnFoodSource(Vector2 Position){
+		var fs = FoodSourceScene.Instantiate<FoodSource>();
+		fs.Position = Position;
+		AddChild(fs);
 	}
 
 	public void SpawnJoekel(Vector2 Position, Dna Dna){
