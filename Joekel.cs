@@ -120,6 +120,8 @@ public partial class Joekel : CharacterBody2D
 
 	
 	private void Reproduce(){
+		if (!IsNodeReady() || Dna == null)
+			return;
 		((World) GetParent()).SpawnJoekel(Position, Dna.Noisified());
 	}
 }
