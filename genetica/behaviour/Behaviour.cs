@@ -25,7 +25,7 @@ public class Behaviour
         if (_currentPlan == Plan.CHILL)
         {
             speed = 0.1f;
-            direction = joekel.getHeading() * (_random.NextSingle() - 0.05f) * 0.01f;
+            direction = (float)(_random.NextSingle() * Math.Tau);
         } else if (_targetPosition is not null)
         {
             float distance = _targetPosition.Value.DistanceTo(joekel.Position);
@@ -62,10 +62,11 @@ public class Behaviour
         if (_currentPlan != Plan.EAT && joekel.GetHunger() > trek)
         {   
             // TODO: Get a food source
-            FoodSource? food = joekel.GetTree().GetNodesInGroup("FoodSource")
+            FoodSource? food = joekel.GetTree()
+                .GetNodesInGroup("FoodSource")
                 .Where(node => node.GetParent() is FoodSource)
                 .Select(node => node.GetParent<FoodSource>())
-                .FirstOrDefault<FoodSource?>();
+                .FirstOrDefault(fs => fs.Position.DistanceTo(joekel.Position) <= 600.0f);
 
             if (food is not null)
             {
@@ -84,12 +85,12 @@ public class Behaviour
         
         if (_currentPlan == Plan.CHILL)
         {
-            if (_random.NextSingle() < oehlalaigheid)
+            if (_random.NextSingle() < oehlalaigheid * 0.05f)
             {
                 _currentPlan = Plan.REPRODUCE;
-            } else 
+            } else if (introversie * 0.01f > _random.NextSingle())
             {
-                // TODO: Condition
+                // TODO: Conditionz
                 _currentPlan = Plan.RUN_AWAY;
                 _targetPosition = new Vector2(_random.NextSingle(), _random.NextSingle()) * joekel.GetParent<World>().WorldSize;
             }
