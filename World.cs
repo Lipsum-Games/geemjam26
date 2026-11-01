@@ -2,7 +2,7 @@ using Godot;
 
 public partial class World : Node2D
 {
-	public static readonly Vector2 WorldSize = new(3000, 2000);
+	public static readonly Vector2 WorldSize = new(4000, 2400);
 
 	public override void _Draw()
 	{

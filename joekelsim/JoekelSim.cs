@@ -20,7 +20,7 @@ public partial class JoekelSim : Node2D
 
 	// FoodSources werken precies zoals joekels: een array van structs en een teller
 	const int MaxFoodSources = 4096;
-	public int StarterFoodSources = 50;
+	public int StarterFoodSources = 200;
 	int momenteelFoodSources;
 
 	// alle food sources, net als joekels data array hierboven.

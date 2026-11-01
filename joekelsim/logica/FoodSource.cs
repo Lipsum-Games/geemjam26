@@ -7,7 +7,7 @@ public partial class JoekelSim
 	const float StartResourceCount = 50f;
 
 	// Om de hoeveel seconde een nieuwe voedsel.
-	public float VoedselInterval = 2f;
+	public float VoedselInterval = 0.4f;
 	float voedselTimer;
 
 	// Spawn nieuwe voedsel in op positie.
