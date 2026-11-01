@@ -43,4 +43,13 @@ public struct JoekelData
 	public Geemjam26ShipsumEvolve.genetica.Behaviour.Plan CurrentPlan;
 	public int BehaviourCheckCounter;
 	public Vector2? TargetPosition;
+	// id van voedsel of joekel van de target
+	public int TargetId;
+	// waar het doel vorige keer stond voor fast lookup.
+	public int TargetGok;
+
+	// hoe ver zien (px)
+	public float Perception;
+	// wanneer honger (1..10)
+	public float Trek;
 }
