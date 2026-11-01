@@ -59,4 +59,7 @@ public struct JoekelData
 
 	// hoe oud in seconden
 	public float Age;
+
+	// de 3 kleurbanden, DNA-rij r als kleur
+	public Color Kleur0, Kleur1, Kleur2;
 }
