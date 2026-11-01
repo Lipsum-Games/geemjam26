@@ -5,10 +5,10 @@ public partial class JoekelSim
 {
 
     // Dit bepaald dus wat de joekel gaat doen komende tijd.
-	(float richting, float kracht) DoeDingen(int i)
+	(float richting, float kracht) DoeDingen(int i, float dt)
 	{
 
-		BesluitPlan(i);
+		BesluitPlan(i, dt);
 
 		if (joekels[i].CurrentPlan == Plan.REPRODUCE)
 		{
@@ -33,14 +33,14 @@ public partial class JoekelSim
 		    // Dichtbij springt hij zachter, zodat hij er niet voorbij schiet
 			float afstand = doel.DistanceTo(joekels[i].Position);
 			float maxVel = GetVelocityVal(i);
-			float kracht = afstand < maxVel ? Mathf.Clamp(0.5f * afstand / maxVel, 0, 1) : 1f;
+			float kracht = afstand < maxVel ? Mathf.Clamp(1.0f * afstand / maxVel, 0, 1) : 1f;
 			return (joekels[i].Position.AngleToPoint(doel), kracht);
 		}
 		return (0f, 0f);
 	}
 
 	// Voor nu nog leeg.
-	void BesluitPlan(int i)
+	void BesluitPlan(int i, float dt)
 	{
 		ref JoekelData j = ref joekels[i];
 
@@ -53,9 +53,9 @@ public partial class JoekelSim
 				StopPlan(ref j);
 			} else if (j.CurrentPlan == Plan.RUN_AWAY)
 			{
-				if (j.RunAwayTicks > 0)
+				if (j.RunAwaySeconds > 0)
 				{
-					j.RunAwayTicks -= 1;
+					j.RunAwaySeconds -= dt;
 				}
 				else
 				{
@@ -115,7 +115,7 @@ public partial class JoekelSim
 				{
 					j.CurrentPlan = Plan.RUN_AWAY;
 					j.TargetPosition = target;
-					j.RunAwayTicks = 3;
+					j.RunAwaySeconds = 10;
 				}
 				else if (j.Oehlalalaigheid > GD.Randf())
 				{
