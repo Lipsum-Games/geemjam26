@@ -39,7 +39,7 @@ public partial class JoekelSim
 		{
 		    // Dichtbij springt hij zachter, zodat hij er niet voorbij schiet
 			float afstand = doel.DistanceTo(joekels[i].Position);
-			float maxVel = joekels[i].Kachow; // TIJDELIJK: main gebruikt GetVelocityVal (kachow x honger x tegel), komt later
+			float maxVel = GetVelocityVal(i);
 			float kracht = afstand < maxVel ? Mathf.Clamp(0.5f * afstand / maxVel, 0, 1) : 1f;
 			return (joekels[i].Position.AngleToPoint(doel), kracht);
 		}

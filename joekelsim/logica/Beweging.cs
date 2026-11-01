@@ -28,7 +28,7 @@ public partial class JoekelSim
 			if (joekels[i].SpringTimer <= 0)
 			{
 				joekels[i].Heading = richting;
-				joekels[i].Velocity += Vector2.FromAngle(richting) * kracht * joekels[i].Kachow;
+				joekels[i].Velocity += Vector2.FromAngle(richting) * kracht * GetVelocityVal(i);
 				joekels[i].SpringTimer = SpringInterval;
 			}
 
@@ -74,5 +74,19 @@ public partial class JoekelSim
 			// dat stuk eraf en de rest van de beweging blijft
 			if (naarHemToe < 0) joekels[i].Velocity -= weg * naarHemToe;
 		}
+	}
+
+	float GetVelocityVal(int i)
+	{
+		float result = joekels[i].Kachow;
+		float honger = (joekels[i].Hunger - HungerMin) / (HungerMax - HungerMin);
+		// 100-50% gevuld is geen penatly, daarna linear van 100% naar 70% speed
+		result *= 1f - 0.3f * Mathf.Clamp((honger - 0.5f) / 0.5f, 0f, 1f);
+		var joekelTile = WorldTiles.GetTileAt(joekels[i].Position);
+		if (joekelTile != null) {
+		    // modifier from the tile the joekel is on
+			result *= joekelTile.GetJoekelSpeedMultiplier(joekels[i].Dna);
+		}
+		return result;
 	}
 }

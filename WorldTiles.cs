@@ -33,14 +33,16 @@ public class WorldTile {
 	public int YPos;
 	public WorldTileType Type;
 
-	public float GetJoekelSpeedMultiplier(Joekel j) {
+	public float GetJoekelSpeedMultiplier(Joekel j) => GetJoekelSpeedMultiplier(j.Dna);
+
+	public float GetJoekelSpeedMultiplier(Dna dna) {
 		switch (this.Type) {
 			case WorldTileType.Grass:
 				return 1f;
 			case WorldTileType.Forest:
 				return 0.7f; // todo: boomklimmen karaktereigenschap ofzo iets koesls
 			case WorldTileType.Water:
-				return Karaktereigenschappen.Zwemdiplomas.Van(j.Dna);
+				return Karaktereigenschappen.Zwemdiplomas.Van(dna);
 		}
 
 		return 1f;
@@ -59,8 +61,8 @@ public partial class WorldTiles : TileMapLayer
 	private readonly FastNoiseLite _noiseSource = initNoiseSource();
 
 	public static WorldTile GetTileAt(Vector2 pos) {
-		int x = (int) pos.X;
-		int y = (int) pos.Y;
+		int x = Mathf.FloorToInt(pos.X / WORLD_TILE_SIZE_X);
+		int y = Mathf.FloorToInt(pos.Y / WORLD_TILE_SIZE_Y);
 
 		if (x < 0f || y < 0f) {
 			return null;
