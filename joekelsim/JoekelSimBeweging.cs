@@ -46,10 +46,38 @@ public partial class JoekelSim
 			else
 				joekels[i].Velocity = Vector2.Zero;
 
+			// botsen met andere joekels, alleen als hij beweegt (net als move and slide)
+			if (joekels[i].Velocity != Vector2.Zero) BotsMetAndereJoekels(i);
+
 			// muren: na het bewegen terugzetten binnen de wereld, (de straal van de joekel afstand van de muur). Stuiter is weg, veel simpeler zo.
 			float r = joekels[i].Chonkheid;
 			// gewoon clampen binnen de muren, ezpz
 			joekels[i].Position = joekels[i].Position.Clamp(new Vector2(r, r), World.WorldSize - new Vector2(r, r));
+		}
+	}
+
+	// Wat MoveAndSlide tegen andere joekels doet: overlap ik iemand, dan schuif ik mezelf eruit (de ander blijft staan). glibberig om iemand heen glijden jwz.
+	void BotsMetAndereJoekels(int i)
+	{
+		int aantal = BurenVan(i, joekels[i].Chonkheid + Karaktereigenschappen.MaxChonkheid);
+		for (int k = 0; k < aantal; k++)
+		{
+		    // j is de index van de andere joekel
+			int j = burenBuffer[k];
+			float raakAfstand = joekels[i].Chonkheid + joekels[j].Chonkheid;
+			Vector2 vanHemNaarMij = joekels[i].Position - joekels[j].Position;
+			float afstand = vanHemNaarMij.Length();
+			// geen overlap dan gaan we gewoon verder.
+			if (afstand >= raakAfstand || afstand == 0) continue;
+
+            // de weg vector, zodat we glibberig langs glijden.
+			Vector2 weg = vanHemNaarMij / afstand;
+			joekels[i].Position = joekels[j].Position + weg * raakAfstand;
+
+            // < 0: ik beweeg (deels) zijn kant op
+			float naarHemToe = joekels[i].Velocity.Dot(weg);
+			// dat stuk eraf en de rest van de beweging blijft
+			if (naarHemToe < 0) joekels[i].Velocity -= weg * naarHemToe;
 		}
 	}
 }
