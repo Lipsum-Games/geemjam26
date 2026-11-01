@@ -71,7 +71,7 @@ public partial class JoekelSim
 			// Prio 1: Voedsel is heeeeeeel belangrijk
 			if (j.CurrentPlan is not (Plan.EAT or Plan.HUNT) && j.Hunger > j.Trek)
 			{
-				if (j.Vleeslustigheid + 0.2f * (GD.Randf() - 0.5) > 0.0)
+				if (j.Vleeslustigheid + 0.2f * (GD.Randf() - 0.5) > JaagDrempel)
 				{
 					// prooi vinden
 					int prooi = BesteProoi(i, j);
@@ -221,6 +221,9 @@ public partial class JoekelSim
 	}
 
 	// terug naar chillen, zonder doel
+	// pas vanaf deze vleeslustigheid gaat een joekel jagen
+	const float JaagDrempel = 0.3f;
+
 	static void StopPlan(ref JoekelData j)
 	{
 		j.CurrentPlan = Plan.CHILL;
