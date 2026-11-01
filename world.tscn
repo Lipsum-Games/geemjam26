@@ -8,12 +8,13 @@
 [ext_resource type="Script" uid="uid://mum8l4sa63mq" path="res://WorldTiles.cs" id="5_aqk2v"]
 [ext_resource type="Script" uid="uid://epkggmoygl7k" path="res://Camera.cs" id="6_dwbse"]
 [ext_resource type="Script" uid="uid://clapvvycaxpvn" path="res://SimKnopjes.cs" id="7_pkg7o"]
-[ext_resource type="Script" path="res://DnaPaneel.cs" id="8_dnapaneel"]
+[ext_resource type="Script" uid="uid://qy010kbptrrb" path="res://DnaPaneel.cs" id="8_dnapaneel"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_aqk2v"]
 resource_name = "tile_atlas"
 texture = ExtResource("4_tlwt5")
 texture_region_size = Vector2i(100, 100)
+use_texture_padding = false
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
@@ -232,6 +233,7 @@ sources/0 = SubResource("TileSetAtlasSource_aqk2v")
 script = ExtResource("1_f3sb7")
 EntityScene = ExtResource("2_fj7yv")
 FoodSourceScene = ExtResource("3_tlwt5")
+SnelleSim = true
 
 [node name="WorldTiles" type="TileMapLayer" parent="." unique_id=896166233]
 tile_set = SubResource("TileSet_asv5b")
