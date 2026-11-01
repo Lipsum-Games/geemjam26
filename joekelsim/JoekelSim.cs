@@ -20,7 +20,7 @@ public partial class JoekelSim : Node2D
 
 	// FoodSources werken precies zoals joekels: een array van structs en een teller
 	const int MaxFoodSources = 4096;
-	public int StarterFoodSources = 50;
+	public int StarterFoodSources = 200;
 	int momenteelFoodSources;
 
 	// alle food sources, net als joekels data array hierboven.
@@ -43,6 +43,7 @@ public partial class JoekelSim : Node2D
 
         // teken food eerst zodat joekels eroverheen getekent worden
 		MaakFoodSourceTekening();
+		MaakMistTekening();
 		MaakJoekelTekening();
 		TekenJoekels();
 	}
@@ -60,6 +61,7 @@ public partial class JoekelSim : Node2D
 		BouwJoekelGrid();
 		// dit moet na BouwJoekelGrid: gebruikt BurenVan (vandaar)
 		Contact((float)delta);
+		Aura((float)delta);
 		CalculateHunger((float)delta);
 		RuimLegeFoodSourcesOp();
 	}
@@ -68,5 +70,6 @@ public partial class JoekelSim : Node2D
 	{
 		TekenJoekels();
 		TekenFoodSources();
+		TekenMist();
 	}
 }

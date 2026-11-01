@@ -23,12 +23,17 @@ public partial class JoekelSim
 		return y * GridBreedte + x;
 	}
 
+	// dikste joekel die nu leeft, zodat buren-zoeken ver genoeg kijkt (Chonkheid heeft geen max)
+	float grootsteChonkheid = Karaktereigenschappen.MinChonkheid;
+
 	// We bouwen dit elke tick opnieuw (is vrij snel, scalet linearly)
 	void BouwJoekelGrid()
 	{
 		System.Array.Fill(celEersteJoekel, -1);
+		grootsteChonkheid = Karaktereigenschappen.MinChonkheid;
 		for (int i = 0; i < momenteelLevendeJoekels; i++)
 		{
+			grootsteChonkheid = Mathf.Max(grootsteChonkheid, joekels[i].Chonkheid);
 			int cel = CelVan(joekels[i].Position);
 			volgendeJoekelInCel[i] = celEersteJoekel[cel]; // wie er al zat komt achter mij
 			celEersteJoekel[cel] = i;                      // en ik ben nu de eerste
@@ -127,7 +132,7 @@ public partial class JoekelSim
 			return false;
 
         // Zit joekel in een andere joekel?
-		int aantal = BurenRond(positie, straal + Karaktereigenschappen.MaxChonkheid);
+		int aantal = BurenRond(positie, straal + grootsteChonkheid);
 		for (int k = 0; k < aantal; k++)
 		{
 			int j = burenBuffer[k];

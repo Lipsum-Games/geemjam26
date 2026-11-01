@@ -16,6 +16,7 @@ public partial class StatsScherm : Window
 	Grafiek _populatie, _groepGroottes;
 	(Grafiek grafiek, VBoxContainer keuzes) _traits;
 	GenHistogrammen _histogrammen;
+	TraitHistogrammen _traitHistogrammen;
 	ClusterLijst _clusterLijst;
 
 	public override void _Ready()
@@ -48,18 +49,23 @@ public partial class StatsScherm : Window
 		_histogrammen = new GenHistogrammen { Name = "DNA genen" };
 		tabs.AddChild(_histogrammen);
 
+		_traitHistogrammen = new TraitHistogrammen { Name = "Traits verdeling" };
+		tabs.AddChild(_traitHistogrammen);
+
+		tabs.AddChild(new GenUitleg { Name = "Gen uitleg" });
+
 		var groepenTab = new VBoxContainer { Name = "Groepen" };
 		tabs.AddChild(groepenTab);
 
 		var keuzeRij = new HBoxContainer();
 		keuzeRij.AddChild(new Label { Text = "Groepeer op:" });
 		var wijze = new OptionButton { FocusMode = Control.FocusModeEnum.None };
+		wijze.AddItem("DNA (alle 9 genen)", (int)Clusters.Modus.Dna);
 		wijze.AddItem("Plek (kuddes)", (int)Clusters.Modus.Plek);
 		wijze.AddItem("Geur (mistkleur)", (int)Clusters.Modus.Geur);
-		wijze.AddItem("DNA (alle 9 genen)", (int)Clusters.Modus.Dna);
-		wijze.SetItemTooltip(0, "Joekels die bij elkaar in de buurt lopen. Losse joekels = zwervers.");
-		wijze.SetItemTooltip(1, "Joekels met (bijna) dezelfde geur = dezelfde mistkleur, ook als ze door elkaar lopen.");
-		wijze.SetItemTooltip(2, "Soorten die in veel genen tegelijk verschillen. Kleine verschillen (1-3 genen) zie je hier niet.");
+		wijze.SetItemTooltip(0, "Soorten die in veel genen tegelijk verschillen. Kleine verschillen (1-3 genen) zie je hier niet.");
+		wijze.SetItemTooltip(1, "Joekels die bij elkaar in de buurt lopen. Losse joekels = zwervers.");
+		wijze.SetItemTooltip(2, "Joekels met (bijna) dezelfde geur = dezelfde mistkleur, ook als ze door elkaar lopen.");
 		wijze.ItemSelected += index =>
 		{
 			if (_clusters == null) return;
@@ -170,6 +176,7 @@ public partial class StatsScherm : Window
 			_populatie.Lijnen.Add(("Joekels", Colors.White, _stats.Populatie));
 			_clusters = GetTree().CurrentScene.GetNode<Clusters>("Clusters");
 			_histogrammen.Bron = _clusters;
+			_traitHistogrammen.Bron = _clusters;
 			_clusterLijst.Bron = _clusters;
 
 			_traits.grafiek.VasteBereiken = _stats.TheoretischBereik;

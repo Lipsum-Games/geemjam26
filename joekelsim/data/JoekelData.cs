@@ -40,7 +40,7 @@ public struct JoekelData
 	public float ContactTijd;
 
 	// De behaviour fields.
-	public Geemjam26ShipsumEvolve.genetica.Behaviour.Plan CurrentPlan;
+	public Plan CurrentPlan;
 	public Vector2? TargetPosition;
 	// id van voedsel of joekel van de target
 	public int TargetId;
@@ -65,4 +65,18 @@ public struct JoekelData
 
 	// kente ei wel zwemmen?? hmmMM^^^??!?!?!!
 	public float Zwemdiplomas;
+
+	// geurtje (aura): hoe ver, hoe hard, welke geur, en tijd sinds de laatste aura-tick
+	public float RanzigBereik;
+	public float RanzigKracht;
+	public float Geur;
+	public float AuraTijd;
+
+	// het ademen van de aura: pauze, pulsduur (seconden) en waar hij nu is in die cyclus
+	public float AuraPauze;
+	public float AuraPulsDuur;
+	public float AuraFase;
+
+	// hoe scheef hij springt (radialen)
+	public float Drunkness;
 }

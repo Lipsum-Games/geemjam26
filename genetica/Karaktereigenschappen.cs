@@ -6,7 +6,7 @@ public static class Karaktereigenschappen
 	public static readonly (int, int) DNA_CELL_DOODGAANS_SNELHEID_EN_ALGEMENE_GEZONDHEID = (2, 2);
 
 	// speed (oftewel kachow) is een sigmoid van de eerste rij over de range van 40-200 gestretched.
-	public static readonly Karaktereigenschap Kachow = new("Kachow", d => Range(40, 200, Sigmoid(d.Row(0))));
+	public static readonly Karaktereigenschap Kachow = new("Kachow", d => 40 + 115 * Softplus(d.Row(0)));
 	
 	// Hoen hekel Joekels hebben aan andere Joekels
 	public static readonly Karaktereigenschap Introversie = new("Introversie", d => d.Row(2) * 2 - 2 * d.Col(1));
@@ -41,8 +41,7 @@ public static class Karaktereigenschappen
 
 	// de chonkheid van de joeekel, hoe fatsig bente ei???
 	public const float MinChonkheid = 5f;
-	public const float MaxChonkheid = 15f;
-	public static readonly Karaktereigenschap Chonkheid = new("Chonkheid", d => Range(MinChonkheid, MaxChonkheid, Sigmoid(d.Diag() - 0.5f * d[0, 1])));
+	public static readonly Karaktereigenschap Chonkheid = new("Chonkheid", d => MinChonkheid + 6f * Softplus(d.Diag() - 0.5f * d[0, 1]));
 
 	// de murigheid bepaalt hoe de joekel met de muur interact
 	public static readonly Karaktereigenschap Murigheid = new("Murigheid", d => d.Cells((0, 2), (1, 1), (2, 0), (0, 1)) / 4);
@@ -55,6 +54,13 @@ public static class Karaktereigenschappen
 	public static readonly Karaktereigenschap Perception = new("Perception", d => Range(100, 300, Sigmoid(-2.5f * d[1, 2] + 0.3f * d[0, 0] - 1.2f * d[2, 0])));
 	
 	public static readonly Karaktereigenschap ChillSpeed = new("ChillSpeed", d =>  Sigmoid(d.Col(2) - 3 * d[1,1]));
+
+	// de aura ademt. pauze is tijd tot pulse van pulseduur.
+	public static readonly Karaktereigenschap AuraPauze = new("AuraPauze", d => Range(0.5f, 6f, Sigmoid(d[0, 2] - 1.2f * d[2, 0] + 0.5f * d[1, 0])));
+	public static readonly Karaktereigenschap AuraPulsDuur = new("AuraPulsDuur", d => Range(0.3f, 3f, Sigmoid(1.5f * d[1, 2] - d[0, 1] + 0.5f * d[2, 2])));
+
+	// hoe scheef een joekel springt (radialen, de spreiding van de fout op elke sprong).
+	public static readonly Karaktereigenschap Drunkness = new("Drunkness", d => 0.1f * Relu(0.8f * (d[0, 0] + d[0, 2]) - 0.7f * d[2, 1] + 0.4f * d[1, 2] + 1.5f) * Relu(0.8f * (d[0, 0] + d[0, 2]) - 0.7f * d[2, 1] + 0.4f * d[1, 2] + 1.5f));
 
 
 }

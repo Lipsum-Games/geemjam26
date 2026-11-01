@@ -37,8 +37,15 @@ public partial class Dna
 		var d = new Dna();
 		for (int r = 0; r < N; r++)
 			for (int c = 0; c < N; c++)
+			{
 				// kleine willekeurige duw
 				d.M[r, c] = M[r, c] + (float)GD.Randfn(0, MutationFactor);
+
+				// gekke mutatie: 1% kans compleet nieuwe waarde, 1% kans omgedraaid teken
+				float kans = GD.Randf();
+				if (kans < 0.01f) d.M[r, c] = (float)GD.RandRange(-1.0, 1.0);
+				else if (kans < 0.02f) d.M[r, c] = -d.M[r, c];
+			}
 		return d;
 	} 
 

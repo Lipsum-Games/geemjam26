@@ -1,5 +1,4 @@
 using Godot;
-using Geemjam26ShipsumEvolve.genetica;
 
 // Contact: wat er gebeurt als twee joekels elkaar aanraken.
 // Nu alleen aanvallen. Voortplanten komt erbij als Behaviour het REPRODUCE-plan heeft.
@@ -26,7 +25,7 @@ public partial class JoekelSim
 			joekels[i].ContactTijd = 0;
 
 			// wie raak ik? check om me heen.
-			int aantal = BurenVan(i, joekels[i].Chonkheid + 2 + Karaktereigenschappen.MaxChonkheid);
+			int aantal = BurenVan(i, joekels[i].Chonkheid + 2 + grootsteChonkheid);
 			for (int k = 0; k < aantal; k++)
 			{
 			    // j is dus de andere joekel index
@@ -52,9 +51,9 @@ public partial class JoekelSim
 
 	bool CheckReproduce(int i)
 	{
-		if (joekels[i].CurrentPlan == Behaviour.Plan.REPRODUCE)
+		if (joekels[i].CurrentPlan == Plan.REPRODUCE)
 		{
-			joekels[i].CurrentPlan = Behaviour.Plan.CHILL;
+			joekels[i].CurrentPlan = Plan.CHILL;
 			return true;
 		} else
 		{

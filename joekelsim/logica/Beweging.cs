@@ -22,11 +22,12 @@ public partial class JoekelSim
 		for (int i = 0; i < momenteelLevendeJoekels; i++)
 		{
 			joekels[i].Age += dt;
-			// springen: timer aftellen, op 0 een duw erbij (+=, niet vervangen) en timer opnieuw. Vóór de afremming, net als Joekel.cs
+			// springen: timer aftellen, op 0 een duw erbij (+=, niet vervangen) en timer opnieuw. Vóór de afremming
 			var (richting, kracht) = DoeDingen(i);
 			joekels[i].SpringTimer -= dt;
 			if (joekels[i].SpringTimer <= 0)
 			{
+				richting += joekels[i].Drunkness * (float)GD.Randfn(0, 1); // meestal een beetje mis, soms flink als je zeer dronken bent
 				joekels[i].Heading = richting;
 				joekels[i].Velocity += Vector2.FromAngle(richting) * kracht * GetVelocityVal(i);
 				joekels[i].SpringTimer = SpringInterval;
@@ -54,7 +55,7 @@ public partial class JoekelSim
 	// Wat MoveAndSlide tegen andere joekels doet: overlap ik iemand, dan schuif ik mezelf eruit (de ander blijft staan). glibberig om iemand heen glijden jwz.
 	void BotsMetAndereJoekels(int i)
 	{
-		int aantal = BurenVan(i, joekels[i].Chonkheid + Karaktereigenschappen.MaxChonkheid);
+		int aantal = BurenVan(i, joekels[i].Chonkheid + grootsteChonkheid);
 		for (int k = 0; k < aantal; k++)
 		{
 		    // j is de index van de andere joekel

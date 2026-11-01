@@ -33,8 +33,6 @@ public class WorldTile {
 	public int YPos;
 	public WorldTileType Type;
 
-	public float GetJoekelSpeedMultiplier(Joekel j) => GetJoekelSpeedMultiplier(Karaktereigenschappen.Zwemdiplomas.Van(j.Dna));
-
 	public float GetJoekelSpeedMultiplier(float zwemdiplomas) {
 		switch (this.Type) {
 			case WorldTileType.Grass:

@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 public partial class Clusters : Node
 {
 	public enum Modus { Plek, Geur, Dna }
-	[Export] public Modus Wijze = Modus.Plek;   // welke modus het stats-scherm toont / markeert
+	[Export] public Modus Wijze = Modus.Dna;   // welke modus het stats-scherm toont / markeert
 	[Export] public int MinGroep = 5;           // minimum joekels om als groep te tellen...
 	[Export] public float MinGroepAandeel = 0.02f; // ...of dit deel van de populatie, als dat meer is
 	[Export] public int KuddeMinimum = 4;       // min. joekels (incl. jezelf) in je buurt om een kudde te beginnen
@@ -583,12 +583,8 @@ public partial class Clusters : Node
 
 	void PasMarkeringToe()
 	{
-		var gedimd = new Color(1, 1, 1, 0.15f);
 		var zichtbaar = new HashSet<object>();
 		foreach (var (j, id) in S.Indeling) if (id == S.Gemarkeerd) zichtbaar.Add(j.Sleutel);
 		GetParent().GetNodeOrNull<JoekelSim>("JoekelSim")?.ZetMarkering(S.Gemarkeerd == null ? null : zichtbaar);
-		foreach (var n in GetParent().GetChildren())
-			if (n is Joekel j)
-				j.Modulate = S.Gemarkeerd == null || zichtbaar.Contains(j) ? Colors.White : gedimd;
 	}
 }

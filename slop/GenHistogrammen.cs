@@ -16,7 +16,7 @@ public partial class GenHistogrammen : Control
 	public string HoverTekst(Vector2 p)
 	{
 		int c = Mathf.Clamp((int)(p.X / (Size.X / 3)), 0, 2), r = Mathf.Clamp((int)(p.Y / (Size.Y / 3)), 0, 2);
-		return $"Gen ({r},{c}): hoe deze genwaarde verdeeld is over alle joekels (-1 links, +1 rechts).\n" +
+		return $"Gen ({r},{c}): hoe deze genwaarde verdeeld is over alle joekels (van -3 tot 3).\n" +
 			"Hoogte = aantal joekels met die waarde. Kleuren = groepen (zie tab 'Groepen').\n" +
 			"Eén bult = iedereen lijkt op elkaar. Twee bulten = dit gen splitst de populatie\n" +
 			"(vaak precies waar twee groepen verschillen).";
@@ -33,11 +33,14 @@ public partial class GenHistogrammen : Control
 		for (int r = 0; r < 3; r++)
 		for (int c = 0; c < 3; c++)
 		{
+			// vast bereik -3..3; wie erbuiten valt komt in het eerste/laatste bakje
+			const float lo = -3, hi = 3;
+
 			var tellingen = new Dictionary<int, int[]>();
 			var totaal = new int[Bakjes];
 			foreach (var (joekel, groep) in Bron.Indeling)
 			{
-				int bakje = Mathf.Clamp((int)((joekel.Dna[r, c] + 1) / 2 * Bakjes), 0, Bakjes - 1);
+				int bakje = Mathf.Clamp((int)((joekel.Dna[r, c] - lo) / (hi - lo) * Bakjes), 0, Bakjes - 1);
 				if (!tellingen.TryGetValue(groep, out var t)) tellingen[groep] = t = new int[Bakjes];
 				t[bakje]++;
 				totaal[bakje]++;
@@ -62,9 +65,9 @@ public partial class GenHistogrammen : Control
 			}
 
 			DrawString(font, new Vector2(cel.Position.X, cel.Position.Y - 4), $"gen ({r},{c})", HorizontalAlignment.Left, -1, 13, Colors.White);
-			DrawString(font, new Vector2(cel.Position.X, cel.End.Y + 13), "-1", HorizontalAlignment.Left, -1, 11, Colors.Gray);
-			DrawString(font, new Vector2(cel.Position.X + cel.Size.X / 2 - 3, cel.End.Y + 13), "0", HorizontalAlignment.Left, -1, 11, Colors.Gray);
-			DrawString(font, new Vector2(cel.End.X - 8, cel.End.Y + 13), "1", HorizontalAlignment.Left, -1, 11, Colors.Gray);
+			DrawString(font, new Vector2(cel.Position.X, cel.End.Y + 13), lo.ToString("0.#"), HorizontalAlignment.Left, -1, 11, Colors.Gray);
+			DrawString(font, new Vector2(cel.Position.X + (0 - lo) / (hi - lo) * cel.Size.X - 3, cel.End.Y + 13), "0", HorizontalAlignment.Left, -1, 11, Colors.Gray);
+			DrawString(font, new Vector2(cel.End.X - 18, cel.End.Y + 13), hi.ToString("0.#"), HorizontalAlignment.Left, -1, 11, Colors.Gray);
 		}
 	}
 }
