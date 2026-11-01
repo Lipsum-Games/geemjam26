@@ -16,7 +16,7 @@ public partial class GenHistogrammen : Control
 	public string HoverTekst(Vector2 p)
 	{
 		int c = Mathf.Clamp((int)(p.X / (Size.X / 3)), 0, 2), r = Mathf.Clamp((int)(p.Y / (Size.Y / 3)), 0, 2);
-		return $"Gen ({r},{c}): hoe deze genwaarde verdeeld is over alle joekels (standaard -2 tot 2, breder als een joekel erbuiten valt).\n" +
+		return $"Gen ({r},{c}): hoe deze genwaarde verdeeld is over alle joekels (van -3 tot 3).\n" +
 			"Hoogte = aantal joekels met die waarde. Kleuren = groepen (zie tab 'Groepen').\n" +
 			"Eén bult = iedereen lijkt op elkaar. Twee bulten = dit gen splitst de populatie\n" +
 			"(vaak precies waar twee groepen verschillen).";
@@ -33,13 +33,8 @@ public partial class GenHistogrammen : Control
 		for (int r = 0; r < 3; r++)
 		for (int c = 0; c < 3; c++)
 		{
-			// bereik: standaard -2..2, groter als er een joekel buiten valt (afgerond op een halve)
-			float lo = -2, hi = 2;
-			foreach (var (joekel, _) in Bron.Indeling)
-			{
-				lo = Mathf.Min(lo, Mathf.Floor(joekel.Dna[r, c] * 2) / 2);
-				hi = Mathf.Max(hi, Mathf.Ceil(joekel.Dna[r, c] * 2) / 2);
-			}
+			// vast bereik -3..3; wie erbuiten valt komt in het eerste/laatste bakje
+			const float lo = -3, hi = 3;
 
 			var tellingen = new Dictionary<int, int[]>();
 			var totaal = new int[Bakjes];
