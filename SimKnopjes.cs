@@ -16,8 +16,11 @@ public partial class SimKnopjes : HBoxContainer
 
 		_pauze = Knop("Pauze", TogglePauze);
 		Knop("<", () => ZetStap(_stap - 1));
-		_snelheid = new Label { Text = "1x", CustomMinimumSize = new Vector2(60, 0), HorizontalAlignment = HorizontalAlignment.Center };
+a		_snelheid = new Label { Text = "1x", HorizontalAlignment = HorizontalAlignment.Center };
 		AddChild(_snelheid);
+		// breed genoeg voor de langste tekst in het lettertype dat het label echt gebruikt
+		float breedte = _snelheid.GetThemeFont("font").GetStringSize($"{Snelheden[^1]}x (≈{Snelheden[^1]}x)", HorizontalAlignment.Left, -1, _snelheid.GetThemeFontSize("font_size")).X;
+		_snelheid.CustomMinimumSize = new Vector2(breedte + 12, 0);
 		Knop(">", () => ZetStap(_stap + 1));
 	}
 
