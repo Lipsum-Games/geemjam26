@@ -43,7 +43,9 @@ public static class Karaktereigenschappen
 	Range(20, 100, Sigmoid(d.Cells(DNA_CELL_DOODGAANS_SNELHEID_EN_ALGEMENE_GEZONDHEID) * 3)));
 
 	// de chonkheid van de joeekel, hoe fatsig bente ei???
-	public static readonly Karaktereigenschap Chonkheid = new("Chonkheid", d => Range(5, 15, Sigmoid(d.Diag() - 0.5f * d[0, 1])));
+	public const float MinChonkheid = 5f
+	public const float MaxChonkheid = 15f;
+	public static readonly Karaktereigenschap Chonkheid = new("Chonkheid", d => Range(MinChonkheid, MaxChonkheid, Sigmoid(d.Diag() - 0.5f * d[0, 1])));
 
 	// de murigheid bepaalt hoe de joekel met de muur interact
 	public static readonly Karaktereigenschap Murigheid = new("Murigheid", d => d.Cells((0, 2), (1, 1), (2, 0), (0, 1)) / 4);
