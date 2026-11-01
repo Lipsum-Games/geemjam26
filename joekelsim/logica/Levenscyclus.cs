@@ -46,6 +46,12 @@ public partial class JoekelSim
 			Heading = GD.Randf() * Mathf.Tau,
 			Trek = Karaktereigenschappen.Trek.Van(dna) * (HungerMax - HungerMin) + HungerMin,
 		};
+
+		// meteen in de grid plaatsen, zodat wie hierna geboren wordt hem al ziet
+		int cel = CelVan(positie);
+		volgendeJoekelInCel[momenteelLevendeJoekels] = celEersteJoekel[cel];
+		celEersteJoekel[cel] = momenteelLevendeJoekels;
+
 		momenteelLevendeJoekels++;
 		return true;
 	}
