@@ -28,4 +28,7 @@ public struct JoekelData
 	// op 0 gaat hij dik DOOD
 	public float HuidigeGezonheid;
 	public float MaximaleGezondheid;
+
+	// trait uit het DNA: [-1..1]: boven de 0.5 eet hij geen planten meer
+	public float Vleeslustigheid;
 }
