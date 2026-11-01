@@ -33,16 +33,16 @@ public class WorldTile {
 	public int YPos;
 	public WorldTileType Type;
 
-	public float GetJoekelSpeedMultiplier(Joekel j) => GetJoekelSpeedMultiplier(j.Dna);
+	public float GetJoekelSpeedMultiplier(Joekel j) => GetJoekelSpeedMultiplier(Karaktereigenschappen.Zwemdiplomas.Van(j.Dna));
 
-	public float GetJoekelSpeedMultiplier(Dna dna) {
+	public float GetJoekelSpeedMultiplier(float zwemdiplomas) {
 		switch (this.Type) {
 			case WorldTileType.Grass:
 				return 1f;
 			case WorldTileType.Forest:
 				return 0.7f; // todo: boomklimmen karaktereigenschap ofzo iets koesls
 			case WorldTileType.Water:
-				return Karaktereigenschappen.Zwemdiplomas.Van(dna);
+				return zwemdiplomas;
 		}
 
 		return 1f;
@@ -72,11 +72,14 @@ public partial class WorldTiles : TileMapLayer
 			return null;
 		}
 
-		return The_Tiles[y * WORLD_AMOUNT_TILES_X + x];
+		int index = y * WORLD_AMOUNT_TILES_X + x;
+		if (index >= The_Tiles.Count) return null; // (nog) geen tegels,
+		return The_Tiles[index];
 	}
 
 	public override void _Ready()
 	{
+		The_Tiles.Clear();
 		TileSet.TileSize = new Vector2I(WORLD_TILE_SIZE_X, WORLD_TILE_SIZE_Y);
 		var atlas = (TileSetAtlasSource)TileSet.GetSource(0);
 		atlas.Texture = GenerateResizedAtlasTexture(atlas.Texture);
@@ -97,6 +100,7 @@ public partial class WorldTiles : TileMapLayer
 				float noise       = _noiseSource.GetNoise2D(x, y); /* [-1,1] */
 				float noiseNormal = (noise + 1f) / 2f;             /* [ 0,1] */
 				int noiseI = (int) (noiseNormal * (WorldTileAtlasCoords.TileTypes.Length));
+				noiseI = Math.Min(noiseI, WorldTileAtlasCoords.TileTypes.Length - 1); // noise precies 1.0 zou anders index 3 geven (bestaat niet)
 
 				var tileType = WorldTileAtlasCoords.TileTypes[noiseI];
 				var atlasCoords = WorldTileAtlasCoords.Coordinates[tileType];
