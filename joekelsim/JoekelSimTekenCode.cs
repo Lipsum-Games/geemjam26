@@ -43,6 +43,40 @@ public partial class JoekelSim
 		}
 	}
 
+	// FoodSources is ook een MultiMesh voor snelle tekenen.
+	MultiMesh foodSourceMultiMesh;
+
+	// Hoe groot is het voedsel? Draw en collision.
+	const float FoodSourceStraal = 20f;
+
+	void MaakFoodSourceTekening()
+	{
+		foodSourceMultiMesh = new MultiMesh
+		{
+			TransformFormat = MultiMesh.TransformFormatEnum.Transform2D,
+			Mesh = MaakCirkel(16),
+			InstanceCount = MaxFoodSources,
+			// AABB hier ook nodig zodat ze altijd getekent worden.
+			CustomAabb = new Aabb(new Vector3(-20, -20, 0), new Vector3(World.WorldSize.X + 40, World.WorldSize.Y + 40, 0)),
+		};
+		// Alles groen
+		Color groen = new Color(0.2f, 0.7f, 0.2f)
+		AddChild(new MultiMeshInstance2D { Name = "FoodSourceTekening", Multimesh = foodSourceMultiMesh, Modulate = groen });
+	}
+
+	void TekenFoodSources()
+	{
+		foodSourceMultiMesh.VisibleInstanceCount = momenteelFoodSources;
+		for (int f = 0; f < momenteelFoodSources; f++)
+		{
+			foodSourceMultiMesh.SetInstanceTransform2D(f, new Transform2D(
+				rotation: 0,
+				scale: new Vector2(FoodSourceStraal, FoodSourceStraal),
+				skew: 0,
+				origin: foodSources[f].Position));
+		}
+	}
+
 	// cirkel met straal van 1 (default). punten is de hoeveelheid taartpuntjes.
 	static ArrayMesh MaakCirkel(int punten)
 	{

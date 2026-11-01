@@ -35,6 +35,8 @@ public partial class JoekelSim : Node2D
 		    // en ook maar lekker random dat eten plaatsen!
 			SpawnFoodSource(new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y));
 
+        // teken food eerst zodat joekels eroverheen getekent worden
+		MaakFoodSourceTekening();
 		MaakJoekelTekening();
 		TekenJoekels();
 	}
@@ -48,5 +50,6 @@ public partial class JoekelSim : Node2D
 	public override void _Process(double delta)
 	{
 		TekenJoekels();
+		TekenFoodSources();
 	}
 }
