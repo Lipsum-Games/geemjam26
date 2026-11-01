@@ -22,11 +22,7 @@ public partial class JoekelSim : Node2D
 	{
 		for (int i = 0; i < StarterJoekels; i++)
 			// plaats die joekeltjes lekker random!
-			joekels[i].Positie = new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y);
-		momenteelLevendeJoekels = StarterJoekels;
-
-		// zet de timers voor de joekel sprongetjes
-		ZetStartSpringTimers();
+			MaakJoekel(new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y));
 
 		MaakJoekelTekening();
 		TekenJoekels();

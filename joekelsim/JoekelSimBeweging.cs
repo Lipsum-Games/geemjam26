@@ -17,15 +17,6 @@ public partial class JoekelSim
 	// TIJDELIJK: straal van de joekel komt van chonkheid van DNA later.
 	const float TijdelijkeStraal = 10f;
 
-	// willekeurige start, anders springen ze allemaal in dezelfde tick
-	void ZetStartSpringTimers()
-	{
-		for (int i = 0; i < momenteelLevendeJoekels; i++)
-		{
-			joekels[i].SpringTimer = GD.Randf() * SpringInterval;
-		}
-	}
-
 	// welke kant op en hoe hard springt joekel i? Hier komt later behaviour.
 	// TIJDELIJK: willekeurige richting, volle kracht.
 	(float richting, float kracht) KiesSprong(int i)
