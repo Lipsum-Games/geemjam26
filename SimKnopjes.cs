@@ -3,7 +3,7 @@ using System;
 
 public partial class SimKnopjes : HBoxContainer
 {
-	static readonly float[] Snelheden = { 1, 2, 4, 8, 16 };
+	static readonly float[] Snelheden = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };
 	int _stap;
 	Button _pauze;
 	Label _snelheid;
@@ -12,11 +12,11 @@ public partial class SimKnopjes : HBoxContainer
 	{
 		ProcessMode = ProcessModeEnum.Always;
 
-		Engine.MaxPhysicsStepsPerFrame = 8;
+		Engine.MaxPhysicsStepsPerFrame = Owner is World { SnelleSim: true } ? 256 : 8;
 
 		_pauze = Knop("Pauze", TogglePauze);
 		Knop("<", () => ZetStap(_stap - 1));
-		_snelheid = new Label { Text = "1x" };
+		_snelheid = new Label { Text = "1x", CustomMinimumSize = new Vector2(60, 0), HorizontalAlignment = HorizontalAlignment.Center };
 		AddChild(_snelheid);
 		Knop(">", () => ZetStap(_stap + 1));
 	}
