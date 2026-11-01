@@ -27,6 +27,7 @@ public partial class JoekelSim
 			joekels[i].SpringTimer -= dt;
 			if (joekels[i].SpringTimer <= 0)
 			{
+				richting += joekels[i].Drunkness * (float)GD.Randfn(0, 1); // meestal een beetje mis, soms flink als je zeer dronken bent
 				joekels[i].Heading = richting;
 				joekels[i].Velocity += Vector2.FromAngle(richting) * kracht * GetVelocityVal(i);
 				joekels[i].SpringTimer = SpringInterval;

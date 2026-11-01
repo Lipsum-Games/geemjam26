@@ -76,4 +76,7 @@ public struct JoekelData
 	public float AuraPauze;
 	public float AuraPulsDuur;
 	public float AuraFase;
+
+	// hoe scheef hij springt (radialen)
+	public float Drunkness;
 }

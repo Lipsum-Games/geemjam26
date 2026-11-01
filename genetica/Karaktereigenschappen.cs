@@ -60,5 +60,8 @@ public static class Karaktereigenschappen
 	public static readonly Karaktereigenschap AuraPauze = new("AuraPauze", d => Range(0.5f, 6f, Sigmoid(d[0, 2] - 1.2f * d[2, 0] + 0.5f * d[1, 0])));
 	public static readonly Karaktereigenschap AuraPulsDuur = new("AuraPulsDuur", d => Range(0.3f, 3f, Sigmoid(1.5f * d[1, 2] - d[0, 1] + 0.5f * d[2, 2])));
 
+	// hoe scheef een joekel springt (radialen, de spreiding van de fout op elke sprong).
+	public static readonly Karaktereigenschap Drunkness = new("Drunkness", d => 0.1f * Relu(0.8f * (d[0, 0] + d[0, 2]) - 0.7f * d[2, 1] + 0.4f * d[1, 2] + 1.5f) * Relu(0.8f * (d[0, 0] + d[0, 2]) - 0.7f * d[2, 1] + 0.4f * d[1, 2] + 1.5f));
+
 
 }
