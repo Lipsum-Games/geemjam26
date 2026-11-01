@@ -132,23 +132,6 @@ public partial class JoekelSim
 		}
 	}
 
-    // Dichtsbijzijnde andere joekel in de wereld vinden.
-	// Zoekt met BurenVan in een cirkel die steeds 2x groter wordt tot er iemand in zit
-	int ClosestJoekel(int i)
-	{
-		for (float straal = CelGrootte; straal < 2 * (World.WorldSize.X + World.WorldSize.Y); straal *= 2)
-		{
-			int aantal = BurenVan(i, straal);
-			if (aantal == 0) continue;
-			int beste = burenBuffer[0];
-			for (int k = 1; k < aantal; k++)
-				if (joekels[i].Position.DistanceSquaredTo(joekels[burenBuffer[k]].Position) < joekels[i].Position.DistanceSquaredTo(joekels[beste].Position))
-					beste = burenBuffer[k];
-			return beste;
-		}
-		return -1;
-	}
-
 	private (float drukteIndex, Vector2 target) _compute_introversie_values(int i)
 	{
 		// pak de joekels om ons heen
