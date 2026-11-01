@@ -21,6 +21,9 @@ public partial class JoekelSim
   			Dna = dna,
 			Kachow = Karaktereigenschappen.Kachow.Van(dna),
 			Chonkheid = Karaktereigenschappen.Chonkheid.Van(dna),
+			MaximaleGezondheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(dna),
+			HuidigeGezonheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(dna), // begint vol
+			Hunger = (HungerMin + HungerMax) / 2, // begint half hongerig
 		};
 		momenteelLevendeJoekels++;
 		return true;
@@ -32,5 +35,15 @@ public partial class JoekelSim
 		momenteelLevendeJoekels--;
 		// Als joekel i dood gaat, plaats de laatste joekel gewoon op zijn plek (dikke swap), is lekker efficient.
 		joekels[i] = joekels[momenteelLevendeJoekels];
+	}
+
+	// alle joekels met 0 gezonheid gaan DOOD
+	void RuimDodenOp()
+	{
+	    // achterstevoren zodat de joekel die naar plek i verhuist van achteren komt dus al is bekekem
+		for (int i = momenteelLevendeJoekels - 1; i >= 0; i--)
+		{
+			if (joekels[i].HuidigeGezonheid <= 0) VerwijderJoekel(i);
+		}
 	}
 }
