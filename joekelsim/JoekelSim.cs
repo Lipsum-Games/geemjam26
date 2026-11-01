@@ -18,11 +18,22 @@ public partial class JoekelSim : Node2D
 	// alle joekels: joekels[i] is joekel i. Wat een joekel is staat in JoekelData.cs, lekker centralized
 	JoekelData[] joekels = new JoekelData[MaxJoekels];
 
+	// FoodSources werken precies zoals joekels: een array van structs en een teller
+	const int MaxFoodSources = 4096;
+	public int StarterFoodSources = 50;
+	int momenteelFoodSources;
+
+	// alle food sources, net als joekels data array hierboven.
+	FoodSourceData[] foodSources = new FoodSourceData[MaxFoodSources];
+
 	public override void _Ready()
 	{
 		for (int i = 0; i < StarterJoekels; i++)
 			// plaats die joekeltjes lekker random!
 			MaakJoekel(new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y), Dna.Random());
+		for (int f = 0; f < StarterFoodSources; f++)
+		    // en ook maar lekker random dat eten plaatsen!
+			SpawnFoodSource(new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y));
 
 		MaakJoekelTekening();
 		TekenJoekels();
@@ -30,6 +41,7 @@ public partial class JoekelSim : Node2D
 
 	public override void _PhysicsProcess(double delta)
 	{
+		UpdateVoedselTimer((float)delta);
 		BeweegJoekels((float)delta);
 	}
 
