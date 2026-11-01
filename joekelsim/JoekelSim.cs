@@ -47,11 +47,13 @@ public partial class JoekelSim : Node2D
 		MaakMistTekening();
 		MaakDrolTekening();
 		MaakJoekelTekening();
+		MaakSeizoenTekening();
 		TekenJoekels();
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
+		UpdateSeizoen((float)delta);
 		RuimDodenOp();
 		// botsen gebruikt BurenVan, en na RuimDodenOp kloppen de indexen in het oude grid niet meer, dus we doen dit nu ff 2x (kan ook 1x maybe maar voor nu is het fine)
 		BouwJoekelGrid();
@@ -80,5 +82,6 @@ public partial class JoekelSim : Node2D
 		TekenMist();
 		TekenDrollen();
 		TekenDrolHopen();
+		TekenSeizoen();
 	}
 }

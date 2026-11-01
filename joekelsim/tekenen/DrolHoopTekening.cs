@@ -41,7 +41,7 @@ public partial class JoekelSim
 
 			// stankwolk: zelfde bereik als in Stank.cs, en hoe groter de hoop hoe dikker de wolk
 			float wortel = Mathf.Sqrt(drolHopen[h].Hoeveelheid);
-			float bereik = StankBasisBereik + StankBereikPerWortel * wortel;
+			float bereik = StankBereik(wortel);
 			stankMultiMesh.SetInstanceTransform2D(h, new Transform2D(0, new Vector2(bereik, bereik), 0, drolHopen[h].Position));
 			stankMultiMesh.SetInstanceColor(h, new Color(0.4f, 0.26f, 0.05f, Mathf.Min(0.4f + wortel * 0.06f, 0.85f)));
 		}

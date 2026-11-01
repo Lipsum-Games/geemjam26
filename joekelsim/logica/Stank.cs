@@ -13,6 +13,9 @@ public partial class JoekelSim
 
 	float stankTimer;
 
+	// warmte laat stank verder reiken: winter 0.7x, zomer 1.3x
+	float StankBereik(float wortel) => (StankBasisBereik + StankBereikPerWortel * wortel) * (0.7f + 0.6f * Warmte);
+
 	void Stank(float dt)
 	{
 		stankTimer += dt;
@@ -23,7 +26,7 @@ public partial class JoekelSim
 		for (int h = 0; h < momenteelDrolHopen; h++)
 		{
 			float wortel = Mathf.Sqrt(drolHopen[h].Hoeveelheid);
-			float bereik = StankBasisBereik + StankBereikPerWortel * wortel;
+			float bereik = StankBereik(wortel);
 			// BurenRond kijkt naar middelpunten, dus de dikste joekel erbij voor wie er net met zijn rand in staat
 			int aantal = BurenRond(drolHopen[h].Position, bereik + grootsteChonkheid);
 			for (int k = 0; k < aantal; k++)

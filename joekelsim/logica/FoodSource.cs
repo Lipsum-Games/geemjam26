@@ -6,8 +6,8 @@ public partial class JoekelSim
     // Hoeveel een nieuwe source aan resource mee begint.
 	const float StartResourceCount = 50f;
 
-	// Om de hoeveel seconde een nieuwe voedsel.
-	public float VoedselInterval = 0.4f;
+	// Om de hoeveel seconde een nieuwe voedsel. (hangt af van het seizoen, zie Seizoenen.cs)
+	public float VoedselInterval => SeizoenVoedselInterval;
 	float voedselTimer;
 
 	// Spawn nieuwe voedsel in op positie.

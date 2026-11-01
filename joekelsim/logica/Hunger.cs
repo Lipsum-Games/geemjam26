@@ -27,6 +27,8 @@ public partial class JoekelSim
 
 			// honger loopt op met de tijd, dikke natuurlijk sneller
 			float hongerOploopFactor = joekels[i].Chonkheid * dt / 100;
+			// kou kost ook honger (warm blijven), dikke joekels zijn beter geisoleerd
+			hongerOploopFactor += KouHonger(i) * dt;
 			joekels[i].Hunger = Mathf.Min(joekels[i].Hunger + hongerOploopFactor, HungerMax);
 
 			// honger van 0 tot 1, als het boven 0.7 gaat gaat er gezondheid af, hoe hongeriger hoe harder (exponentially)
