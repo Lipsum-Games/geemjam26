@@ -5,9 +5,10 @@ public partial class JoekelSim
 {
 	// Maak een nieuwe joekel op deze plek. Hij komt achteraan in de array (op plek momenteelLevendeJoekels).
 	// Als de array vol is, dan gebeurt er niets.
-	void MaakJoekel(Vector2 positie)
+	// Geeft true terug als er echt een joekel is gemaakt
+	bool MaakJoekel(Vector2 positie)
 	{
-		if (momenteelLevendeJoekels >= MaxJoekels) return;
+		if (momenteelLevendeJoekels >= MaxJoekels) return False;
 
 		// struct op de plaats van de joekel
 		joekels[momenteelLevendeJoekels] = new JoekelData
@@ -17,5 +18,13 @@ public partial class JoekelSim
 			SpringTimer = GD.Randf() * SpringInterval,
 		};
 		momenteelLevendeJoekels++;
+		return true;
+	}
+
+	void VerwijderJoekel(int i)
+	{
+		momenteelLevendeJoekels--;
+		// Als joekel i dood gaat, plaats de laatste joekel gewoon op zijn plek (dikke swap), is lekker efficient.
+		joekels[i] = joekels[momenteelLevendeJoekels];
 	}
 }
