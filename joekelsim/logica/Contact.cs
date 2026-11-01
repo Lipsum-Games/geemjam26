@@ -12,6 +12,12 @@ public partial class JoekelSim
 	const float ReproductionHungerCost = 4f;
 	const float AgeOfConsent = 200f / 60f;
 
+	// boven dit DNA-verschil zijn het eigenlijk andere soorten
+	const float SoortGrens = 4f;
+	const float SoortGrensMiskraamKans = 0.5f;
+	// onder dit DNA-verschil is het inteelt (bijna-klonen)
+	const float InteeltGrens = 1.5f;
+
 	// hoeveel honger een kill wegneemt per chonk van de prooi
 	const float VleesPerChonk = 1.2f;
 
@@ -77,7 +83,11 @@ public partial class JoekelSim
 	{
 		if (joekels[i].Age < AgeOfConsent || joekels[i].Hunger > ReproductionHunger)
 			return;
-		if(joekels[i].Dna.Similarity(joekels[i].Dna, joekels[j].Dna) < 4 && GD.Randf() < 0.6f)
+		// inteelt: bijna-klonen krijgen vaak een miskraam
+		if(joekels[i].Dna.Similarity(joekels[i].Dna, joekels[j].Dna) < InteeltGrens && GD.Randf() < 0.6f)
+			return;
+		// soortgrens: te verschillend DNA = vaak een miskraam, zo blijven soorten die uit elkaar gegroeid zijn apart
+		if(joekels[i].Dna.Similarity(joekels[i].Dna, joekels[j].Dna) > SoortGrens && GD.Randf() < SoortGrensMiskraamKans)
 			return;
 		SpawnJoekel(joekels[i].Position, Dna.Combine(joekels[i].Dna, joekels[j].Dna));
 		joekels[i].Hunger += ReproductionHungerCost;
