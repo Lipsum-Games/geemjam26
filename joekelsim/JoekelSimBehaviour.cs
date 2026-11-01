@@ -17,6 +17,19 @@ public partial class JoekelSim
 			BesluitPlan(i);
 		}
 
+		if (joekels[i].CurrentPlan == Behaviour.Plan.REPRODUCE)
+		{
+			joekels[i].TargetGok = IndexVanJoekel(joekels[i].TargetId, joekels[i].TargetGok);
+			if (joekels[i].TargetGok >= 0)
+			{
+				joekels[i].TargetPosition = joekels[joekels[i].TargetGok].Position;
+			}
+			else
+			{
+				StopPlan(ref joekels[i]);
+			}
+		}
+
 		// By default chillen, nu ff standaard klein sprongetje naar rechts.
 		if (joekels[i].CurrentPlan == Behaviour.Plan.CHILL)
 			return (0f, 0.1f);
@@ -86,6 +99,13 @@ public partial class JoekelSim
 				if (j.Oehlalalaigheid > GD.Randf())
 				{
 					// Maatje vinden
+					int mate = ClosestJoekel(i);
+					if(mate >= 0){
+						j.CurrentPlan = Behaviour.Plan.REPRODUCE;
+						j.TargetPosition = joekels[mate].Position;
+						j.TargetId = joekels[mate].Id;
+						j.TargetGok = mate;
+					}
 				} else
 				{
 					// Is het te druk?
@@ -105,6 +125,28 @@ public partial class JoekelSim
 			j.TargetGok = IndexVanFoodSource(j.TargetId, j.TargetGok);
 			if (j.TargetGok < 0 || foodSources[j.TargetGok].ResourceCount <= 0) StopPlan(ref j);
 		}
+		if (j.CurrentPlan == Behaviour.Plan.REPRODUCE)
+		{
+			j.TargetGok = IndexVanJoekel(j.TargetId, j.TargetGok);
+			if (j.TargetGok < 0) StopPlan(ref j);
+		}
+	}
+
+    // Dichtsbijzijnde andere joekel in de wereld vinden.
+	// Zoekt met BurenVan in een cirkel die steeds 2x groter wordt tot er iemand in zit
+	int ClosestJoekel(int i)
+	{
+		for (float straal = CelGrootte; straal < 2 * (World.WorldSize.X + World.WorldSize.Y); straal *= 2)
+		{
+			int aantal = BurenVan(i, straal);
+			if (aantal == 0) continue;
+			int beste = burenBuffer[0];
+			for (int k = 1; k < aantal; k++)
+				if (joekels[i].Position.DistanceSquaredTo(joekels[burenBuffer[k]].Position) < joekels[i].Position.DistanceSquaredTo(joekels[beste].Position))
+					beste = burenBuffer[k];
+			return beste;
+		}
+		return -1;
 	}
 
 	private (float drukteIndex, Vector2 target) _compute_introversie_values(int i)
