@@ -34,7 +34,7 @@ public partial class JoekelSim
 	{
 		// alleen de FoodSources in de cel van de joekel en de 8 cellen eromheen checken
 		int cel = CelVan(joekels[i].Position);
-		int celX = cel % GridBreedte
+		int celX = cel % GridBreedte;
 		int celY = cel / GridBreedte;
 		for (int y = celY - 1; y <= celY + 1; y++)
 		{

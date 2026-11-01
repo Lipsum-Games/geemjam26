@@ -49,4 +49,53 @@ public partial class JoekelSim
 			celEersteFoodSource[cel] = f;
 		}
 	}
+
+	// De BurenVan functie beantwoord: wie staat er binnen zoveel pixels van mij?
+	//
+	// Wij hebben dus deze Grids hierboven om checken efficient te maken. IPV alle joekels checken we alleen in de vakjes om ons heen.
+	// En we kijken zover vakjes weg als dat de straal is dat we checken
+    // Als joekels close zijn hebben we ook een buffer waar we ze inschrijven, lekker snel.
+	//
+	// Gebruik:
+	//     int aantal = BurenVan(i, 100);                 // hoeveel buren binnen 100 px?
+	//     for (int k = 0; k < aantal; k++)
+	//     {
+	//         int j = burenBuffer[k];                    // j is een buurjoekel
+	//         ... doe iets met joekels[j] ...
+	//     }
+	//
+	// Let op: burenBuffer is een gedeeld kladblaadje. De volgende BurenVan wist het weer,
+	// dus roep BurenVan niet aan binnen zo'n loop (maar ik weet dat je niet zoiets gaat doen hmmm??)
+	int[] burenBuffer = new int[MaxJoekels];
+
+	int BurenVan(int i, float straal)
+	{
+		int aantal = 0;
+
+		// hoeveel vakjes ver moeten er gekeken worden? Straal 64 of minder: 1 vakje (de 8 eromheen). Straal 100: 2 vakjes ver, etc. etc.
+		int ringen = (int)Mathf.Ceil(straal / CelGrootte);
+
+		// in welk vakje sta ik? (vakjenummer terug naar kolom x en rij y)
+		int cel = CelVan(joekels[i].Position);
+		int celX = cel % GridBreedte
+		int celY = cel / GridBreedte;
+
+		// alle vakjes in een vierkant om mij heen checken
+		for (int y = celY - ringen; y <= celY + ringen; y++)
+		{
+			for (int x = celX - ringen; x <= celX + ringen; x++)
+			{
+				if (x < 0 || y < 0 || x >= GridBreedte || y >= GridHoogte) continue; // vakje bestaat niet (buiten de wereld)
+
+				// alle joekels in dit vakje: begin bij de eerste, volg de ketting tot -1
+				for (int j = celEersteJoekel[y * GridBreedte + x]; j >= 0; j = volgendeJoekelInCel[j])
+				{
+					// niet mezelf, en echt dichtbij genoeg?
+					if (j != i && joekels[i].Position.DistanceSquaredTo(joekels[j].Position) < straal * straal)
+						burenBuffer[aantal++] = j; // opschrijven, en de teller ++'en
+				}
+			}
+		}
+		return aantal;
+	}
 }
