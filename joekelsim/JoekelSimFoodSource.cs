@@ -39,7 +39,31 @@ public partial class JoekelSim
 		return hoeveelTeEten;
 	}
 
-	// welke FoodSource raakt joekel i? (cirkel van chonkheid + 2, zoals de Area2D van Joekel, tegen de groene cirkel). -1 = geen
+    // Vind de dichtste foodsource rond een joekel in een straal.
+	int DichtsteFoodSource(int i, float straal)
+	{
+		int beste = -1;
+		float besteScore = float.MaxValue;
+		int ringen = (int)Mathf.Ceil(straal / CelGrootte);
+		int cel = CelVan(joekels[i].Position);
+		int celX = cel % GridBreedte;
+		int celY = cel / GridBreedte;
+		for (int y = celY - ringen; y <= celY + ringen; y++)
+			for (int x = celX - ringen; x <= celX + ringen; x++)
+			{
+				if (x < 0 || y < 0 || x >= GridBreedte || y >= GridHoogte) continue;
+				for (int f = celEersteFoodSource[y * GridBreedte + x]; f >= 0; f = volgendeFoodSourceInCel[f])
+				{
+					float afstand = joekels[i].Position.DistanceTo(foodSources[f].Position);
+					if (foodSources[f].ResourceCount <= 0 || afstand > straal + FoodSourceStraal) continue; // leeg of niet te zien
+					float score = afstand + GD.Randf() * 100f;
+					if (score < besteScore) { besteScore = score; beste = f; }
+				}
+			}
+		return beste;
+	}
+
+    // welke FoodSource raakt joekel i? (cirkel van chonkheid + 2, zoals de Area2D van Joekel, tegen de groene cirkel). -1 = geen
 	// TIJDELIJK: kijkt naar alles at once, optimizalation komt zo wel
 	int RaaktFoodSource(int i)
 	{
