@@ -7,6 +7,11 @@ public partial class JoekelSim
 	// contact elke 4 ticks voor optimilization.
 	const int ContactElkeNStappen = 4;
 
+	// alleen voortplanten als honger lager is dan dit
+	const float ReproductionHunger = 2f;
+	const float ReproductionHungerCost = 4f;
+	const float AgeOfConsent = 200f / 60f;
+
 	void Contact(float dt)
 	{
 		for (int i = 0; i < momenteelLevendeJoekels; i++)

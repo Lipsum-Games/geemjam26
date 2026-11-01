@@ -21,6 +21,7 @@ public partial class JoekelSim
         // apply voor elke joekel
 		for (int i = 0; i < momenteelLevendeJoekels; i++)
 		{
+			joekels[i].Age += dt;
 			// springen: timer aftellen, op 0 een duw erbij (+=, niet vervangen) en timer opnieuw. Vóór de afremming, net als Joekel.cs
 			var (richting, kracht) = DoeDingen(i);
 			joekels[i].SpringTimer -= dt;

@@ -57,4 +57,7 @@ public struct JoekelData
 	public int RunAwayTicks;
 	public float Heading;    // richting van de laatste sprong
 	public float ChillSpeed;
+
+	// hoe oud in seconden
+	public float Age;
 }
