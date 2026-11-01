@@ -77,7 +77,7 @@ public partial class JoekelSim
 
 		// in welk vakje sta ik? (vakjenummer terug naar kolom x en rij y)
 		int cel = CelVan(joekels[i].Position);
-		int celX = cel % GridBreedte
+		int celX = cel % GridBreedte;
 		int celY = cel / GridBreedte;
 
 		// alle vakjes in een vierkant om mij heen checken

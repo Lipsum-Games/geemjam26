@@ -50,6 +50,8 @@ public partial class JoekelSim : Node2D
 		BouwJoekelGrid();
 		// voedsel grid moet na de timer maar wel voor het eten anders kunnen we nabiijheid niet checken
 		BouwFoodSourceGrid();
+		// dit moet na BouwJoekelGrid: gebruikt BurenVan (vandaar)
+		Contact((float)delta);
 		CalculateHunger((float)delta);
 		RuimLegeFoodSourcesOp();
 	}

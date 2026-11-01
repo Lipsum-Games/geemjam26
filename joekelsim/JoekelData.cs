@@ -31,4 +31,8 @@ public struct JoekelData
 
 	// trait uit het DNA: [-1..1]: boven de 0.5 eet hij geen planten meer
 	public float Vleeslustigheid;
+
+	// contact wordt elke 4 ticks gemeten, vandaar deze variabelen.
+	public int ContactTeller;
+	public float ContactTijd;
 }
