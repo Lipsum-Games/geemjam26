@@ -17,7 +17,7 @@ public partial class JoekelSim
 		for (int i = 0; i < momenteelLevendeJoekels; i++)
 		{
 			if (joekels[i].HuidigeGezonheid <= 0) continue; // deze tick doodgegaan? nix meer doen
-		    // eerst math om te checken of we contact moeten checken.
+			// eerst math om te checken of we contact moeten checken.
 			joekels[i].ContactTijd += dt;
 			if (++joekels[i].ContactTeller < ContactElkeNStappen) continue;
 			float contactDt = joekels[i].ContactTijd;
@@ -28,7 +28,7 @@ public partial class JoekelSim
 			int aantal = BurenVan(i, joekels[i].Chonkheid + 2 + grootsteChonkheid);
 			for (int k = 0; k < aantal; k++)
 			{
-			    // j is dus de andere joekel index
+				// j is dus de andere joekel index
 				int j = burenBuffer[k];
 				float raakAfstand = joekels[i].Chonkheid + 2 + joekels[j].Chonkheid;
 				if (joekels[i].Position.DistanceSquaredTo(joekels[j].Position) >= raakAfstand * raakAfstand) continue; // net niet? continue
@@ -40,10 +40,10 @@ public partial class JoekelSim
 					Reproduce(i, j);
 				}
 				// groot verschil = batel
-				else if (verschil > 6)
+				else if (joekels[i].CurrentPlan == Plan.HUNT && verschil > 1)
 				{
 					joekels[j].HuidigeGezonheid -= joekels[i].Chonkheid * 60f * contactDt;
-					joekels[i].Hunger -= Mathf.Max(joekels[i].Vleeslustigheid - 0.5f, 0) * 60f * contactDt;
+					joekels[i].Hunger = Mathf.Max(0.0f, joekels[i].Hunger - Mathf.Max(joekels[i].Vleeslustigheid + 0.3f, 0f) * 10f * contactDt);
 				}
 			}
 		}

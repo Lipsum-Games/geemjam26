@@ -8,5 +8,7 @@ public enum Plan
 	// Joekel hates other joekels and wants to flee
 	RUN_AWAY,
 	// Oe lalala
-	REPRODUCE,
+	REPRODUCE, 
+	// Op jacht
+	HUNT
 }
