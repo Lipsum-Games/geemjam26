@@ -55,7 +55,7 @@ public partial class JoekelSim
 	// Wat MoveAndSlide tegen andere joekels doet: overlap ik iemand, dan schuif ik mezelf eruit (de ander blijft staan). glibberig om iemand heen glijden jwz.
 	void BotsMetAndereJoekels(int i)
 	{
-		int aantal = BurenVan(i, joekels[i].Chonkheid + Karaktereigenschappen.MaxChonkheid);
+		int aantal = BurenVan(i, joekels[i].Chonkheid + grootsteChonkheid);
 		for (int k = 0; k < aantal; k++)
 		{
 		    // j is de index van de andere joekel

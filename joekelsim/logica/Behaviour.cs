@@ -128,7 +128,7 @@ public partial class JoekelSim
 	private (float drukteIndex, Vector2 target) _compute_introversie_values(int i)
 	{
 		// pak de joekels om ons heen
-		int aantal = BurenVan(i, joekels[i].Perception + Karaktereigenschappen.MaxChonkheid);
+		int aantal = BurenVan(i, joekels[i].Perception + grootsteChonkheid);
 		int count = 1;
 		Vector2 som = joekels[i].Position;
 		for (int k = 0; k < aantal; k++)

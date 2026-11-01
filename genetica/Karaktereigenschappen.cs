@@ -6,7 +6,7 @@ public static class Karaktereigenschappen
 	public static readonly (int, int) DNA_CELL_DOODGAANS_SNELHEID_EN_ALGEMENE_GEZONDHEID = (2, 2);
 
 	// speed (oftewel kachow) is een sigmoid van de eerste rij over de range van 40-200 gestretched.
-	public static readonly Karaktereigenschap Kachow = new("Kachow", d => Range(40, 200, Sigmoid(d.Row(0))));
+	public static readonly Karaktereigenschap Kachow = new("Kachow", d => 40 + 115 * Softplus(d.Row(0)));
 	
 	// Hoen hekel Joekels hebben aan andere Joekels
 	public static readonly Karaktereigenschap Introversie = new("Introversie", d => d.Row(2) * 2 - 2 * d.Col(1));
@@ -41,8 +41,7 @@ public static class Karaktereigenschappen
 
 	// de chonkheid van de joeekel, hoe fatsig bente ei???
 	public const float MinChonkheid = 5f;
-	public const float MaxChonkheid = 15f;
-	public static readonly Karaktereigenschap Chonkheid = new("Chonkheid", d => Range(MinChonkheid, MaxChonkheid, Sigmoid(d.Diag() - 0.5f * d[0, 1])));
+	public static readonly Karaktereigenschap Chonkheid = new("Chonkheid", d => MinChonkheid + 6f * Softplus(d.Diag() - 0.5f * d[0, 1]));
 
 	// de murigheid bepaalt hoe de joekel met de muur interact
 	public static readonly Karaktereigenschap Murigheid = new("Murigheid", d => d.Cells((0, 2), (1, 1), (2, 0), (0, 1)) / 4);

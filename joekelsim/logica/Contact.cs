@@ -25,7 +25,7 @@ public partial class JoekelSim
 			joekels[i].ContactTijd = 0;
 
 			// wie raak ik? check om me heen.
-			int aantal = BurenVan(i, joekels[i].Chonkheid + 2 + Karaktereigenschappen.MaxChonkheid);
+			int aantal = BurenVan(i, joekels[i].Chonkheid + 2 + grootsteChonkheid);
 			for (int k = 0; k < aantal; k++)
 			{
 			    // j is dus de andere joekel index
