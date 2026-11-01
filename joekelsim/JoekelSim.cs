@@ -43,6 +43,7 @@ public partial class JoekelSim : Node2D
 
         // teken food eerst zodat joekels eroverheen getekent worden
 		MaakFoodSourceTekening();
+		MaakMistTekening();
 		MaakJoekelTekening();
 		TekenJoekels();
 	}
@@ -69,5 +70,6 @@ public partial class JoekelSim : Node2D
 	{
 		TekenJoekels();
 		TekenFoodSources();
+		TekenMist();
 	}
 }
