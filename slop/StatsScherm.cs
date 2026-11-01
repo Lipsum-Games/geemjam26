@@ -54,12 +54,12 @@ public partial class StatsScherm : Window
 		var keuzeRij = new HBoxContainer();
 		keuzeRij.AddChild(new Label { Text = "Groepeer op:" });
 		var wijze = new OptionButton { FocusMode = Control.FocusModeEnum.None };
+		wijze.AddItem("DNA (alle 9 genen)", (int)Clusters.Modus.Dna);
 		wijze.AddItem("Plek (kuddes)", (int)Clusters.Modus.Plek);
 		wijze.AddItem("Geur (mistkleur)", (int)Clusters.Modus.Geur);
-		wijze.AddItem("DNA (alle 9 genen)", (int)Clusters.Modus.Dna);
-		wijze.SetItemTooltip(0, "Joekels die bij elkaar in de buurt lopen. Losse joekels = zwervers.");
-		wijze.SetItemTooltip(1, "Joekels met (bijna) dezelfde geur = dezelfde mistkleur, ook als ze door elkaar lopen.");
-		wijze.SetItemTooltip(2, "Soorten die in veel genen tegelijk verschillen. Kleine verschillen (1-3 genen) zie je hier niet.");
+		wijze.SetItemTooltip(0, "Soorten die in veel genen tegelijk verschillen. Kleine verschillen (1-3 genen) zie je hier niet.");
+		wijze.SetItemTooltip(1, "Joekels die bij elkaar in de buurt lopen. Losse joekels = zwervers.");
+		wijze.SetItemTooltip(2, "Joekels met (bijna) dezelfde geur = dezelfde mistkleur, ook als ze door elkaar lopen.");
 		wijze.ItemSelected += index =>
 		{
 			if (_clusters == null) return;

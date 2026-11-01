@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 public partial class Clusters : Node
 {
 	public enum Modus { Plek, Geur, Dna }
-	[Export] public Modus Wijze = Modus.Plek;   // welke modus het stats-scherm toont / markeert
+	[Export] public Modus Wijze = Modus.Dna;   // welke modus het stats-scherm toont / markeert
 	[Export] public int MinGroep = 5;           // minimum joekels om als groep te tellen...
 	[Export] public float MinGroepAandeel = 0.02f; // ...of dit deel van de populatie, als dat meer is
 	[Export] public int KuddeMinimum = 4;       // min. joekels (incl. jezelf) in je buurt om een kudde te beginnen
