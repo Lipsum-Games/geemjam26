@@ -50,9 +50,8 @@ public class Behaviour
 		
 		if (CurrentPlan == Plan.CHILL)
 		{
-			speed = 0.1f;
-			direction = 0.0f;
-			//direction = (float)(_random.NextSingle() * Math.Tau);
+			speed = Karaktereigenschappen.ChillSpeed.Van(joekel.Dna);
+			direction = joekel.getHeading() + (_random.NextSingle() - 0.5f) * 0.1f;
 		} else if (_targetPosition is not null)
 		{
 			float distance = _targetPosition.Value.DistanceTo(joekel.Position);
@@ -128,25 +127,25 @@ public class Behaviour
 			} else if (CurrentPlan == Plan.CHILL)
 			{
 				// We doen niks, laten we wat gaan den
+
+				(float drukteIndex, Vector2 target) = _compute_introversie_values(joekel, joekels, introversie);
 				
-				if (oehlalaigheid > _random.NextSingle())
+				// Is het te druk?
+				if (drukteIndex >_random.NextSingle())
+				{
+					CurrentPlan = Plan.RUN_AWAY;
+					_targetPosition = target;
+					_runAwayTicks = 3;
+				}
+				else if(oehlalaigheid > _random.NextSingle())
 				{
 					// Maatje vinden
 					Joekel? mate = ClosestJoekel(joekel);
-					if(mate != null){
+					if (mate != null)
+					{
 						CurrentPlan = Plan.REPRODUCE;
 						_targetPosition = mate.Position;
 						_targetNode = mate;
-					}
-				} else
-				{
-					// Is het te druk?
-					(float drukteIndex, Vector2 target) = _compute_introversie_values(joekel, joekels, introversie);
-					if (_random.NextSingle() < drukteIndex)
-					{
-						CurrentPlan = Plan.RUN_AWAY;
-						_targetPosition = target;
-						_runAwayTicks = 3;
 					}
 				}
 			} 
@@ -158,12 +157,8 @@ public class Behaviour
 			_targetNode = null;
 			_targetPosition = null;
 		} 
-		
-		
-		
-
-
 	}
+	
 	private (float drukteIndex, Vector2 target) _compute_introversie_values(Joekel joekel, List<Joekel> joekels, float introversie)
 	{
 		if (joekels.Count <= 1)
@@ -182,8 +177,8 @@ public class Behaviour
 		if (introversie > 0)
 		{
 			// Kans op wegbewegen, schaalt met #joekels introversie
-			drukteIndex = 0.2f * (joekels.Count - 1) * introversie;
-
+			drukteIndex = 0.5f * (joekels.Count - 1.0f) * introversie;
+			
 			Vector2 relPos = (avgLoc - joekel.Position);
 			
 			if (relPos.IsZeroApprox())
