@@ -208,6 +208,8 @@ public class Behaviour
 	{
 		// Hungery
 		EAT,
+		// Carnivoor
+		HUNT,
 		// Just chilling
 		CHILL,
 		// Joekel hates other joekels and wants to flee

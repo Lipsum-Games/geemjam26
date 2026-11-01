@@ -41,10 +41,10 @@ public partial class JoekelSim
 					Reproduce(i, j);
 				}
 				// groot verschil = batel
-				else if (verschil > 6)
+				else if (joekels[i].CurrentPlan == Behaviour.Plan.HUNT && verschil > 1)
 				{
 					joekels[j].HuidigeGezonheid -= joekels[i].Chonkheid * 60f * contactDt;
-					joekels[i].Hunger -= Mathf.Max(joekels[i].Vleeslustigheid - 0.5f, 0) * 60f * contactDt;
+					joekels[i].Hunger = Mathf.Max(0.0f, joekels[i].Hunger - Mathf.Max(joekels[i].Vleeslustigheid + 0.3f, 0f) * 10f * contactDt);
 				}
 			}
 		}

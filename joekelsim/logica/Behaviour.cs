@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Godot;
 using Geemjam26ShipsumEvolve.genetica;
 
@@ -46,10 +48,10 @@ public partial class JoekelSim
 		ref JoekelData j = ref joekels[i];
 
 		// Kijk eerst of we in een huidig plan zitten
-		if (j.CurrentPlan == Behaviour.Plan.EAT || (j.CurrentPlan != Behaviour.Plan.CHILL && j.Hunger < j.Trek))
+		if (j.CurrentPlan is Behaviour.Plan.EAT or Behaviour.Plan.HUNT || (j.CurrentPlan != Behaviour.Plan.CHILL && j.Hunger < j.Trek))
 		{
 			// No need to act, only handle "end" conditions
-			if (j.CurrentPlan == Behaviour.Plan.EAT && j.Hunger < HungerMin * 1.1f)
+			if (j.CurrentPlan is Behaviour.Plan.EAT or Behaviour.Plan.HUNT && j.Hunger < HungerMin * 1.1f)
 			{
 				StopPlan(ref j);
 			} else if (j.CurrentPlan == Behaviour.Plan.RUN_AWAY)
@@ -70,21 +72,32 @@ public partial class JoekelSim
 			// Plan the next move
 
 			// Prio 1: Voedsel is heeeeeeel belangrijk
-			if (j.CurrentPlan != Behaviour.Plan.EAT && j.Hunger > j.Trek)
+			if (j.CurrentPlan is not (Behaviour.Plan.EAT or Behaviour.Plan.HUNT) && j.Hunger > j.Trek)
 			{
-				int f = DichtsteFoodSource(i, j.Perception);
-
-				if (f >= 0)
+				if (j.Vleeslustigheid + 0.2f * (GD.Randf() - 0.5) > 0.0)
 				{
-					// Go to foodsource
-					j.TargetPosition = foodSources[f].Position;
-					j.TargetId = foodSources[f].Id;
-					j.TargetGok = f;
-					j.CurrentPlan = Behaviour.Plan.EAT;
+					// prooi vinden
+					int prooi = BesteProoi(i, j);
+					if (prooi >= 0)
+					{
+						j.CurrentPlan = Behaviour.Plan.HUNT;
+						j.TargetPosition = joekels[prooi].Position;
+						j.TargetId = joekels[prooi].Id;
+						j.TargetGok = prooi;
+					}
 				}
 				else
 				{
-					// TODO: New "looking for food" behaviour?
+					int f = DichtsteFoodSource(i, j.Perception);
+
+					if (f >= 0)
+					{
+						// Go to foodsource
+						j.TargetPosition = foodSources[f].Position;
+						j.TargetId = foodSources[f].Id;
+						j.TargetGok = f;
+						j.CurrentPlan = Behaviour.Plan.EAT;
+					}
 				}
 			} else if (j.CurrentPlan == Behaviour.Plan.CHILL)
 			{
@@ -119,11 +132,45 @@ public partial class JoekelSim
 			j.TargetGok = IndexVanFoodSource(j.TargetId, j.TargetGok);
 			if (j.TargetGok < 0 || foodSources[j.TargetGok].ResourceCount <= 0) StopPlan(ref j);
 		}
-		if (j.CurrentPlan == Behaviour.Plan.REPRODUCE)
+		if (j.CurrentPlan is Behaviour.Plan.REPRODUCE or Behaviour.Plan.HUNT)
 		{
 			j.TargetGok = IndexVanJoekel(j.TargetId, j.TargetGok);
 			if (j.TargetGok < 0) StopPlan(ref j);
 		}
+	}
+	private int BesteProoi(int i, JoekelData joekelData)
+	{
+		int buren = BurenVan(i, joekelData.Perception);
+		if (buren == 0)
+		{
+			return -1;
+		}
+
+		JoekelData? prooi = null;
+		int? joekelIndex = null;
+		float? bestScore = null;
+
+		for (int bi = 0; bi < buren; bi++)
+		{
+			int joi = burenBuffer[bi];
+			JoekelData jo = joekels[joi];
+			if (jo.Vleeslustigheid <= -0.0)
+			{
+				float jscore = jo.Position.DistanceTo(joekelData.Position);
+				if (bestScore is null || jscore < bestScore.Value)
+				{
+					bestScore = jscore;
+					prooi = jo;
+					joekelIndex = joi;
+				}
+			}
+		}
+
+		if (prooi is not null)
+		{
+			return joekelIndex.Value;
+		}
+		return -1;
 	}
 
 	private (float drukteIndex, Vector2 target) _compute_introversie_values(int i)
