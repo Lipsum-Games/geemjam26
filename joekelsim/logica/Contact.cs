@@ -12,6 +12,9 @@ public partial class JoekelSim
 	const float ReproductionHungerCost = 4f;
 	const float AgeOfConsent = 200f / 60f;
 
+	// hoeveel honger een kill wegneemt per chonk van de prooi
+	const float VleesPerChonk = 0.6f;
+
 	void Contact(float dt)
 	{
 		for (int i = 0; i < momenteelLevendeJoekels; i++)
@@ -42,8 +45,13 @@ public partial class JoekelSim
 				// groot verschil = batel
 				else if (joekels[i].CurrentPlan == Plan.HUNT && verschil > 1)
 				{
+					bool leefde = joekels[j].HuidigeGezonheid > 0;
 					joekels[j].HuidigeGezonheid -= joekels[i].Chonkheid * 60f * contactDt;
 					joekels[i].Hunger = Mathf.Max(0.0f, joekels[i].Hunger - Mathf.Max(joekels[i].Vleeslustigheid + 0.3f, 0f) * 10f * contactDt);
+
+					// doodgemaakt? opeten! hoe dikker de prooi hoe meer vlees, hoe vleeslustiger hoe meer je eruit haalt
+					if (leefde && joekels[j].HuidigeGezonheid <= 0)
+						joekels[i].Hunger = Mathf.Max(HungerMin, joekels[i].Hunger - Mathf.Max(joekels[i].Vleeslustigheid, 0) * joekels[j].Chonkheid * VleesPerChonk);
 				}
 			}
 		}
