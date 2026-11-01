@@ -14,6 +14,9 @@ public partial class JoekelSim
 	// TIJDELIJK een fixed kachow tot dna erin zit.
 	const float TijdelijkeKachow = 120f;
 
+	// TIJDELIJK: straal van de joekel komt van chonkheid van DNA later.
+	const float TijdelijkeStraal = 10f;
+
 	// willekeurige start, anders springen ze allemaal in dezelfde tick
 	void ZetStartSpringTimers()
 	{
@@ -57,6 +60,11 @@ public partial class JoekelSim
 				joekelPosities[i] += joekelSnelheden[i] * dt;
 			else
 				joekelSnelheden[i] = Vector2.Zero;
+
+			// muren: na het bewegen terugzetten binnen de wereld, (de straal van de joekel afstand van de muur). Stuiter is weg, veel simpeler zo.
+			float r = TijdelijkeStraal;
+			// gewoon clampen binnen de muren, ezpz
+			joekelPosities[i] = joekelPosities[i].Clamp(new Vector2(r, r), World.WorldSize - new Vector2(r, r));
 		}
 	}
 }

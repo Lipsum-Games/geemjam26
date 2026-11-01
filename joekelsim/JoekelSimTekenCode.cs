@@ -37,7 +37,7 @@ public partial class JoekelSim
 			// update de mesh met nieuwe waardes van de joekel.
 			joekelMultiMesh.SetInstanceTransform2D(i, new Transform2D(
 				rotation: 0,
-				scale: new Vector2(10, 10),
+				scale: new Vector2(TijdelijkeStraal, TijdelijkeStraal),
 				skew: 0,
 				origin: joekelPosities[i]));
 		}
