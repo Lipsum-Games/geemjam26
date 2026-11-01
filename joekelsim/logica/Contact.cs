@@ -1,4 +1,5 @@
 using Godot;
+using Geemjam26ShipsumEvolve.genetica;
 
 // Contact: wat er gebeurt als twee joekels elkaar aanraken.
 // Nu alleen aanvallen. Voortplanten komt erbij als Behaviour het REPRODUCE-plan heeft.
@@ -35,13 +36,39 @@ public partial class JoekelSim
 
 				// hoe verschillend is ons DNA?
 				float verschil = joekels[i].Dna.Similarity(joekels[i].Dna, joekels[j].Dna);
+				if (CheckReproduce(i) && verschil < 6)
+				{
+					Reproduce(i, j);
+				}
 				// groot verschil = batel
-				if (verschil > 6)
+				else if (verschil > 6)
 				{
 					joekels[j].HuidigeGezonheid -= joekels[i].Chonkheid * 60f * contactDt;
 					joekels[i].Hunger -= Mathf.Max(joekels[i].Vleeslustigheid - 0.5f, 0) * 60f * contactDt;
 				}
 			}
 		}
+	}
+
+	bool CheckReproduce(int i)
+	{
+		if (joekels[i].CurrentPlan == Behaviour.Plan.REPRODUCE)
+		{
+			joekels[i].CurrentPlan = Behaviour.Plan.CHILL;
+			return true;
+		} else
+		{
+			return false;
+		}
+	}
+
+	void Reproduce(int i, int j)
+	{
+		if (joekels[i].Age < AgeOfConsent || joekels[i].Hunger > ReproductionHunger)
+			return;
+		if(joekels[i].Dna.Similarity(joekels[i].Dna, joekels[j].Dna) < 4 && GD.Randf() < 0.6f)
+			return;
+		MaakJoekel(joekels[i].Position, Dna.Combine(joekels[i].Dna, joekels[j].Dna));
+		joekels[i].Hunger += ReproductionHungerCost;
 	}
 }
