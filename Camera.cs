@@ -5,11 +5,11 @@ public partial class Camera : Camera2D
 {
 
 	[Export] public float VolgZoom = 2f;
-	Joekel _volg;
+	Node2D _volg;
 	Vector2? _zoomDoel;
 	Vector2 _volgOffset;
 
-	public void Volg(Joekel joekel)
+	public void Volg(Node2D joekel)
 	{
 		_volgOffset = Vector2.Zero;
 		_volg = joekel;
