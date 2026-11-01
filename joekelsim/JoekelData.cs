@@ -21,4 +21,11 @@ public struct JoekelData
 
 	// straal in px. Voor het tekenen en de muren (obviously)
 	public float Chonkheid;
+
+	// 1 (vol) tot 10 (uitgehongerd)
+	public float Hunger;
+
+	// op 0 gaat hij dik DOOD
+	public float HuidigeGezonheid;
+	public float MaximaleGezondheid;
 }
