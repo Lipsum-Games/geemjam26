@@ -68,7 +68,10 @@ public partial class JoekelSim
 	// dus roep BurenVan niet aan binnen zo'n loop (maar ik weet dat je niet zoiets gaat doen hmmm??)
 	int[] burenBuffer = new int[MaxJoekels];
 
-	int BurenVan(int i, float straal)
+	int BurenVan(int i, float straal) => BurenRond(joekels[i].Position, straal, i);
+
+	// zelfde als BurenVan, maar rond een plek i.p.v. een joekel (handig als er nog geen joekel staat, zoals bij geboorte).
+	int BurenRond(Vector2 positie, float straal, int zonder = -1)
 	{
 		int aantal = 0;
 
@@ -76,7 +79,7 @@ public partial class JoekelSim
 		int ringen = (int)Mathf.Ceil(straal / CelGrootte);
 
 		// in welk vakje sta ik? (vakjenummer terug naar kolom x en rij y)
-		int cel = CelVan(joekels[i].Position);
+		int cel = CelVan(positie);
 		int celX = cel % GridBreedte;
 		int celY = cel / GridBreedte;
 
@@ -91,7 +94,7 @@ public partial class JoekelSim
 				for (int j = celEersteJoekel[y * GridBreedte + x]; j >= 0; j = volgendeJoekelInCel[j])
 				{
 					// niet mezelf, en echt dichtbij genoeg?
-					if (j != i && joekels[i].Position.DistanceSquaredTo(joekels[j].Position) < straal * straal)
+					if (j != zonder && positie.DistanceSquaredTo(joekels[j].Position) < straal * straal)
 						burenBuffer[aantal++] = j; // opschrijven, en de teller ++'en
 				}
 			}
@@ -124,18 +127,13 @@ public partial class JoekelSim
 			return false;
 
         // Zit joekel in een andere joekel?
-		int ringen = (int)Mathf.Ceil((straal + Karaktereigenschappen.MaxChonkheid) / CelGrootte);
-		int cel = CelVan(positie);
-		int celX = cel % GridBreedte;
-		int celY = cel / GridBreedte;
-		for (int y = celY - ringen; y <= celY + ringen; y++)
-			for (int x = celX - ringen; x <= celX + ringen; x++)
-			{
-				if (x < 0 || y < 0 || x >= GridBreedte || y >= GridHoogte) continue;
-				for (int j = celEersteJoekel[y * GridBreedte + x]; j >= 0; j = volgendeJoekelInCel[j])
-					if (positie.DistanceTo(joekels[j].Position) < straal + joekels[j].Chonkheid)
-						return false;
-			}
+		int aantal = BurenRond(positie, straal + Karaktereigenschappen.MaxChonkheid);
+		for (int k = 0; k < aantal; k++)
+		{
+			int j = burenBuffer[k];
+			if (positie.DistanceTo(joekels[j].Position) < straal + joekels[j].Chonkheid)
+				return false;
+		}
 		return true;
 	}
 }
