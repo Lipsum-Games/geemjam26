@@ -11,13 +11,6 @@ public partial class JoekelSim
 
 	// om de hoeveel tijd de joekel sprint. voor nu 2.6 fixed.
 	const float SpringInterval = 2.6f;
-	// welke kant op en hoe hard springt joekel i? Hier komt later behaviour.
-	// TIJDELIJK: willekeurige richting, volle kracht.
-	(float richting, float kracht) KiesSprong(int i)
-	{
-	    // guaranteed to be random (not 4)
-		return (GD.Randf() * Mathf.Tau, 1f);
-	}
 
 	// één tick: elke joekel remt af en schuift een stukje op
 	void BeweegJoekels(float dt)
@@ -29,10 +22,10 @@ public partial class JoekelSim
 		for (int i = 0; i < momenteelLevendeJoekels; i++)
 		{
 			// springen: timer aftellen, op 0 een duw erbij (+=, niet vervangen) en timer opnieuw. Vóór de afremming, net als Joekel.cs
+			var (richting, kracht) = DoeDingen(i);
 			joekels[i].SpringTimer -= dt;
 			if (joekels[i].SpringTimer <= 0)
 			{
-				var (richting, kracht) = KiesSprong(i);
 				joekels[i].Velocity += Vector2.FromAngle(richting) * kracht * joekels[i].Kachow;
 				joekels[i].SpringTimer = SpringInterval;
 			}
