@@ -48,6 +48,8 @@ public partial class JoekelSim : Node2D
 		BeweegJoekels((float)delta);
 		// het grid moet wel elke tick geupdate worden. is snel hoor
 		BouwJoekelGrid();
+		// voedsel grid moet na de timer maar wel voor het eten anders kunnen we nabiijheid niet checken
+		BouwFoodSourceGrid();
 		CalculateHunger((float)delta);
 		RuimLegeFoodSourcesOp();
 	}

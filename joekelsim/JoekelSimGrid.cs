@@ -34,4 +34,19 @@ public partial class JoekelSim
 			celEersteJoekel[cel] = i;                      // en ik ben nu de eerste
 		}
 	}
+
+	// zelfde grid als hierboven en dan voor voedsel.
+	int[] celEersteFoodSource = new int[GridBreedte * GridHoogte];
+	int[] volgendeFoodSourceInCel = new int[MaxFoodSources];
+
+	void BouwFoodSourceGrid()
+	{
+		System.Array.Fill(celEersteFoodSource, -1);
+		for (int f = 0; f < momenteelFoodSources; f++)
+		{
+			int cel = CelVan(foodSources[f].Position);
+			volgendeFoodSourceInCel[f] = celEersteFoodSource[cel];
+			celEersteFoodSource[cel] = f;
+		}
+	}
 }

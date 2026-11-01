@@ -32,13 +32,24 @@ public partial class JoekelSim
 	// TIJDELIJK: kijkt naar alles at once, optimizalation komt zo wel
 	int RaaktFoodSource(int i)
 	{
-		for (int f = 0; f < momenteelFoodSources; f++)
+		// alleen de FoodSources in de cel van de joekel en de 8 cellen eromheen checken
+		int cel = CelVan(joekels[i].Position);
+		int celX = cel % GridBreedte
+		int celY = cel / GridBreedte;
+		for (int y = celY - 1; y <= celY + 1; y++)
 		{
-		    // Is het deze tick al opgepeuzeld? Zo ja verder.
-			if (foodSources[f].ResourceCount <= 0) continue;
-			// Check daarna of dit voedsel in onze voedselrange zit. Zo ja return voedsel index f
-			float afstand = joekels[i].Chonkheid + 2 + FoodSourceStraal;
-			if (joekels[i].Position.DistanceSquaredTo(foodSources[f].Position) < afstand * afstand) return f;
+			for (int x = celX - 1; x <= celX + 1; x++)
+			{
+				if (x < 0 || y < 0 || x >= GridBreedte || y >= GridHoogte) continue; // buiten de wereld, dat checken we niet ofcourse.
+				for (int f = celEersteFoodSource[y * GridBreedte + x]; f >= 0; f = volgendeFoodSourceInCel[f])
+				{
+				    // Is het deze tick al opgepeuzeld? Zo ja verder.
+					if (foodSources[f].ResourceCount <= 0) continue;
+					// Check daarna of dit voedsel in onze voedselrange zit. Zo ja return voedsel index f
+					float afstand = joekels[i].Chonkheid + 2 + FoodSourceStraal;
+					if (joekels[i].Position.DistanceSquaredTo(foodSources[f].Position) < afstand * afstand) return f;
+				}
+			}
 		}
 		return -1;
 	}
