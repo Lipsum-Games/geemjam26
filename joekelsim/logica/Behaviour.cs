@@ -4,18 +4,12 @@ using Geemjam26ShipsumEvolve.genetica;
 // Behaviour: wat wil een joekel?
 public partial class JoekelSim
 {
-    // Check om de zoveel ticks voor behaviour.
-	const int CheckBehaviourEvery = 5;
 
     // Dit bepaald dus wat de joekel gaat doen komende tijd.
 	(float richting, float kracht) DoeDingen(int i)
 	{
-		joekels[i].BehaviourCheckCounter--;
-		if (joekels[i].BehaviourCheckCounter <= 0)
-		{
-			joekels[i].BehaviourCheckCounter = CheckBehaviourEvery;
-			BesluitPlan(i);
-		}
+
+		BesluitPlan(i);
 
 		if (joekels[i].CurrentPlan == Behaviour.Plan.REPRODUCE)
 		{
