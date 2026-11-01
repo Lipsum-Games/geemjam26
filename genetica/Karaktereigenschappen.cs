@@ -56,5 +56,9 @@ public static class Karaktereigenschappen
 	
 	public static readonly Karaktereigenschap ChillSpeed = new("ChillSpeed", d =>  Sigmoid(d.Col(2) - 3 * d[1,1]));
 
+	// de aura ademt. pauze is tijd tot pulse van pulseduur.
+	public static readonly Karaktereigenschap AuraPauze = new("AuraPauze", d => Range(0.5f, 6f, Sigmoid(d[0, 2] - 1.2f * d[2, 0] + 0.5f * d[1, 0])));
+	public static readonly Karaktereigenschap AuraPulsDuur = new("AuraPulsDuur", d => Range(0.3f, 3f, Sigmoid(1.5f * d[1, 2] - d[0, 1] + 0.5f * d[2, 2])));
+
 
 }

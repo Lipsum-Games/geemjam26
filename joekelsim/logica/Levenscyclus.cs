@@ -50,6 +50,9 @@ public partial class JoekelSim
 			RanzigBereik = Karaktereigenschappen.RanzigheidAuraBereik.Van(dna),
 			RanzigKracht = Karaktereigenschappen.RanzigheidAuraKracht.Van(dna),
 			Geur = Karaktereigenschappen.RanzigheidAuraGeur.Van(dna),
+			AuraPauze = Karaktereigenschappen.AuraPauze.Van(dna),
+			AuraPulsDuur = Karaktereigenschappen.AuraPulsDuur.Van(dna),
+			AuraFase = GD.Randf() * (Karaktereigenschappen.AuraPauze.Van(dna) + Karaktereigenschappen.AuraPulsDuur.Van(dna)), // niet iedereen tegelijk pls ;_;
 			AuraTijd = GD.Randf() * AuraInterval, // spreiden: niet alle joekels in hetzelfde frame and gaat perfromance kaduk
 			Kleur0 = new Color((dna[0, 0] + 1) / 2, (dna[0, 1] + 1) / 2, (dna[0, 2] + 1) / 2),
 			Kleur1 = new Color((dna[1, 0] + 1) / 2, (dna[1, 1] + 1) / 2, (dna[1, 2] + 1) / 2),

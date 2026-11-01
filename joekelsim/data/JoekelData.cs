@@ -71,4 +71,9 @@ public struct JoekelData
 	public float RanzigKracht;
 	public float Geur;
 	public float AuraTijd;
+
+	// het ademen van de aura: pauze, pulsduur (seconden) en waar hij nu is in die cyclus
+	public float AuraPauze;
+	public float AuraPulsDuur;
+	public float AuraFase;
 }

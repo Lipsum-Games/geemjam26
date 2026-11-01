@@ -18,6 +18,7 @@ public partial class JoekelSim
 		{
 			if (joekels[i].HuidigeGezonheid <= 0) continue;
 			if (joekels[i].RanzigKracht > 0) {
+				joekels[i].AuraFase = (joekels[i].AuraFase + dt) % (joekels[i].AuraPauze + joekels[i].AuraPulsDuur);
 				// scale de aura per time delta
 				joekels[i].AuraTijd += dt;
 				if (joekels[i].AuraTijd >= AuraInterval) {
@@ -26,6 +27,16 @@ public partial class JoekelSim
 				}
 			}
 		}
+	}
+
+	// hoe sterk de aura nu is (0..1): 0 tijdens de pauze, daarna een belcurve over de puls met de piek precies halverwege
+	float AuraPuls(int i)
+	{
+		float t = joekels[i].AuraFase - joekels[i].AuraPauze; // tijd sinds de puls begon
+		if (t < 0) return 0;
+		float midden = joekels[i].AuraPulsDuur / 2;
+		float breedte = joekels[i].AuraPulsDuur / 6; // dan is hij aan het begin en eind van de puls ~0
+		return Mathf.Exp(-(t - midden) * (t - midden) / (2 * breedte * breedte));
 	}
 
 	private float LynxEffect(float verschil)
@@ -53,7 +64,7 @@ public partial class JoekelSim
 			// als jouw geur lijkt op die van de ander dan bentei ei misschien toch nie zo vies als ie dacht hé
 			float eigenlijk_toch_niet_zo_ranzigheid = LynxEffect(Mathf.Abs(joekels[i].Geur - joekels[ander].Geur));
 			// pas jouw ranzigheid toe op de gezondheid van de wederpartij
-			joekels[ander].HuidigeGezonheid -= joekels[i].RanzigKracht * kan_ik_je_ruiken_hoeveelheid * eigenlijk_toch_niet_zo_ranzigheid * dt;
+			joekels[ander].HuidigeGezonheid -= joekels[i].RanzigKracht * AuraPuls(i) * kan_ik_je_ruiken_hoeveelheid * eigenlijk_toch_niet_zo_ranzigheid * dt;
 			joekels[ander].HuidigeGezonheid = Mathf.Min(joekels[ander].HuidigeGezonheid, joekels[ander].MaximaleGezondheid);
 		}
 	}

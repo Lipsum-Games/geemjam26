@@ -27,7 +27,7 @@ public partial class JoekelSim
 			mistMultiMesh.SetInstanceTransform2D(i, new Transform2D(0, new Vector2(grootte, grootte), 0, joekels[i].Position));
 
 			var geurKleur = Color.FromHsv((joekels[i].Geur + 1) / 2 * 0.8f, 0.7f, 1f);
-			geurKleur.A = joekels[i].RanzigKracht / 8 * 0.5f;
+			geurKleur.A = joekels[i].RanzigKracht / 8 * 0.5f * AuraPuls(i);
 			mistMultiMesh.SetInstanceColor(i, geurKleur);
 		}
 	}
