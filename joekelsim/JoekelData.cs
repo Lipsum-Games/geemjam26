@@ -52,4 +52,7 @@ public struct JoekelData
 	public float Perception;
 	// wanneer honger (1..10)
 	public float Trek;
+	public float Introversie;
+	public float Oehlalalaigheid;
+	public int RunAwayTicks;
 }

@@ -45,6 +45,17 @@ public partial class JoekelSim
 			if (j.CurrentPlan == Behaviour.Plan.EAT && j.Hunger < HungerMin * 1.1f)
 			{
 				StopPlan(ref j);
+			} else if (j.CurrentPlan == Behaviour.Plan.RUN_AWAY)
+			{
+				if (j.RunAwayTicks > 0)
+				{
+					j.RunAwayTicks -= 1;
+				}
+				else
+				{
+					j.CurrentPlan = Behaviour.Plan.CHILL;
+					j.TargetPosition = null;
+				}
 			}
 		}
 		else
@@ -68,6 +79,24 @@ public partial class JoekelSim
 				{
 					// TODO: New "looking for food" behaviour?
 				}
+			} else if (j.CurrentPlan == Behaviour.Plan.CHILL)
+			{
+				// We doen niks, laten we wat gaan den
+
+				if (j.Oehlalalaigheid > GD.Randf())
+				{
+					// Maatje vinden
+				} else
+				{
+					// Is het te druk?
+					(float drukteIndex, Vector2 target) = _compute_introversie_values(i);
+					if (GD.Randf() < drukteIndex)
+					{
+						j.CurrentPlan = Behaviour.Plan.RUN_AWAY;
+						j.TargetPosition = target;
+						j.RunAwayTicks = 3;
+					}
+				}
 			}
 		}
 
@@ -76,6 +105,56 @@ public partial class JoekelSim
 			j.TargetGok = IndexVanFoodSource(j.TargetId, j.TargetGok);
 			if (j.TargetGok < 0 || foodSources[j.TargetGok].ResourceCount <= 0) StopPlan(ref j);
 		}
+	}
+
+	private (float drukteIndex, Vector2 target) _compute_introversie_values(int i)
+	{
+		// pak de joekels om ons heen
+		int aantal = BurenVan(i, joekels[i].Perception + Karaktereigenschappen.MaxChonkheid);
+		int count = 1;
+		Vector2 som = joekels[i].Position;
+		for (int k = 0; k < aantal; k++)
+		{
+			int b = burenBuffer[k];
+			if (joekels[i].Position.DistanceTo(joekels[b].Position) >= joekels[i].Perception + joekels[b].Chonkheid) continue;
+			som += joekels[b].Position;
+			count++;
+		}
+
+		if (count <= 1)
+		{
+			return (0, Vector2.Zero);
+		}
+
+		// Hoe "erg" drukte is
+		float drukteIndex;
+		Vector2 target;
+
+		Vector2 avgLoc = som / count;
+
+		if (joekels[i].Introversie > 0)
+		{
+			// Kans op wegbewegen, schaalt met #joekels introversie
+			drukteIndex = 0.2f * (count - 1) * joekels[i].Introversie;
+
+			Vector2 relPos = (avgLoc - joekels[i].Position);
+
+			if (relPos.IsZeroApprox())
+			{
+				return (0, Vector2.Zero);
+			}
+
+			target = -relPos * 1_000;
+		}
+		else
+		{
+			// Kans op drukte opzoeken, meer extraversie en minder joekels maken de kans hoger om andere joekels te zoeken
+			drukteIndex = Mathf.Abs(joekels[i].Introversie) / count;
+
+			target = avgLoc;
+		}
+
+		return (drukteIndex, target);
 	}
 
 	// terug naar chillen, zonder doel
