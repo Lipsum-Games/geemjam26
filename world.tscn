@@ -233,6 +233,7 @@ sources/0 = SubResource("TileSetAtlasSource_aqk2v")
 script = ExtResource("1_f3sb7")
 EntityScene = ExtResource("2_fj7yv")
 FoodSourceScene = ExtResource("3_tlwt5")
+SnelleSim = true
 
 [node name="WorldTiles" type="TileMapLayer" parent="." unique_id=896166233]
 tile_set = SubResource("TileSet_asv5b")

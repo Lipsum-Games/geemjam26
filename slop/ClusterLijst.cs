@@ -43,7 +43,7 @@ public partial class ClusterLijst : Control
 			return "Grootte van de groep en aandeel van alle joekels.\n" +
 				"Klik = markeer in de wereld (de rest wordt doorzichtig), nogmaals klikken = uit.\n" +
 				"Blijft aan als je het stats-venster sluit.";
-		return "Meest voorkomende stuitertype in deze groep, plus max 3 traits waarin de groep\n" +
+		return "Max 3 traits waarin de groep\n" +
 			"afwijkt van de héle populatie, in σ (standaarddeviaties).\n" +
 			"+1σ = duidelijk hoger dan gemiddeld, −1σ = duidelijk lager. Onder 0,5σ wordt niet getoond.\n" +
 			"Met één groep is er niets om van af te wijken, dan staat alleen het type er.";

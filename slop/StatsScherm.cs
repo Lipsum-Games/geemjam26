@@ -14,7 +14,7 @@ public partial class StatsScherm : Window
 	Statistiek _stats;
 	Clusters _clusters;
 	Grafiek _populatie, _groepGroottes;
-	(Grafiek grafiek, VBoxContainer keuzes) _traits, _types;
+	(Grafiek grafiek, VBoxContainer keuzes) _traits;
 	GenHistogrammen _histogrammen;
 	ClusterLijst _clusterLijst;
 
@@ -44,7 +44,6 @@ public partial class StatsScherm : Window
 		zoom.Toggled += aan => traitsGrafiek.GebruikVast = !aan;
 		_traits.keuzes.AddChild(zoom);
 		_traits.keuzes.AddChild(new HSeparator());
-		_types = MaakTab(tabs, "Stuitertypes", elkEigenSchaal: false);
 
 		_histogrammen = new GenHistogrammen { Name = "DNA genen" };
 		tabs.AddChild(_histogrammen);
@@ -177,11 +176,9 @@ public partial class StatsScherm : Window
 			Func<float> statsTijd = () => _stats.Populatie.Count * _stats.Interval;
 			_populatie.Tijdsduur = statsTijd;
 			_traits.grafiek.Tijdsduur = statsTijd;
-			_types.grafiek.Tijdsduur = statsTijd;
 			_groepGroottes.Tijdsduur = () => (_clusters.GrootteHistorie.Count > 0 ? _clusters.GrootteHistorie.First().Value.Count : 0) * _clusters.Interval;
 		}
 		Vul(_traits, _stats.Traits, standaardAan: 3);
-		Vul(_types, _stats.Types, standaardAan: 4);
 	}
 
 	// voegt reeksen toe die er nog niet zijn (bv. als het scherm geopend werd vóór de eerste meting)

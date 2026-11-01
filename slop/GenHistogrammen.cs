@@ -37,7 +37,6 @@ public partial class GenHistogrammen : Control
 			var totaal = new int[Bakjes];
 			foreach (var (joekel, groep) in Bron.Indeling)
 			{
-				if (!IsInstanceValid(joekel)) continue;
 				int bakje = Mathf.Clamp((int)((joekel.Dna[r, c] + 1) / 2 * Bakjes), 0, Bakjes - 1);
 				if (!tellingen.TryGetValue(groep, out var t)) tellingen[groep] = t = new int[Bakjes];
 				t[bakje]++;
