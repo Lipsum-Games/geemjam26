@@ -38,4 +38,9 @@ public struct JoekelData
 	// contact wordt elke 4 ticks gemeten, vandaar deze variabelen.
 	public int ContactTeller;
 	public float ContactTijd;
+
+	// De behaviour fields.
+	public Geemjam26ShipsumEvolve.genetica.Behaviour.Plan CurrentPlan;
+	public int BehaviourCheckCounter;
+	public Vector2? TargetPosition;
 }
