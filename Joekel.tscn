@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://gdl8o0rc1uug"]
+
+[ext_resource type="Script" path="res://Joekel.cs" id="1_ctcih"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_0cgbl"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_g0sgr"]
+
+[node name="Joekel" type="CharacterBody2D" unique_id=1321837734]
+input_pickable = true
+motion_mode = 1
+script = ExtResource("1_ctcih")
+HungerMax = null
+HungerMin = null
+ReproductionHunger = 5.0
+ReproductionHungerCost = 2.0
+AgeOfConsent = null
+SpringInterval = null
+Frictie = null
+RustDrempel = null
+ZachteStuiter = null
+HardeStuiter = null
+MuurHeal = null
+MuurSchade = null
+GeurHealZone = null
+GeurPlateau = null
+GeurVolleSchade = null
+GeurHealKracht = null
+AuraInterval = null
+ContactElkeNStappen = null
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=277901733]
+shape = SubResource("CircleShape2D_0cgbl")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=855973448]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1248990554]
+shape = SubResource("CircleShape2D_g0sgr")
