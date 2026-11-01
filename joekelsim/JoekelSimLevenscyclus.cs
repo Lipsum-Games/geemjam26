@@ -20,7 +20,7 @@ public partial class JoekelSim
 			// Hier worden de eigenschappen initialized uit DNA.
   			Dna = dna,
 			Kachow = Karaktereigenschappen.Kachow.Van(dna),
-			Straal = Karaktereigenschappen.Chonkheid.Van(dna),
+			Chonkheid = Karaktereigenschappen.Chonkheid.Van(dna),
 		};
 		momenteelLevendeJoekels++;
 		return true;
