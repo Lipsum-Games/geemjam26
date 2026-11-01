@@ -11,6 +11,7 @@ public partial class JoekelSim
 	{
 		for (int i = 0; i < momenteelLevendeJoekels; i++)
 		{
+			if (joekels[i].HuidigeGezonheid <= 0) continue; // deze tick doodgegaan: kan niet meer eten en herleven
 
             // als we voedsel aanraken (een valida f index voor voedsel)
 			int f = RaaktFoodSource(i);
