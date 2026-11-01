@@ -11,6 +11,8 @@ public partial class World : Node2D
 	[Export] public float VoedselInterval = 2f;
 	private float _voedselTimer;
 	public static readonly Vector2 WorldSize = new(3000, 2000);
+	// als dit aan staat: alle joekels in een zoeen JoekelSim-node (arrays) instead van een Joekel-node per joekel. DIt maakt de joekel simulatie echt zoveel sneller (als het af is)
+	[Export] public bool SnelleSim = false;
 
 	void AddWall(StaticBody2D body, Vector2 normal, float distance)
 	{
@@ -34,6 +36,12 @@ public partial class World : Node2D
 		AddWall(walls, new Vector2(1, 0), 0);
 		AddWall(walls, new Vector2(0, -1), -WorldSize.Y);
 		AddWall(walls, new Vector2(-1, 0), -WorldSize.X);
+
+		if (SnelleSim)
+		{
+			AddChild(new JoekelSim { Name = "JoekelSim" });
+			return;
+		}
 
 		var area = WorldSize;
 		for (int i = 0; i < Count; i++)
@@ -92,6 +100,7 @@ public partial class World : Node2D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
+		if (SnelleSim) return; // JoekelSim regelt straks zijn eigen voedsel
 		_voedselTimer -= (float)delta;
 		if (_voedselTimer <= 0)
 		{

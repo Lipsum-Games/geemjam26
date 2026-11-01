@@ -231,7 +231,7 @@ public partial class Joekel : CharacterBody2D
 		// Zet de velocity op nul als we al langzaam genoeg gaan.
 		else Velocity = Vector2.Zero;
 
-        // contact niet elke frame
+		// contact niet elke frame
 		_contactTijd += dt;
 		bool doeContact = ++_contactTeller >= ContactElkeNStappen;
 		float contactDt = _contactTijd;
