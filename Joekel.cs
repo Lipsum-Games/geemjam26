@@ -41,7 +41,6 @@ public partial class Joekel : CharacterBody2D
 	private float _kachow;
 	private float _hunger;
 	private float _zwem;
-	private float _turnJitter;
 	private Behaviour _behaviour = new Behaviour();
 	
 	private Area2D _detectionArea;
@@ -66,6 +65,7 @@ public partial class Joekel : CharacterBody2D
 	private float _ranzigKracht;
 	private float _geur;
 	public float Geur => _geur;
+	public float _perception { get; set; }
 	static readonly GradientTexture2D MistTextuur = MaakRanzigheidsMist();
 
 
@@ -79,7 +79,7 @@ public partial class Joekel : CharacterBody2D
 		_volgendeHeading = _heading;
 		_springTimer = GD.Randf() * SpringInterval;
 		_kachow = Karaktereigenschappen.Kachow.Van(Dna);
-		_turnJitter = Karaktereigenschappen.TurnJitter.Van(Dna);
+		_perception = Karaktereigenschappen.Perception.Van(Dna);
 		_detectionArea = GetNode<Area2D>("Area2D");
 		_detectionArea.AreaEntered += OnAreaEntered;
 		_detectionArea.AreaExited += OnAreaExited;
@@ -312,8 +312,9 @@ public partial class Joekel : CharacterBody2D
 						pts[k] = Vector2.FromAngle(Mathf.Lerp(a0, a1, k / (float)n)) * _chonkheid;
 				return pts;
 		}
+		
 		DrawColoredPolygon(Boog(0, s), _kleuren_bandjes[0]);
-		DrawColoredPolygon([new Vector2(r, 0), ..Boog(s, Mathf.Tau - s)], _kleuren_bandjes[1]);
+		DrawColoredPolygon([new Vector2(r, 0), .. Boog(s, Mathf.Tau - s)], _kleuren_bandjes[1]);
 		DrawColoredPolygon(Boog(Mathf.Tau - s, Mathf.Tau), _kleuren_bandjes[2]);
 
 	}

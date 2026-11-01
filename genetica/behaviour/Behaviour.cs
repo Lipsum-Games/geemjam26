@@ -1,36 +1,58 @@
 #nullable enable
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using Godot.Collections;
 
 namespace Geemjam26ShipsumEvolve.genetica;
 
 public class Behaviour
 {
+	private const int _check_behaviour_every = 5;
 	private Random _random = new Random();
-	private Plan _currentPlan = Plan.CHILL; 
+	internal Plan CurrentPlan { get; set; } = Plan.CHILL; 
 	private Vector2? _targetPosition = null;
 	private Node? _targetNode = null;
-	
-	
+	private int _behaviourCheckCounter = 0;
+	private int _runAwayTicks = 0;
+
+
 
 	// Besluit wat de joekel gaat doen en returnt een tuple van richting (radialen) en gewenste snelheid
 	public Tuple<float, float> DoeDingen(Joekel joekel, double dt)
 	{
-		_besluitPlan(joekel, dt);
 
+		_behaviourCheckCounter -= 1;
+		if (_behaviourCheckCounter <= 0)
+		{
+			_behaviourCheckCounter = _check_behaviour_every;
+			_besluitPlan(joekel, dt);
+
+		}
+		
 		float direction = 0.0f;
 		float speed = 0.0f;
 
-		if (_currentPlan == Plan.REPRODUCE && _targetNode is not null)
+		if (CurrentPlan == Plan.REPRODUCE)
 		{
-			_targetPosition = ((Joekel)_targetNode).GetPosition();
+			if (_targetNode is not null && GodotObject.IsInstanceValid(_targetNode))
+			{
+				_targetPosition = ((Joekel)_targetNode).GetPosition();
+			}
+			else
+			{
+				CurrentPlan = Plan.CHILL;
+				_targetNode = null;
+				_targetPosition = null;
+			}
 		}
 		
-		if (_currentPlan == Plan.CHILL)
+		if (CurrentPlan == Plan.CHILL)
 		{
 			speed = 0.1f;
-			direction = (float)(_random.NextSingle() * Math.Tau);
+			direction = 0.0f;
+			//direction = (float)(_random.NextSingle() * Math.Tau);
 		} else if (_targetPosition is not null)
 		{
 			float distance = _targetPosition.Value.DistanceTo(joekel.Position);
@@ -60,68 +82,134 @@ public class Behaviour
 		var trek = Karaktereigenschappen.Trek.Van(joekel.Dna) * (joekel.HungerMax - joekel.HungerMin) + joekel.HungerMin;
 		var oehlalaigheid = Karaktereigenschappen.Oehlalalaigheid.Van(joekel.Dna);
 
-		if ((_currentPlan == Plan.EAT || _currentPlan == Plan.REPRODUCE) && !GodotObject.IsInstanceValid(_targetNode))
+		// Kijk eerst of we in een huidig plan zitten
+		if (CurrentPlan == Plan.EAT || (CurrentPlan != Plan.CHILL && joekel.GetHunger() < trek))
 		{
-			_currentPlan = Plan.CHILL;
-			_targetNode = null;
-			_targetPosition = null;
-		} 
-		
-		// Voedsel is heeeeeeel belangrijk
-		if (_currentPlan != Plan.EAT && joekel.GetHunger() > trek)
-		{   
-			FoodSource? food = joekel.GetTree()
-				.GetNodesInGroup("FoodSource")
-				.Where(node => node.GetParent() is FoodSource)
-				.Select(node => node.GetParent<FoodSource>())
-				.Where(fs => fs.Position.DistanceTo(joekel.Position) <= 600.0f)
-				.MinBy(fs => fs.Position.DistanceTo(joekel.Position) + _random.NextSingle() * 100.0);
-
-			if (food is not null)
+			// No need to act, only handle "end" conditions
+			if (CurrentPlan == Plan.EAT && joekel.GetHunger() < joekel.HungerMin * 1.1f)
 			{
-				// Go to foodsource
-				_targetPosition = food.Position;
-				_targetNode = food;
-				_currentPlan = Plan.EAT;
-			}
-
-			return;
-		} 
-		
-		if (_currentPlan == Plan.EAT && joekel.GetHunger() < joekel.HungerMin * 1.1f)
-		{
-			_currentPlan = Plan.CHILL;
-			_targetNode = null;
-			_targetPosition = null;
-		}
-		
-		if (_currentPlan == Plan.CHILL)
-		{
-			if (_random.NextSingle() < oehlalaigheid * dt * 0.8f)
+				CurrentPlan = Plan.CHILL;
+				_targetNode = null;
+				_targetPosition = null;
+			} else if (CurrentPlan == Plan.RUN_AWAY)
 			{
-				Joekel? mate = ClosestJoekel(joekel);
-				if(mate != null){
-					_currentPlan = Plan.REPRODUCE;
-					_targetPosition = mate.Position;
-					_targetNode = mate;
+				if (_runAwayTicks > 0)
+				{
+					_runAwayTicks -= 1;
 				}
-			} else if (introversie * dt * 0.2f > _random.NextSingle())
-			{
-				// TODO: Conditionz
-				_currentPlan = Plan.RUN_AWAY;
-				_targetPosition = new Vector2(_random.NextSingle(), _random.NextSingle()) * World.WorldSize;
+				else
+				{
+					CurrentPlan = Plan.CHILL;
+					_targetPosition = null;
+				}
 			}
 		}
-
-		if (_currentPlan == Plan.RUN_AWAY && _targetPosition is not null && joekel.Position.DistanceTo(_targetPosition.Value) < 100.0f)
+		else
 		{
-			_currentPlan = Plan.CHILL;
-			_targetPosition = null;
+			// Plan the next move
+			(List<Joekel> joekels, List<FoodSource> foodSources) = getAllRelevantEntitiesInPerceptionRange(joekel);
+			
+			// Prio 1: Voedsel is heeeeeeel belangrijk
+			if (CurrentPlan != Plan.EAT && joekel.GetHunger() > trek)
+			{   
+				FoodSource? food = foodSources.MinBy(fs => fs.Position.DistanceTo(joekel.Position) + _random.NextSingle() * 100.0);
+
+				if (food is not null)
+				{
+					// Go to foodsource
+					_targetPosition = food.Position;
+					_targetNode = food;
+					CurrentPlan = Plan.EAT;
+				}
+				else
+				{
+					// TODO: New "looking for food" behaviour?
+				}
+			} else if (CurrentPlan == Plan.CHILL)
+			{
+				// We doen niks, laten we wat gaan den
+				
+				if (oehlalaigheid > _random.NextSingle())
+				{
+					// Maatje vinden
+					Joekel? mate = ClosestJoekel(joekel);
+					if(mate != null){
+						CurrentPlan = Plan.REPRODUCE;
+						_targetPosition = mate.Position;
+						_targetNode = mate;
+					}
+				} else
+				{
+					// Is het te druk?
+					(float drukteIndex, Vector2 target) = _compute_introversie_values(joekel, joekels, introversie);
+					if (_random.NextSingle() < drukteIndex)
+					{
+						CurrentPlan = Plan.RUN_AWAY;
+						_targetPosition = target;
+						_runAwayTicks = 3;
+					}
+				}
+			} 
 		}
+
+		if ((CurrentPlan == Plan.EAT || CurrentPlan == Plan.REPRODUCE) && !GodotObject.IsInstanceValid(_targetNode))
+		{
+			CurrentPlan = Plan.CHILL;
+			_targetNode = null;
+			_targetPosition = null;
+		} 
+		
+		
+		
+
+
+	}
+	private (float drukteIndex, Vector2 target) _compute_introversie_values(Joekel joekel, List<Joekel> joekels, float introversie)
+	{
+		if (joekels.Count <= 1)
+		{
+			return (0, Vector2.Zero);
+		}
+		
+		// Hoe "erg" drukte is
+		float drukteIndex;
+		Vector2 target;
+
+		Vector2 avgLoc = joekels
+			.Select(j => j.Position )
+			.Aggregate(Vector2.Zero, (v1, v2) => v1 + v2) / joekels.Count; 
+		
+		if (introversie > 0)
+		{
+			// Kans op wegbewegen, schaalt met #joekels introversie
+			drukteIndex = 0.2f * (joekels.Count - 1) * introversie;
+
+			Vector2 relPos = (avgLoc - joekel.Position);
+			
+			if (relPos.IsZeroApprox())
+			{
+				return (0, Vector2.Zero);
+			}
+
+			target = -relPos * 1_000;
+		}
+		else
+		{
+			// Kans op drukte opzoeken, meer extraversie en minder joekels maken de kans hoger om andere joekels te zoeken
+			drukteIndex = Math.Abs(introversie) / joekels.Count;
+
+			target = avgLoc;
+		}
+
+
+
+		
+		return (drukteIndex, target);
+
 	}
 
 
-	enum Plan
+	public enum Plan
 	{
 		// Hungery
 		EAT,
@@ -135,9 +223,9 @@ public class Behaviour
 
 	public bool CheckReproduce()
 	{
-		if (_currentPlan == Plan.REPRODUCE)
+		if (CurrentPlan == Plan.REPRODUCE)
 		{
-			_currentPlan = Plan.CHILL;
+			CurrentPlan = Plan.CHILL;
 			return true;
 		} else
 		{
@@ -162,5 +250,39 @@ public class Behaviour
 			}
 		}
 		return closest;
+	}
+ 
+	/**
+	 * Takes returns Joekels and Food in the perception range of the Joekel
+	 */
+	private Tuple<List<Joekel>, List<FoodSource>> getAllRelevantEntitiesInPerceptionRange(Joekel joekel)
+	{
+		PhysicsDirectSpaceState2D space = joekel.GetParent<World>().GetWorld2D().DirectSpaceState;
+		PhysicsShapeQueryParameters2D query = new PhysicsShapeQueryParameters2D();
+		query.CollideWithAreas = true;
+		query.CollideWithBodies = true;
+		query.Shape = new CircleShape2D()
+		{
+			Radius = joekel._perception
+		};
+
+		query.Transform = new Transform2D(0, joekel.Position);
+		Array<Dictionary> result = space.IntersectShape(query, maxResults: 2048);
+		
+		// Extract values from the dict, and only take the Food and Joekels
+		List<Joekel> joekels = result.Select(d => d["collider"])
+			.Where(c => c.Obj is not null)
+			.Select(c => c.Obj)
+			.OfType<Joekel>()
+			.ToList<Joekel>();
+		
+		List<FoodSource> foodsources = result.Select(d => d["collider"])
+			.Select(c => c.Obj)
+			.OfType<Area2dFoodSource>()
+			.Select(afs => afs.GetParent<FoodSource>())
+			.Where(fs => fs != null)
+			.ToList<FoodSource>();
+		
+		return new(joekels, foodsources);
 	}
 }
