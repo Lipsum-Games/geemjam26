@@ -9,7 +9,7 @@ public static class Karaktereigenschappen
 	public static readonly Karaktereigenschap Kachow = new("Kachow", d => Range(40, 200, Sigmoid(d.Row(0))));
 	
 	// Hoen hekel Joekels hebben aan andere Joekels
-	public static readonly Karaktereigenschap Introversie = new("Introversie", d => Sigmoid(d.Row(2) * 2 - 2 * d.Col(1)));
+	public static readonly Karaktereigenschap Introversie = new("Introversie", d => d.Row(2) * 2 - 2 * d.Col(1));
 	
 	// Hoe snel de joekels besluiten dat de honger teveel is en ze moeten vreten
 	public static readonly Karaktereigenschap Trek = new("Trek", d => Sigmoid(d.Col(2) * 2.0f - 2.0f * d.AntiDiag()));
@@ -49,5 +49,7 @@ public static class Karaktereigenschappen
 	public static readonly Karaktereigenschap RanzigheidAuraBereik = new("RanzigheidAuraBereik", d => Range(0, 150, Sigmoid((d[1, 0] + d[2, 1]) / 2 * 3)));
 	public static readonly Karaktereigenschap RanzigheidAuraKracht = new("RanzigheidAuraKracht", d => Relu(d[0, 2]) * 8);
 	public static readonly Karaktereigenschap RanzigheidAuraGeur = new("RanzigheidAuraGeur", d => d[1, 1]);
+
+	public static readonly Karaktereigenschap Perception = new("Perception", d => Range(50, 500, Sigmoid(-2.5f * d[1, 2] + 0.3f * d[0, 0] - 1.2f * d[2, 0])));
 
 }
