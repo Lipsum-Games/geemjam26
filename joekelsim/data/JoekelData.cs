@@ -79,4 +79,8 @@ public struct JoekelData
 
 	// hoe scheef hij springt (radialen)
 	public float Drunkness;
+
+	// drollen per seconde, en hoe ver hij is tot de volgende (0-1)
+	public float Schijtlust;
+	public float SchijtTimer;
 }

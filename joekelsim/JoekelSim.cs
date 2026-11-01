@@ -44,6 +44,7 @@ public partial class JoekelSim : Node2D
         // teken food eerst zodat joekels eroverheen getekent worden
 		MaakFoodSourceTekening();
 		MaakMistTekening();
+		MaakDrolTekening();
 		MaakJoekelTekening();
 		TekenJoekels();
 	}
@@ -62,6 +63,7 @@ public partial class JoekelSim : Node2D
 		// dit moet na BouwJoekelGrid: gebruikt BurenVan (vandaar)
 		Contact((float)delta);
 		Aura((float)delta);
+		Schijten((float)delta);
 		CalculateHunger((float)delta);
 		RuimLegeFoodSourcesOp();
 	}
@@ -71,5 +73,6 @@ public partial class JoekelSim : Node2D
 		TekenJoekels();
 		TekenFoodSources();
 		TekenMist();
+		TekenDrollen();
 	}
 }
