@@ -86,4 +86,7 @@ public struct JoekelData
 
 	// tja dat is wat er staat, mans gotta eat
 	public float Strontvreterij;
+
+	// 0-1: warm in de winter, heet in de zomer
+	public float Vacht;
 }

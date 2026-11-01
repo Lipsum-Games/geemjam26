@@ -46,6 +46,7 @@ public partial class JoekelSim : Node2D
 		MaakDrolHoopTekening();
 		MaakMistTekening();
 		MaakDrolTekening();
+		MaakVachtTekening();
 		MaakJoekelTekening();
 		MaakSeizoenTekening();
 		TekenJoekels();
@@ -77,6 +78,7 @@ public partial class JoekelSim : Node2D
 
 	public override void _Process(double delta)
 	{
+		TekenVachten();
 		TekenJoekels();
 		TekenFoodSources();
 		TekenMist();

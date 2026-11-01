@@ -56,6 +56,8 @@ public partial class WorldTiles : TileMapLayer
 	private static readonly List<WorldTile> The_Tiles = new List<WorldTile>();
 
 	private const int TILE_ATLAS_TILE_SET_SOURCE_ID = 0;
+	// de originele atlas: bij het herladen van de scene is de TileSet dezelfde en al verkleind, dus altijd vanaf het origineel
+	private static Texture2D _origineleAtlas;
 	private readonly FastNoiseLite _noiseSource = initNoiseSource();
 
 	public static WorldTile GetTileAt(Vector2 pos) {
@@ -80,7 +82,8 @@ public partial class WorldTiles : TileMapLayer
 		The_Tiles.Clear();
 		TileSet.TileSize = new Vector2I(WORLD_TILE_SIZE_X, WORLD_TILE_SIZE_Y);
 		var atlas = (TileSetAtlasSource)TileSet.GetSource(0);
-		atlas.Texture = GenerateResizedAtlasTexture(atlas.Texture);
+		_origineleAtlas ??= atlas.Texture;
+		atlas.Texture = GenerateResizedAtlasTexture(_origineleAtlas);
 
 		TileSet.TileSize = new Vector2I(
 			WORLD_TILE_SIZE_X,

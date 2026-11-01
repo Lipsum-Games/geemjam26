@@ -14,7 +14,8 @@ public static class GroepNamen
 
 	public static string Naam(int id, Clusters.Modus modus)
 	{
-		var rng = new Random(id * 7919 + (int)modus * 104729 + 17);
-		return Voor[rng.Next(Voor.Length)] + Stam[rng.Next(Stam.Length)] + Na[rng.Next(Na.Length)];
+		return Willekeurig(new Random(id * 7919 + (int)modus * 104729 + 17));
 	}
+
+	public static string Willekeurig(Random rng) => Voor[rng.Next(Voor.Length)] + Stam[rng.Next(Stam.Length)] + Na[rng.Next(Na.Length)];
 }

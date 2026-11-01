@@ -56,6 +56,7 @@ public partial class JoekelSim
 			Drunkness = Karaktereigenschappen.Drunkness.Van(dna),
 			Schijtlust = Karaktereigenschappen.Schijtlust.Van(dna),
 			Strontvreterij = Karaktereigenschappen.Strontvreterij.Van(dna),
+			Vacht = Karaktereigenschappen.Vacht.Van(dna),
 			SchijtTimer = GD.Randf(),
 			AuraFase = GD.Randf() * (Karaktereigenschappen.AuraPauze.Van(dna) + Karaktereigenschappen.AuraPulsDuur.Van(dna)), // niet iedereen tegelijk pls ;_;
 			AuraTijd = GD.Randf() * AuraInterval, // spreiden: niet alle joekels in hetzelfde frame and gaat perfromance kaduk
