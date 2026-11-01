@@ -42,6 +42,7 @@ public partial class JoekelSim : Node2D
 			SpawnFoodSource(new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y));
 
         // teken food eerst zodat joekels eroverheen getekent worden
+		MaakKlimaatTekening();
 		MaakFoodSourceTekening();
 		MaakDrolHoopTekening();
 		MaakMistTekening();

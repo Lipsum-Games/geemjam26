@@ -9,6 +9,16 @@ public partial class JoekelSim
 	static readonly Color WinterTint = new(0.82f, 0.88f, 1f);
 	static readonly Color ZomerTint = new(1f, 0.93f, 0.8f);
 
+	// schemer over de wereld om de temperature gradient te laten zien
+	void MaakKlimaatTekening()
+	{
+		var g = new Gradient();
+		g.Offsets = [0f, 0.5f, 1f];
+		g.Colors = [new Color(0.55f, 0.75f, 1f, 0.22f), new Color(1, 1, 1, 0f), new Color(1f, 0.6f, 0.3f, 0.22f)];
+		var textuur = new GradientTexture2D { Gradient = g, FillFrom = new Vector2(0, 0), FillTo = new Vector2(0, 1), Width = 4, Height = 256 };
+		AddChild(new Sprite2D { Name = "KlimaatTekening", Texture = textuur, Centered = false, Scale = World.WorldSize / new Vector2(4, 256) });
+	}
+
 	void MaakSeizoenTekening()
 	{
 		// tint de wereld een beetje om de season feel te geven
