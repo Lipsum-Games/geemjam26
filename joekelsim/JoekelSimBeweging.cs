@@ -33,23 +33,23 @@ public partial class JoekelSim
 			if (joekels[i].SpringTimer <= 0)
 			{
 				var (richting, kracht) = KiesSprong(i);
-				joekels[i].Snelheid += Vector2.FromAngle(richting) * kracht * joekels[i].Kachow;
+				joekels[i].Velocity += Vector2.FromAngle(richting) * kracht * joekels[i].Kachow;
 				joekels[i].SpringTimer = SpringInterval;
 			}
 
 		    // de afremming
-			joekels[i].Snelheid *= afremming;
+			joekels[i].Velocity *= afremming;
 
             // als rustdrempel, zet stil, anders gewoon bewegen die hap
-			if (joekels[i].Snelheid.Length() > RustDrempel)
-				joekels[i].Positie += joekels[i].Snelheid * dt;
+			if (joekels[i].Velocity.Length() > RustDrempel)
+				joekels[i].Position += joekels[i].Velocity * dt;
 			else
-				joekels[i].Snelheid = Vector2.Zero;
+				joekels[i].Velocity = Vector2.Zero;
 
 			// muren: na het bewegen terugzetten binnen de wereld, (de straal van de joekel afstand van de muur). Stuiter is weg, veel simpeler zo.
 			float r = joekels[i].Chonkheid;
 			// gewoon clampen binnen de muren, ezpz
-			joekels[i].Positie = joekels[i].Positie.Clamp(new Vector2(r, r), World.WorldSize - new Vector2(r, r));
+			joekels[i].Position = joekels[i].Position.Clamp(new Vector2(r, r), World.WorldSize - new Vector2(r, r));
 		}
 	}
 }

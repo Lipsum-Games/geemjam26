@@ -39,7 +39,7 @@ public partial class JoekelSim
 				rotation: 0,
 				scale: new Vector2(joekels[i].Chonkheid, joekels[i].Chonkheid),
 				skew: 0,
-				origin: joekels[i].Positie));
+				origin: joekels[i].Position));
 		}
 	}
 
@@ -60,7 +60,7 @@ public partial class JoekelSim
 			CustomAabb = new Aabb(new Vector3(-20, -20, 0), new Vector3(World.WorldSize.X + 40, World.WorldSize.Y + 40, 0)),
 		};
 		// Alles groen
-		Color groen = new Color(0.2f, 0.7f, 0.2f)
+		Color groen = new Color(0.2f, 0.7f, 0.2f);
 		AddChild(new MultiMeshInstance2D { Name = "FoodSourceTekening", Multimesh = foodSourceMultiMesh, Modulate = groen });
 	}
 

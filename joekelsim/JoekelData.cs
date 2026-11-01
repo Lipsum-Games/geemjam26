@@ -5,10 +5,10 @@ using Godot;
 public struct JoekelData
 {
 	// dit is de array van joekelposities. i is dus de index van de joekel
-	public Vector2 Positie;
+	public Vector2 Position;
 
 	// snelheid van elke joekel in pixels per seconde voor de [x, y] axis.
-	public Vector2 Snelheid;
+	public Vector2 Velocity;
 
 	// hoeveel seconden tot de volgende sprong van elke joekel
 	public float SpringTimer;

@@ -13,7 +13,7 @@ public partial class JoekelSim
 		// struct op de plaats van de joekel
 		joekels[momenteelLevendeJoekels] = new JoekelData
 		{
-			Positie = positie,
+			Position = positie,
 			// willekeurige start, anders springen ze allemaal in dezelfde tick
 			SpringTimer = GD.Randf() * SpringInterval,
 
