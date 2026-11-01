@@ -45,6 +45,10 @@ public partial class JoekelSim
 			ChillSpeed = Karaktereigenschappen.ChillSpeed.Van(dna),
 			Heading = GD.Randf() * Mathf.Tau,
 			Trek = Karaktereigenschappen.Trek.Van(dna) * (HungerMax - HungerMin) + HungerMin,
+			// Kleur based on DNA
+			Kleur0 = new Color((dna[0, 0] + 1) / 2, (dna[0, 1] + 1) / 2, (dna[0, 2] + 1) / 2),
+			Kleur1 = new Color((dna[1, 0] + 1) / 2, (dna[1, 1] + 1) / 2, (dna[1, 2] + 1) / 2),
+			Kleur2 = new Color((dna[2, 0] + 1) / 2, (dna[2, 1] + 1) / 2, (dna[2, 2] + 1) / 2),
 		};
 
 		// meteen in de grid plaatsen, zodat wie hierna geboren wordt hem al ziet
