@@ -3,7 +3,7 @@ using System;
 
 public partial class SimKnopjes : HBoxContainer
 {
-	static readonly float[] Snelheden = { 1, 2, 4, 8, 16, 32, 64 };
+	static readonly float[] Snelheden = { 1, 2, 4, 8, 16 };
 	int _stap;
 	Button _pauze;
 	Label _snelheid;
@@ -11,7 +11,8 @@ public partial class SimKnopjes : HBoxContainer
 	public override void _Ready()
 	{
 		ProcessMode = ProcessModeEnum.Always;
-		Engine.MaxPhysicsStepsPerFrame = 128;
+
+		Engine.MaxPhysicsStepsPerFrame = 8;
 
 		_pauze = Knop("Pauze", TogglePauze);
 		Knop("<", () => ZetStap(_stap - 1));
@@ -34,11 +35,34 @@ public partial class SimKnopjes : HBoxContainer
 		_pauze.Text = GetTree().Paused ? "Verder" : "Pauze";
 	}
 
+	// Godot's TimeScale alleen maakt elke physics-stap groter (bij 64x: 2 sim-seconden per stap), dan gedraagt de sim
+	// zich anders. Daarom schalen we het aantal stappen mee: elke stap blijft 1/basis sim-seconde, er komen er
+	// gewoon meer per echte seconde. Kost dus echt k× zoveel rekenwerk; haalt de CPU het niet, dan loopt de sim
+	// langzamer dan de knop zegt, maar wel correct.
+	int _basisTicks;
+
 	void ZetStap(int stap)
 	{
+		if (_basisTicks == 0) _basisTicks = Engine.PhysicsTicksPerSecond;
 		_stap = Mathf.Clamp(stap, 0, Snelheden.Length - 1);
 		Engine.TimeScale = Snelheden[_stap];
+		Engine.PhysicsTicksPerSecond = _basisTicks * (int)Snelheden[_stap];
 		_snelheid.Text = Snelheden[_stap] + "x";
+	}
+
+	// eerlijk label: toon de echt gehaalde snelheid als de CPU het niet bijhoudt, bv. "64x (≈16x)"
+	ulong _meetStart, _meetFrames;
+	public override void _Process(double delta)
+	{
+		if (_basisTicks == 0 || GetTree().Paused) { _meetStart = 0; return; }
+		ulong nu = Time.GetTicksMsec(), frames = Engine.GetPhysicsFrames();
+		if (_meetStart == 0) { _meetStart = nu; _meetFrames = frames; return; }
+		double echt = (nu - _meetStart) / 1000.0;
+		if (echt < 0.5) return;
+		double gehaald = (frames - _meetFrames) / (double)_basisTicks / echt;
+		float doel = Snelheden[_stap];
+		_snelheid.Text = gehaald < doel * 0.9 ? $"{doel}x (≈{gehaald:0}x)" : $"{doel}x";
+		_meetStart = nu; _meetFrames = frames;
 	}
 
 	public override void _UnhandledInput(InputEvent e)

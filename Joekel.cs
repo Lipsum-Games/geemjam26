@@ -159,6 +159,12 @@ public partial class Joekel : CharacterBody2D
 	private PhysicsShapeQueryParameters2D _auraVraag;
 	private float _auraTijd;
 
+	// performance: contact (aanval/voortplanten) niet elke stap maar elke ContactElkeNStappen, met de opgespaarde tijd als dt.
+	[Export] public int ContactElkeNStappen = 4;
+	private int _contactTeller;
+	private float _contactTijd;
+	private float _laatsteRotatie = float.NaN;
+
 	private void RanzigeAura(float dt)
 	{
 		_auraVraag.Transform = new Transform2D(0, GlobalPosition);
@@ -225,6 +231,13 @@ public partial class Joekel : CharacterBody2D
 		// Zet de velocity op nul als we al langzaam genoeg gaan.
 		else Velocity = Vector2.Zero;
 
+        // contact niet elke frame
+		_contactTijd += dt;
+		bool doeContact = ++_contactTeller >= ContactElkeNStappen;
+		float contactDt = _contactTijd;
+		if (doeContact) { _contactTeller = 0; _contactTijd = 0; }
+
+		if (doeContact)
 		foreach (var body in _detectionArea.GetOverlappingBodies())
 		{
 			if (body is Joekel ander && ander != this)
@@ -233,9 +246,9 @@ public partial class Joekel : CharacterBody2D
 					Reproduce(ander);
 				} else if (Dna.Similarity(Dna, ander.Dna) > 6){
 					// ATTACK
-					// scale de hunger per dt en 60 fps game
-					ander._huidigeGezonheid -= _chonkheid * 60f * dt;
-					_hunger -= Math.Max((_vleeslustigheid - 0.5f), 0) * 60f * dt;
+					// scale de hunger per dt en 60 fps game (contactDt = tijd sinds de vorige contact-check)
+					ander._huidigeGezonheid -= _chonkheid * 60f * contactDt;
+					_hunger -= Math.Max((_vleeslustigheid - 0.5f), 0) * 60f * contactDt;
 				}
 				continue;
 				// hier kan je op de andere joekel leuke code toepassen voor interacties.
@@ -256,7 +269,9 @@ public partial class Joekel : CharacterBody2D
 		}
 
 		float t = 1 - _springTimer / SpringInterval;
-		Rotation = Mathf.LerpAngle(_heading, _volgendeHeading, Mathf.SmoothStep(0.7f, 1f, t));
+		// alleen zetten als hij verandert (draaien gebeurt alleen vlak voor een sprong): scheelt een engine-aanroep per stap
+		float rotatie = Mathf.LerpAngle(_heading, _volgendeHeading, Mathf.SmoothStep(0.7f, 1f, t));
+		if (rotatie != _laatsteRotatie) { Rotation = rotatie; _laatsteRotatie = rotatie; }
 
 		CalculateHunger(delta);
 	}
@@ -331,7 +346,7 @@ public partial class Joekel : CharacterBody2D
 			_huidigeGezonheid = Mathf.Min(_huidigeGezonheid, _maximaleGezondheid);
 			_hunger -= eating;
 		}
-		_hunger = Mathf.Min(_hunger + Karaktereigenschappen.Chonkheid.Van(Dna) * (float)delta / 100 , HungerMax);
+		_hunger = Mathf.Min(_hunger + _chonkheid * (float)delta / 100 , HungerMax);
 
 		float honger = (_hunger - HungerMin) / (HungerMax - HungerMin);
 		if(honger>0.7f){
