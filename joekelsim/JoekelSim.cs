@@ -33,9 +33,10 @@ public partial class JoekelSim : Node2D
 
 	public override void _Ready()
 	{
+		BouwJoekelGrid(); // eerst een leeg grid (alles -1): SpawnJoekel kijkt in het grid of een plek vrij is
 		for (int i = 0; i < StarterJoekels; i++)
 			// plaats die joekeltjes lekker random!
-			MaakJoekel(new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y), Dna.Random());
+			SpawnJoekel(new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y), Dna.Random());
 		for (int f = 0; f < StarterFoodSources; f++)
 		    // en ook maar lekker random dat eten plaatsen!
 			SpawnFoodSource(new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y));
