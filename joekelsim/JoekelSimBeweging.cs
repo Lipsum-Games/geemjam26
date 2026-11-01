@@ -26,6 +26,7 @@ public partial class JoekelSim
 			joekels[i].SpringTimer -= dt;
 			if (joekels[i].SpringTimer <= 0)
 			{
+				joekels[i].Heading = richting;
 				joekels[i].Velocity += Vector2.FromAngle(richting) * kracht * joekels[i].Kachow;
 				joekels[i].SpringTimer = SpringInterval;
 			}

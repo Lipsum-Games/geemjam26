@@ -55,4 +55,6 @@ public struct JoekelData
 	public float Introversie;
 	public float Oehlalalaigheid;
 	public int RunAwayTicks;
+	public float Heading;    // richting van de laatste sprong
+	public float ChillSpeed;
 }

@@ -32,7 +32,7 @@ public partial class JoekelSim
 
 		// By default chillen, nu ff standaard klein sprongetje naar rechts.
 		if (joekels[i].CurrentPlan == Behaviour.Plan.CHILL)
-			return (0f, 0.1f);
+			return (joekels[i].Heading + (GD.Randf() - 0.5f) * 0.1f, joekels[i].ChillSpeed);
 
         // Als er een doel is, spring ernaartoe.
 		if (joekels[i].TargetPosition is Vector2 doel)
@@ -96,25 +96,25 @@ public partial class JoekelSim
 			{
 				// We doen niks, laten we wat gaan den
 
-				if (j.Oehlalalaigheid > GD.Randf())
+				(float drukteIndex, Vector2 target) = _compute_introversie_values(i);
+
+				// Is het te druk?
+				if (drukteIndex > GD.Randf())
+				{
+					j.CurrentPlan = Behaviour.Plan.RUN_AWAY;
+					j.TargetPosition = target;
+					j.RunAwayTicks = 3;
+				}
+				else if (j.Oehlalalaigheid > GD.Randf())
 				{
 					// Maatje vinden
 					int mate = ClosestJoekel(i);
-					if(mate >= 0){
+					if (mate >= 0)
+					{
 						j.CurrentPlan = Behaviour.Plan.REPRODUCE;
 						j.TargetPosition = joekels[mate].Position;
 						j.TargetId = joekels[mate].Id;
 						j.TargetGok = mate;
-					}
-				} else
-				{
-					// Is het te druk?
-					(float drukteIndex, Vector2 target) = _compute_introversie_values(i);
-					if (GD.Randf() < drukteIndex)
-					{
-						j.CurrentPlan = Behaviour.Plan.RUN_AWAY;
-						j.TargetPosition = target;
-						j.RunAwayTicks = 3;
 					}
 				}
 			}
@@ -177,7 +177,7 @@ public partial class JoekelSim
 		if (joekels[i].Introversie > 0)
 		{
 			// Kans op wegbewegen, schaalt met #joekels introversie
-			drukteIndex = 0.2f * (count - 1) * joekels[i].Introversie;
+			drukteIndex = 0.5f * (count - 1.0f) * joekels[i].Introversie;
 
 			Vector2 relPos = (avgLoc - joekels[i].Position);
 

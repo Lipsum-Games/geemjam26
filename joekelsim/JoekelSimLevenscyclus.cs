@@ -41,6 +41,8 @@ public partial class JoekelSim
 			Perception = Karaktereigenschappen.Perception.Van(dna),
 			Introversie = Karaktereigenschappen.Introversie.Van(dna),
 			Oehlalalaigheid = Karaktereigenschappen.Oehlalalaigheid.Van(dna),
+			ChillSpeed = Karaktereigenschappen.ChillSpeed.Van(dna),
+			Heading = GD.Randf() * Mathf.Tau,
 			Trek = Karaktereigenschappen.Trek.Van(dna) * (HungerMax - HungerMin) + HungerMin,
 		};
 		momenteelLevendeJoekels++;
