@@ -43,10 +43,11 @@ public partial class JoekelSim : Node2D
 
 	public override void _PhysicsProcess(double delta)
 	{
+		RuimDodenOp();
 		UpdateVoedselTimer((float)delta);
 		BeweegJoekels((float)delta);
 		CalculateHunger((float)delta);
-		RuimDodenOp();
+		RuimLegeFoodSourcesOp();
 	}
 
 	public override void _Process(double delta)
