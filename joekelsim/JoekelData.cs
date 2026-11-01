@@ -4,6 +4,9 @@ using Godot;
 // Nieuwe eigenschap voor een joekel? HIERRR toevoegen.
 public struct JoekelData
 {
+	// unique id that never changes
+    public int Id;
+
 	// dit is de array van joekelposities. i is dus de index van de joekel
 	public Vector2 Position;
 
