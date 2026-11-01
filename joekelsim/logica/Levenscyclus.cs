@@ -33,7 +33,8 @@ public partial class JoekelSim
 
 			// Hier worden de eigenschappen initialized uit DNA.
   			Dna = dna,
-			Kachow = Karaktereigenschappen.Kachow.Van(dna),
+			// dikker dan 10 = trager: bij 20 chonk de helft kachow
+			Kachow = Karaktereigenschappen.Kachow.Van(dna) * Mathf.Min(1, 10 / Karaktereigenschappen.Chonkheid.Van(dna)),
 			Chonkheid = Karaktereigenschappen.Chonkheid.Van(dna),
 			MaximaleGezondheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(dna),
 			HuidigeGezonheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(dna), // begint vol
@@ -64,6 +65,7 @@ public partial class JoekelSim
 		int cel = CelVan(positie);
 		volgendeJoekelInCel[momenteelLevendeJoekels] = celEersteJoekel[cel];
 		celEersteJoekel[cel] = momenteelLevendeJoekels;
+		grootsteChonkheid = Mathf.Max(grootsteChonkheid, joekels[momenteelLevendeJoekels].Chonkheid);
 
 		momenteelLevendeJoekels++;
 		return true;
