@@ -6,7 +6,7 @@ public partial class JoekelSim
 	// Maak een nieuwe joekel op deze plek. Hij komt achteraan in de array (op plek momenteelLevendeJoekels).
 	// Als de array vol is, dan gebeurt er niets.
 	// Geeft true terug als er echt een joekel is gemaakt
-	bool MaakJoekel(Vector2 positie)
+	bool MaakJoekel(Vector2 positie, Dna dna)
 	{
 		if (momenteelLevendeJoekels >= MaxJoekels) return false;
 
@@ -16,6 +16,11 @@ public partial class JoekelSim
 			Positie = positie,
 			// willekeurige start, anders springen ze allemaal in dezelfde tick
 			SpringTimer = GD.Randf() * SpringInterval,
+
+			// Hier worden de eigenschappen initialized uit DNA.
+  			Dna = dna,
+			Kachow = Karaktereigenschappen.Kachow.Van(dna),
+			Straal = Karaktereigenschappen.Chonkheid.Van(dna),
 		};
 		momenteelLevendeJoekels++;
 		return true;

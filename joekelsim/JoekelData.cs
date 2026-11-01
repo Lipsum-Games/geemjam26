@@ -12,4 +12,13 @@ public struct JoekelData
 
 	// hoeveel seconden tot de volgende sprong van elke joekel
 	public float SpringTimer;
+
+	// het DNA (3x3 matrix van genen).
+	public Dna Dna;
+
+	// sprongkracht in px/s
+	public float Kachow;
+
+	// straal in px. Voor het tekenen en de muren (obviously)
+	public float Chonkheid;
 }

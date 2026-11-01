@@ -22,7 +22,7 @@ public partial class JoekelSim : Node2D
 	{
 		for (int i = 0; i < StarterJoekels; i++)
 			// plaats die joekeltjes lekker random!
-			MaakJoekel(new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y));
+			MaakJoekel(new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y), Dna.Random());
 
 		MaakJoekelTekening();
 		TekenJoekels();

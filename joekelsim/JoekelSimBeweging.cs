@@ -11,12 +11,6 @@ public partial class JoekelSim
 
 	// om de hoeveel tijd de joekel sprint. voor nu 2.6 fixed.
 	const float SpringInterval = 2.6f;
-	// TIJDELIJK een fixed kachow tot dna erin zit.
-	const float TijdelijkeKachow = 120f;
-
-	// TIJDELIJK: straal van de joekel komt van chonkheid van DNA later.
-	const float TijdelijkeStraal = 10f;
-
 	// welke kant op en hoe hard springt joekel i? Hier komt later behaviour.
 	// TIJDELIJK: willekeurige richting, volle kracht.
 	(float richting, float kracht) KiesSprong(int i)
@@ -39,7 +33,7 @@ public partial class JoekelSim
 			if (joekels[i].SpringTimer <= 0)
 			{
 				var (richting, kracht) = KiesSprong(i);
-				joekels[i].Snelheid += Vector2.FromAngle(richting) * kracht * TijdelijkeKachow;
+				joekels[i].Snelheid += Vector2.FromAngle(richting) * kracht * joekels[i].Kachow;
 				joekels[i].SpringTimer = SpringInterval;
 			}
 
@@ -53,7 +47,7 @@ public partial class JoekelSim
 				joekels[i].Snelheid = Vector2.Zero;
 
 			// muren: na het bewegen terugzetten binnen de wereld, (de straal van de joekel afstand van de muur). Stuiter is weg, veel simpeler zo.
-			float r = TijdelijkeStraal;
+			float r = joekels[i].Chonkheid;
 			// gewoon clampen binnen de muren, ezpz
 			joekels[i].Positie = joekels[i].Positie.Clamp(new Vector2(r, r), World.WorldSize - new Vector2(r, r));
 		}
