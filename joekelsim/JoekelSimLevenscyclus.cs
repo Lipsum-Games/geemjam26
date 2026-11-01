@@ -47,7 +47,7 @@ public partial class JoekelSim
 		return true;
 	}
 
-	void VerwijderJoekel(int i)o
+	void VerwijderJoekel(int i)
 	{
 		if (i < 0 || i >= momenteelLevendeJoekels) { GD.PushError($"VerwijderJoekel({i}), maar er leven er maar {momenteelLevendeJoekels}"); return; }
 		momenteelLevendeJoekels--;

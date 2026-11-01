@@ -52,6 +52,9 @@ public static class Karaktereigenschappen
 	public static readonly Karaktereigenschap RanzigheidAuraKracht = new("RanzigheidAuraKracht", d => Relu(d[0, 2]) * 8);
 	public static readonly Karaktereigenschap RanzigheidAuraGeur = new("RanzigheidAuraGeur", d => d[1, 1]);
 
-	public static readonly Karaktereigenschap Perception = new("Perception", d => Range(50, 500, Sigmoid(-2.5f * d[1, 2] + 0.3f * d[0, 0] - 1.2f * d[2, 0])));
+	public static readonly Karaktereigenschap Perception = new("Perception", d => Range(100, 300, Sigmoid(-2.5f * d[1, 2] + 0.3f * d[0, 0] - 1.2f * d[2, 0])));
+	
+	public static readonly Karaktereigenschap ChillSpeed = new("ChillSpeed", d =>  Sigmoid(d.Col(2) - 3 * d[1,1]));
+
 
 }
