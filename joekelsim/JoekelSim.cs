@@ -52,11 +52,11 @@ public partial class JoekelSim : Node2D
 		// botsen gebruikt BurenVan, en na RuimDodenOp kloppen de indexen in het oude grid niet meer, dus we doen dit nu ff 2x (kan ook 1x maybe maar voor nu is het fine)
 		BouwJoekelGrid();
 		UpdateVoedselTimer((float)delta);
+		// voedsel grid moet na de timer maar wel voor het eten anders kunnen we nabiijheid niet checken
+		BouwFoodSourceGrid();
 		BeweegJoekels((float)delta);
 		// het grid moet wel elke tick geupdate worden. is snel hoor
 		BouwJoekelGrid();
-		// voedsel grid moet na de timer maar wel voor het eten anders kunnen we nabiijheid niet checken
-		BouwFoodSourceGrid();
 		// dit moet na BouwJoekelGrid: gebruikt BurenVan (vandaar)
 		Contact((float)delta);
 		CalculateHunger((float)delta);
