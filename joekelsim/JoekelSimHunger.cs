@@ -11,8 +11,19 @@ public partial class JoekelSim
 	{
 		for (int i = 0; i < momenteelLevendeJoekels; i++)
 		{
+
+            // als we voedsel aanraken (een valida f index voor voedsel)
+			int f = RaaktFoodSource(i);
+			if (f >= 0)
+			{
+			    float maximaalWilOfKanEten = (joekels[i].Hunger - HungerMin) * Mathf.Max((joekels[i].Vleeslustigheid - 0.5f) * -1, 0);
+				float eating = Eat(f, dt, maximaalWilOfKanEten);
+				joekels[i].HuidigeGezonheid = Mathf.Min(joekels[i].HuidigeGezonheid + 2f * eating, joekels[i].MaximaleGezondheid);
+				joekels[i].Hunger -= eating;
+			}
+
 			// honger loopt op met de tijd, dikke natuurlijk sneller
-			float hongerOploopFactor = joekels[i].Chonkheid * dt / 100
+			float hongerOploopFactor = joekels[i].Chonkheid * dt / 100;
 			joekels[i].Hunger = Mathf.Min(joekels[i].Hunger + hongerOploopFactor, HungerMax);
 
 			// honger van 0 tot 1, als het boven 0.7 gaat gaat er gezondheid af, hoe hongeriger hoe harder (exponentially)

@@ -24,6 +24,7 @@ public partial class JoekelSim
 			MaximaleGezondheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(dna),
 			HuidigeGezonheid = Karaktereigenschappen.DoodgaansSnelheidEnAlgemeneGezondheid.Van(dna), // begint vol
 			Hunger = (HungerMin + HungerMax) / 2, // begint half hongerig
+			Vleeslustigheid = Karaktereigenschappen.Vleeslustigheid.Van(dna),
 		};
 		momenteelLevendeJoekels++;
 		return true;
