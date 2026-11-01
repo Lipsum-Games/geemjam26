@@ -65,6 +65,7 @@ public partial class JoekelSim : Node2D
 		Contact((float)delta);
 		Aura((float)delta);
 		VergaDrolHopen((float)delta);
+		TrekDrolHopenAan((float)delta);
 		Schijten((float)delta);
 		Stank((float)delta);
 		EetDrolHopen((float)delta);

@@ -8,7 +8,7 @@ public partial class JoekelSim
 	const float HoopSamenvoegStraal = 60f;
 
 	// elke seconde vergaat dit deel van elke hoop
-	const float HoopVergaanPerSeconde = 0.01f;
+	const float HoopVergaanPerSeconde = 0.02f;
 
 	DrolHoopData[] drolHopen = new DrolHoopData[MaxDrolHopen];
 	int momenteelDrolHopen;
@@ -49,6 +49,55 @@ public partial class JoekelSim
 	}
 
 	// strontvreters die een hoop aanraken eten ervan.
+	// zwaartekracht: zwaardere hopen trekken lichtere hopen aan, en overlappende hopen smelten samen
+	const float ZwaartekrachtInterval = 0.5f;
+	const float ZwaartekrachtBereik = 128f; // 2 vakjes ver, dan blijft het goedkoop. meer wordt duur man man man
+	const float ZwaartekrachtSterkte = 10f; // px per seconde, maal hoeveelheid van de zware, gedeeld door afstand
+	const float MaxHoopSnelheid = 50f;
+	float zwaartekrachtTimer;
+
+	void TrekDrolHopenAan(float dt)
+	{
+		zwaartekrachtTimer += dt;
+		if (zwaartekrachtTimer < ZwaartekrachtInterval) return;
+		float stapDt = zwaartekrachtTimer;
+		zwaartekrachtTimer = 0;
+
+		int ringen = (int)Mathf.Ceil(ZwaartekrachtBereik / CelGrootte);
+		for (int h = 0; h < momenteelDrolHopen; h++)
+		{
+			if (drolHopen[h].Hoeveelheid < 0.5f) continue; // al opgeslokt
+			Vector2 trek = Vector2.Zero;
+			int cel = CelVan(drolHopen[h].Position);
+			int celX = cel % GridBreedte, celY = cel / GridBreedte;
+			for (int y = celY - ringen; y <= celY + ringen; y++)
+				for (int x = celX - ringen; x <= celX + ringen; x++)
+				{
+					if (x < 0 || y < 0 || x >= GridBreedte || y >= GridHoogte) continue;
+					for (int z = celEersteDrolHoop[y * GridBreedte + x]; z >= 0; z = volgendeDrolHoopInCel[z])
+					{
+						// alleen zwaardere hopen trekken aan mij
+						if (z == h || drolHopen[z].Hoeveelheid <= drolHopen[h].Hoeveelheid) continue;
+						Vector2 naarZwaar = drolHopen[z].Position - drolHopen[h].Position;
+						float afstand = naarZwaar.Length();
+						if (afstand > ZwaartekrachtBereik) continue;
+
+						// raken ze elkaar? dan opgeslokt
+						float raak = DrolStraal * (Mathf.Sqrt(drolHopen[z].Hoeveelheid) + Mathf.Sqrt(drolHopen[h].Hoeveelheid));
+						if (afstand < raak)
+						{
+							drolHopen[z].Hoeveelheid += drolHopen[h].Hoeveelheid;
+							drolHopen[h].Hoeveelheid = 0;
+							goto volgende;
+						}
+						trek += naarZwaar / afstand * ZwaartekrachtSterkte * drolHopen[z].Hoeveelheid / afstand;
+					}
+				}
+			drolHopen[h].Position += trek.LimitLength(MaxHoopSnelheid) * stapDt;
+			volgende:;
+		}
+	}
+
 	void EetDrolHopen(float dt)
 	{
 		for (int i = 0; i < momenteelLevendeJoekels; i++)

@@ -45,6 +45,10 @@ public partial class JoekelSim
 			drollen[d].Resterend -= DrolSnelheid * dt;
 			bool weg = drollen[d].Resterend <= 0;
 
+			// schiet niet door muren heen
+			Vector2 binnen = drollen[d].Position.Clamp(Vector2.Zero, World.WorldSize);
+			if (binnen != drollen[d].Position) { drollen[d].Position = binnen; weg = true; }
+
 			int aantal = weg ? 0 : BurenRond(drollen[d].Position, DrolStraal + grootsteChonkheid);
 			for (int k = 0; k < aantal; k++)
 			{
