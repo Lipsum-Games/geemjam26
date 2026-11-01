@@ -32,7 +32,7 @@ public partial class JoekelSim
 	void TekenSeizoen()
 	{
 		float temperatuur = Temperatuur;
-		seizoenLabel.Text = $"{Seizoen} · {temperatuur:0}°C · jaar {Jaar}";
+		seizoenLabel.Text = $"{Seizoen} · {temperatuur:0}°C (noord {temperatuur - NoordZuidVerschil:0}, zuid {temperatuur + NoordZuidVerschil:0}) · jaar {Jaar}";
 		jaarBalk.Value = JaarFase;
 
 		// van koud (0) naar warm (1): eerst winterblauw naar wit, dan wit naar zomerwarm

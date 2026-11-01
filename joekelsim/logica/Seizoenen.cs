@@ -42,7 +42,7 @@ public partial class JoekelSim
 
 	float KouHonger(int i)
 	{
-		float kou = Mathf.Clamp((KouGrens - Temperatuur) / (KouGrens - KoudsteTemperatuur), 0, 1);
+		float kou = Mathf.Clamp((KouGrens - TemperatuurBij(joekels[i].Position)) / (KouGrens - KoudsteTemperatuur), 0, 1);
 		return MaxKouHonger * kou * (1 - Isolatie(i));
 	}
 
@@ -52,9 +52,14 @@ public partial class JoekelSim
 
 	float HitteHonger(int i)
 	{
-		float hitte = Mathf.Clamp((Temperatuur - HitteGrens) / (WarmsteTemperatuur - HitteGrens), 0, 1);
+		float hitte = Mathf.Clamp((TemperatuurBij(joekels[i].Position) - HitteGrens) / (WarmsteTemperatuur - HitteGrens), 0, 1);
 		return MaxHitteHonger * hitte * Isolatie(i);
 	}
+
+	// klimaat: het noorden (boven) is kouder, het zuiden warmer.
+	const float NoordZuidVerschil = 15f; // graden kouder helemaal boven, warmer helemaal onder
+
+	float TemperatuurBij(Vector2 positie) => Temperatuur + NoordZuidVerschil * (positie.Y / World.WorldSize.Y * 2 - 1);
 
 	void UpdateSeizoen(float dt) => jaarTijd += dt;
 }
