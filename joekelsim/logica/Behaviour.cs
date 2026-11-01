@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
 using Godot;
-using Geemjam26ShipsumEvolve.genetica;
 
 // Behaviour: wat wil een joekel?
 public partial class JoekelSim
@@ -13,7 +10,7 @@ public partial class JoekelSim
 
 		BesluitPlan(i);
 
-		if (joekels[i].CurrentPlan == Behaviour.Plan.REPRODUCE)
+		if (joekels[i].CurrentPlan == Plan.REPRODUCE)
 		{
 			joekels[i].TargetGok = IndexVanJoekel(joekels[i].TargetId, joekels[i].TargetGok);
 			if (joekels[i].TargetGok >= 0)
@@ -27,7 +24,7 @@ public partial class JoekelSim
 		}
 
 		// By default chillen, nu ff standaard klein sprongetje naar rechts.
-		if (joekels[i].CurrentPlan == Behaviour.Plan.CHILL)
+		if (joekels[i].CurrentPlan == Plan.CHILL)
 			return (joekels[i].Heading + (GD.Randf() - 0.5f) * 0.1f, joekels[i].ChillSpeed);
 
         // Als er een doel is, spring ernaartoe.
@@ -48,13 +45,13 @@ public partial class JoekelSim
 		ref JoekelData j = ref joekels[i];
 
 		// Kijk eerst of we in een huidig plan zitten
-		if (j.CurrentPlan is Behaviour.Plan.EAT or Behaviour.Plan.HUNT || (j.CurrentPlan != Behaviour.Plan.CHILL && j.Hunger < j.Trek))
+		if (j.CurrentPlan is Plan.EAT or Plan.HUNT || (j.CurrentPlan != Plan.CHILL && j.Hunger < j.Trek))
 		{
 			// No need to act, only handle "end" conditions
-			if (j.CurrentPlan is Behaviour.Plan.EAT or Behaviour.Plan.HUNT && j.Hunger < HungerMin * 1.1f)
+			if (j.CurrentPlan is Plan.EAT or Plan.HUNT && j.Hunger < HungerMin * 1.1f)
 			{
 				StopPlan(ref j);
-			} else if (j.CurrentPlan == Behaviour.Plan.RUN_AWAY)
+			} else if (j.CurrentPlan == Plan.RUN_AWAY)
 			{
 				if (j.RunAwayTicks > 0)
 				{
@@ -62,7 +59,7 @@ public partial class JoekelSim
 				}
 				else
 				{
-					j.CurrentPlan = Behaviour.Plan.CHILL;
+					j.CurrentPlan = Plan.CHILL;
 					j.TargetPosition = null;
 				}
 			}
@@ -72,7 +69,7 @@ public partial class JoekelSim
 			// Plan the next move
 
 			// Prio 1: Voedsel is heeeeeeel belangrijk
-			if (j.CurrentPlan is not (Behaviour.Plan.EAT or Behaviour.Plan.HUNT) && j.Hunger > j.Trek)
+			if (j.CurrentPlan is not (Plan.EAT or Plan.HUNT) && j.Hunger > j.Trek)
 			{
 				if (j.Vleeslustigheid + 0.2f * (GD.Randf() - 0.5) > 0.0)
 				{
@@ -80,7 +77,7 @@ public partial class JoekelSim
 					int prooi = BesteProoi(i, j);
 					if (prooi >= 0)
 					{
-						j.CurrentPlan = Behaviour.Plan.HUNT;
+						j.CurrentPlan = Plan.HUNT;
 						j.TargetPosition = joekels[prooi].Position;
 						j.TargetId = joekels[prooi].Id;
 						j.TargetGok = prooi;
@@ -96,10 +93,10 @@ public partial class JoekelSim
 						j.TargetPosition = foodSources[f].Position;
 						j.TargetId = foodSources[f].Id;
 						j.TargetGok = f;
-						j.CurrentPlan = Behaviour.Plan.EAT;
+						j.CurrentPlan = Plan.EAT;
 					}
 				}
-			} else if (j.CurrentPlan == Behaviour.Plan.CHILL)
+			} else if (j.CurrentPlan == Plan.CHILL)
 			{
 				// We doen niks, laten we wat gaan den
 
@@ -108,7 +105,7 @@ public partial class JoekelSim
 				// Is het te druk?
 				if (drukteIndex > GD.Randf())
 				{
-					j.CurrentPlan = Behaviour.Plan.RUN_AWAY;
+					j.CurrentPlan = Plan.RUN_AWAY;
 					j.TargetPosition = target;
 					j.RunAwayTicks = 3;
 				}
@@ -118,7 +115,7 @@ public partial class JoekelSim
 					int mate = ClosestJoekel(i);
 					if (mate >= 0)
 					{
-						j.CurrentPlan = Behaviour.Plan.REPRODUCE;
+						j.CurrentPlan = Plan.REPRODUCE;
 						j.TargetPosition = joekels[mate].Position;
 						j.TargetId = joekels[mate].Id;
 						j.TargetGok = mate;
@@ -127,12 +124,12 @@ public partial class JoekelSim
 			}
 		}
 
-		if (j.CurrentPlan == Behaviour.Plan.EAT)
+		if (j.CurrentPlan == Plan.EAT)
 		{
 			j.TargetGok = IndexVanFoodSource(j.TargetId, j.TargetGok);
 			if (j.TargetGok < 0 || foodSources[j.TargetGok].ResourceCount <= 0) StopPlan(ref j);
 		}
-		if (j.CurrentPlan is Behaviour.Plan.REPRODUCE or Behaviour.Plan.HUNT)
+		if (j.CurrentPlan is Plan.REPRODUCE or Plan.HUNT)
 		{
 			j.TargetGok = IndexVanJoekel(j.TargetId, j.TargetGok);
 			if (j.TargetGok < 0) StopPlan(ref j);
@@ -176,7 +173,7 @@ public partial class JoekelSim
 	private (float drukteIndex, Vector2 target) _compute_introversie_values(int i)
 	{
 		// pak de joekels om ons heen
-		int aantal = BurenVan(i, joekels[i].Perception + Karaktereigenschappen.MaxChonkheid);
+		int aantal = BurenVan(i, joekels[i].Perception + grootsteChonkheid);
 		int count = 1;
 		Vector2 som = joekels[i].Position;
 		for (int k = 0; k < aantal; k++)
@@ -226,7 +223,7 @@ public partial class JoekelSim
 	// terug naar chillen, zonder doel
 	static void StopPlan(ref JoekelData j)
 	{
-		j.CurrentPlan = Behaviour.Plan.CHILL;
+		j.CurrentPlan = Plan.CHILL;
 		j.TargetPosition = null;
 		j.TargetId = 0;
 	}
