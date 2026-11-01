@@ -41,7 +41,6 @@ public partial class Joekel : CharacterBody2D
 	private float _kachow;
 	private float _hunger;
 	private float _zwem;
-	private float _turnJitter;
 	private Behaviour _behaviour = new Behaviour();
 	
 	private Area2D _detectionArea;
@@ -79,7 +78,6 @@ public partial class Joekel : CharacterBody2D
 		_volgendeHeading = _heading;
 		_springTimer = GD.Randf() * SpringInterval;
 		_kachow = Karaktereigenschappen.Kachow.Van(Dna);
-		_turnJitter = Karaktereigenschappen.TurnJitter.Van(Dna);
 		_detectionArea = GetNode<Area2D>("Area2D");
 		_detectionArea.AreaEntered += OnAreaEntered;
 		_detectionArea.AreaExited += OnAreaExited;
@@ -231,7 +229,7 @@ public partial class Joekel : CharacterBody2D
 		// Zet de velocity op nul als we al langzaam genoeg gaan.
 		else Velocity = Vector2.Zero;
 
-        // contact niet elke frame
+		// contact niet elke frame
 		_contactTijd += dt;
 		bool doeContact = ++_contactTeller >= ContactElkeNStappen;
 		float contactDt = _contactTijd;

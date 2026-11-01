@@ -97,7 +97,7 @@ public class Behaviour
 		
 		if (_currentPlan == Plan.CHILL)
 		{
-			if (_random.NextSingle() < oehlalaigheid * dt * 0.8f)
+			if (_random.NextSingle() < oehlalaigheid * 0.8f)
 			{
 				Joekel? mate = ClosestJoekel(joekel);
 				if(mate != null){
@@ -105,7 +105,7 @@ public class Behaviour
 					_targetPosition = mate.Position;
 					_targetNode = mate;
 				}
-			} else if (introversie * dt * 0.2f > _random.NextSingle())
+			} else if (introversie * 0.8f > _random.NextSingle())
 			{
 				// TODO: Conditionz
 				_currentPlan = Plan.RUN_AWAY;
