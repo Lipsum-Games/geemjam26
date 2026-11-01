@@ -8,7 +8,7 @@ public partial class JoekelSim
 	// Geeft true terug als er echt een joekel is gemaakt
 	bool MaakJoekel(Vector2 positie)
 	{
-		if (momenteelLevendeJoekels >= MaxJoekels) return False;
+		if (momenteelLevendeJoekels >= MaxJoekels) return false;
 
 		// struct op de plaats van de joekel
 		joekels[momenteelLevendeJoekels] = new JoekelData
@@ -23,6 +23,7 @@ public partial class JoekelSim
 
 	void VerwijderJoekel(int i)
 	{
+		if (i < 0 || i >= momenteelLevendeJoekels) { GD.PushError($"VerwijderJoekel({i}), maar er leven er maar {momenteelLevendeJoekels}"); return; }
 		momenteelLevendeJoekels--;
 		// Als joekel i dood gaat, plaats de laatste joekel gewoon op zijn plek (dikke swap), is lekker efficient.
 		joekels[i] = joekels[momenteelLevendeJoekels];
