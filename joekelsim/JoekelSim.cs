@@ -21,6 +21,9 @@ public partial class JoekelSim : Node2D
 	// snelheid van elke joekel in pixels per seconde voor de [x, y] axis.
 	Vector2[] joekelSnelheden = new Vector2[MaxJoekels];
 
+	// hoeveel seconden tot de volgende sprong van elke joekel
+	float[] joekelSpringTimers = new float[MaxJoekels];
+
 	public override void _Ready()
 	{
 		for (int i = 0; i < StarterJoekels; i++)
@@ -28,8 +31,8 @@ public partial class JoekelSim : Node2D
 			joekelPosities[i] = new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y);
 		momenteelLevendeJoekels = StarterJoekels;
 
-		// start duwtje voor testen.
-		GeefStartDuwtje();
+		// zet de timers voor de joekel sprongetjes
+		ZetStartSpringTimers();
 
 		MaakJoekelTekening();
 		TekenJoekels();

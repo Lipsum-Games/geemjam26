@@ -9,13 +9,26 @@ public partial class JoekelSim
 	// zodra joekel langzamer dan dit gaat, staan ze instantly stil (optimization)
 	const float RustDrempel = 10f;
 
-	// TIJDELIJK: tot ze kunnen springen (stap 2c) krijgt elke joekel bij de start één duw in een willekeurige richting
-	void GeefStartDuwtje()
+	// om de hoeveel tijd de joekel sprint. voor nu 2.6 fixed.
+	const float SpringInterval = 2.6f;
+	// TIJDELIJK een fixed kachow tot dna erin zit.
+	const float TijdelijkeKachow = 120f;
+
+	// willekeurige start, anders springen ze allemaal in dezelfde tick
+	void ZetStartSpringTimers()
 	{
 		for (int i = 0; i < momenteelLevendeJoekels; i++)
 		{
-			joekelSnelheden[i] = Vector2.FromAngle(GD.Randf() * Mathf.Tau) * GD.Randf() * 200f;
+			joekelSpringTimers[i] = GD.Randf() * SpringInterval;
 		}
+	}
+
+	// welke kant op en hoe hard springt joekel i? Hier komt later behaviour.
+	// TIJDELIJK: willekeurige richting, volle kracht.
+	(float richting, float kracht) KiesSprong(int i)
+	{
+	    // guaranteed to be random (not 4)
+		return (GD.Randf() * Mathf.Tau, 1f);
 	}
 
 	// één tick: elke joekel remt af en schuift een stukje op
@@ -27,6 +40,15 @@ public partial class JoekelSim
         // apply voor elke joekel
 		for (int i = 0; i < momenteelLevendeJoekels; i++)
 		{
+			// springen: timer aftellen, op 0 een duw erbij (+=, niet vervangen) en timer opnieuw. Vóór de afremming, net als Joekel.cs
+			joekelSpringTimers[i] -= dt;
+			if (joekelSpringTimers[i] <= 0)
+			{
+				var (richting, kracht) = KiesSprong(i);
+				joekelSnelheden[i] += Vector2.FromAngle(richting) * kracht * TijdelijkeKachow;
+				joekelSpringTimers[i] = SpringInterval;
+			}
+
 		    // de afremming
 			joekelSnelheden[i] *= afremming;
 
