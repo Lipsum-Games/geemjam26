@@ -47,6 +47,10 @@ public partial class JoekelSim
 			Trek = Karaktereigenschappen.Trek.Van(dna) * (HungerMax - HungerMin) + HungerMin,
 			// Kleur based on DNA
 			Zwemdiplomas = Karaktereigenschappen.Zwemdiplomas.Van(dna),
+			RanzigBereik = Karaktereigenschappen.RanzigheidAuraBereik.Van(dna),
+			RanzigKracht = Karaktereigenschappen.RanzigheidAuraKracht.Van(dna),
+			Geur = Karaktereigenschappen.RanzigheidAuraGeur.Van(dna),
+			AuraTijd = GD.Randf() * AuraInterval, // spreiden: niet alle joekels in hetzelfde frame and gaat perfromance kaduk
 			Kleur0 = new Color((dna[0, 0] + 1) / 2, (dna[0, 1] + 1) / 2, (dna[0, 2] + 1) / 2),
 			Kleur1 = new Color((dna[1, 0] + 1) / 2, (dna[1, 1] + 1) / 2, (dna[1, 2] + 1) / 2),
 			Kleur2 = new Color((dna[2, 0] + 1) / 2, (dna[2, 1] + 1) / 2, (dna[2, 2] + 1) / 2),

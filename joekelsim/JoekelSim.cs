@@ -60,6 +60,7 @@ public partial class JoekelSim : Node2D
 		BouwJoekelGrid();
 		// dit moet na BouwJoekelGrid: gebruikt BurenVan (vandaar)
 		Contact((float)delta);
+		Aura((float)delta);
 		CalculateHunger((float)delta);
 		RuimLegeFoodSourcesOp();
 	}

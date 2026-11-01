@@ -65,4 +65,10 @@ public struct JoekelData
 
 	// kente ei wel zwemmen?? hmmMM^^^??!?!?!!
 	public float Zwemdiplomas;
+
+	// geurtje (aura): hoe ver, hoe hard, welke geur, en tijd sinds de laatste aura-tick
+	public float RanzigBereik;
+	public float RanzigKracht;
+	public float Geur;
+	public float AuraTijd;
 }
