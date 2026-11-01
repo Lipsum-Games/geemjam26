@@ -23,7 +23,7 @@ public partial class JoekelSim
 		{
 			joekels[i].Age += dt;
 			// springen: timer aftellen, op 0 een duw erbij (+=, niet vervangen) en timer opnieuw. Vóór de afremming
-			var (richting, kracht) = DoeDingen(i);
+			var (richting, kracht) = DoeDingen(i, dt);
 			joekels[i].SpringTimer -= dt;
 			if (joekels[i].SpringTimer <= 0)
 			{
