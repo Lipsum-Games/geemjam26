@@ -24,7 +24,8 @@ public partial class JoekelSim
 			CustomAabb = new Aabb(new Vector3(-20, -20, 0), new Vector3(World.WorldSize.X + 40, World.WorldSize.Y + 40, 0)),
 		};
 		// voeg natuurlijk toe aan de scene tree zodat het getekend kan worden
-		AddChild(new MultiMeshInstance2D { Name = "JoekelTekening", Multimesh = joekelMultiMesh });
+		// geen interpolatie want dat fucked als we indexen swappen als iets weggaat/doodgaat.
+		AddChild(new MultiMeshInstance2D { Name = "JoekelTekening", Multimesh = joekelMultiMesh, PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off });
 	}
 
 	// Update de MultiMesh zodat het overeenkomt met hoe de joekels nu zijn (in de wereld)
@@ -61,7 +62,8 @@ public partial class JoekelSim
 		};
 		// Alles groen
 		Color groen = new Color(0.2f, 0.7f, 0.2f);
-		AddChild(new MultiMeshInstance2D { Name = "FoodSourceTekening", Multimesh = foodSourceMultiMesh, Modulate = groen });
+        // geen interpolatie want dat fucked als we indexen swappen als iets weggaat/doodgaat.
+		AddChild(new MultiMeshInstance2D { Name = "FoodSourceTekening", Multimesh = foodSourceMultiMesh, Modulate = groen, PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off }); // zelfde als bij joekels: geen spookvoedsel
 	}
 
 	void TekenFoodSources()
