@@ -85,7 +85,7 @@ public partial class JoekelSim
 		var joekelTile = WorldTiles.GetTileAt(joekels[i].Position);
 		if (joekelTile != null) {
 		    // modifier from the tile the joekel is on
-			result *= joekelTile.GetJoekelSpeedMultiplier(joekels[i].Dna);
+			result *= joekelTile.GetJoekelSpeedMultiplier(joekels[i].Zwemdiplomas);
 		}
 		return result;
 	}
