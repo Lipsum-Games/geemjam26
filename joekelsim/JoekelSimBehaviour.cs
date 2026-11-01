@@ -36,5 +36,53 @@ public partial class JoekelSim
 	// Voor nu nog leeg.
 	void BesluitPlan(int i)
 	{
+		ref JoekelData j = ref joekels[i];
+
+		// Kijk eerst of we in een huidig plan zitten
+		if (j.CurrentPlan == Behaviour.Plan.EAT || (j.CurrentPlan != Behaviour.Plan.CHILL && j.Hunger < j.Trek))
+		{
+			// No need to act, only handle "end" conditions
+			if (j.CurrentPlan == Behaviour.Plan.EAT && j.Hunger < HungerMin * 1.1f)
+			{
+				StopPlan(ref j);
+			}
+		}
+		else
+		{
+			// Plan the next move
+
+			// Prio 1: Voedsel is heeeeeeel belangrijk
+			if (j.CurrentPlan != Behaviour.Plan.EAT && j.Hunger > j.Trek)
+			{
+				int f = DichtsteFoodSource(i, j.Perception);
+
+				if (f >= 0)
+				{
+					// Go to foodsource
+					j.TargetPosition = foodSources[f].Position;
+					j.TargetId = foodSources[f].Id;
+					j.TargetGok = f;
+					j.CurrentPlan = Behaviour.Plan.EAT;
+				}
+				else
+				{
+					// TODO: New "looking for food" behaviour?
+				}
+			}
+		}
+
+		if (j.CurrentPlan == Behaviour.Plan.EAT)
+		{
+			j.TargetGok = IndexVanFoodSource(j.TargetId, j.TargetGok);
+			if (j.TargetGok < 0 || foodSources[j.TargetGok].ResourceCount <= 0) StopPlan(ref j);
+		}
+	}
+
+	// terug naar chillen, zonder doel
+	static void StopPlan(ref JoekelData j)
+	{
+		j.CurrentPlan = Behaviour.Plan.CHILL;
+		j.TargetPosition = null;
+		j.TargetId = 0;
 	}
 }
