@@ -1,4 +1,4 @@
-// De plannen van een joekel (uit genetica/behaviour/Behaviour.cs, verhuisd toen de oude sim weg ging)
+// De plannen van een joekel
 public enum Plan
 {
 	// Hungery

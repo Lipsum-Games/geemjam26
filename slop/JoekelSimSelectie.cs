@@ -1,6 +1,6 @@
 using Godot;
 
-// Slop: een joekel in de snelle sim aanklikken en zijn info in het DNA-paneel tonen (= Joekel.Selecteer/Toon in de oude game).
+// Slop: een joekel aanklikken en zijn info in het DNA-paneel tonen.
 // We onthouden het Id (niet de index), want na een swap-remove staat er een andere joekel op die plek.
 public partial class JoekelSim
 {
@@ -30,7 +30,7 @@ public partial class JoekelSim
 
 	public void Deselecteer() => geselecteerdId = 0;
 
-	// elke frame (vanuit DnaPaneel): tekst bijwerken. Is hij dood, dan paneel dicht (= Joekel.MaakDoodEnRuimOp)
+	// elke frame (vanuit DnaPaneel): tekst bijwerken. Is hij dood, dan paneel dicht
 	public void ToonGeselecteerde()
 	{
 		if (geselecteerdId == 0) return;
@@ -47,7 +47,7 @@ public partial class JoekelSim
 		var j = joekels[geselecteerdGok];
 		volgpunt.Position = j.Position;
 
-		// = Joekel.Toon (Murigheid als getal: er zijn geen stuitertypes meer)
+		// Murigheid als getal: er zijn geen stuitertypes meer
 		var s = "DNA\n";
 		for (int r = 0; r < Dna.N; r++)
 			s += j.Dna[r, 0].ToString("F2") + "  " + j.Dna[r, 1].ToString("F2") + "  " + j.Dna[r, 2].ToString("F2") + "\n";

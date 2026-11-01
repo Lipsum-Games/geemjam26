@@ -1,6 +1,6 @@
 using Godot;
 
-// Ranzigheid: de aura. = RanzigeAura en LynxEffect uit de oude Joekel.cs
+// Ranzigheid: de aura
 public partial class JoekelSim
 {
 	// geur exports voor wanneer heal en plateau enzo
