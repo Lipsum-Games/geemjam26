@@ -15,8 +15,19 @@ public partial class JoekelSim
 	{
 		if (momenteelFoodSources >= MaxFoodSources) return; // niks toen als we op de harde max zitten
 		// voeg toe aan de centrally managed array.
-		foodSources[momenteelFoodSources] = new FoodSourceData { Position = position, ResourceCount = StartResourceCount };
+		foodSources[momenteelFoodSources] = new FoodSourceData { Id = volgendId++, Position = position, ResourceCount = StartResourceCount };
 		momenteelFoodSources++;
+	}
+
+	int IndexVanFoodSource(int id, int gok = -1)
+	{
+	    // gok is vorige plek waar we die zagen. als het hit is de lookup sneller.
+		if (gok >= 0 && gok < momenteelFoodSources && foodSources[gok].Id == id) return gok;
+		// zo niet zoek hem op
+		for (int f = 0; f < momenteelFoodSources; f++)
+			if (foodSources[f].Id == id) return f;
+        // en niet gevonden is -1
+		return -1;
 	}
 
     // eet een bepaalde voedsel, waar de index f van is.

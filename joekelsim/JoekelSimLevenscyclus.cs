@@ -3,6 +3,17 @@ using Godot;
 // De hele joekel lifecycle, geboorte en dood wordt hier geregeld.
 public partial class JoekelSim
 {
+	int IndexVanJoekel(int id, int gok = -1)
+	{
+        // gok is vorige plek waar we die zagen. als het hit is de lookup sneller.
+		if (gok >= 0 && gok < momenteelLevendeJoekels && joekels[gok].Id == id) return gok;
+        // zo niet zoek hem op
+		for (int i = 0; i < momenteelLevendeJoekels; i++)
+			if (joekels[i].Id == id) return i;
+        // en niet gevonden is -1
+		return -1;
+	}
+
 	// Maak een nieuwe joekel op deze plek. Hij komt achteraan in de array (op plek momenteelLevendeJoekels).
 	// Als de array vol is, dan gebeurt er niets.
 	// Geeft true terug als er echt een joekel is gemaakt
@@ -13,6 +24,7 @@ public partial class JoekelSim
 		// struct op de plaats van de joekel
 		joekels[momenteelLevendeJoekels] = new JoekelData
 		{
+			Id = volgendId++,
 			Position = positie,
 			// willekeurige start, anders springen ze allemaal in dezelfde tick
 			SpringTimer = GD.Randf() * SpringInterval,

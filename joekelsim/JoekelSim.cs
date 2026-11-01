@@ -26,6 +26,11 @@ public partial class JoekelSim : Node2D
 	// alle food sources, net als joekels data array hierboven.
 	FoodSourceData[] foodSources = new FoodSourceData[MaxFoodSources];
 
+	// Volgende ID voor Foodsources en joekels. Dit is omdat de index van de arrays, als iets wordt opgeruimd.
+	// de positie verandert en we moeten losse IDs bijhouden.
+	// Wil je iemand onthouden (bv. "ik loop naar die partner"), onthoud dan zijn Id en zoek de index steeds opnieuw op.
+	int volgendId = 1;
+
 	public override void _Ready()
 	{
 		for (int i = 0; i < StarterJoekels; i++)
