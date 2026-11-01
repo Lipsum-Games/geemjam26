@@ -19,6 +19,9 @@ public partial class JoekelSim
 			TransformFormat = MultiMesh.TransformFormatEnum.Transform2D, // voor 2d space, bepaalt hoe de buffer deruut ziet
 			Mesh = MaakCirkel(16), // onze mesh, dikke cirkel deluxe
 			InstanceCount = MaxJoekels, // maximale hoeveelheid joekeltjes
+			// maak een aanbb (Axis-Aligned Bounding Box) om de wereld heen. Godot wil alleen de multimesh tekenen als dit in beeld is.
+			// Dit voorkomt dat joekeltjes soms niet worden getekend.
+			CustomAabb = new Aabb(new Vector3(-20, -20, 0), new Vector3(World.WorldSize.X + 40, World.WorldSize.Y + 40, 0)),
 		};
 		// voeg natuurlijk toe aan de scene tree zodat het getekend kan worden
 		AddChild(new MultiMeshInstance2D { Name = "JoekelTekening", Multimesh = joekelMultiMesh });

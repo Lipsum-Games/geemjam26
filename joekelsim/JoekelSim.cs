@@ -28,4 +28,9 @@ public partial class JoekelSim : Node2D
 		MaakJoekelTekening();
 		TekenJoekels();
 	}
+
+	public override void _PhysicsProcess(double delta)
+	{
+		TekenJoekels();
+	}
 }
