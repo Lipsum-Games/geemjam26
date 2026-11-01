@@ -142,9 +142,8 @@ public class Behaviour
 				{
 					// Is het te druk?
 					(float drukteIndex, Vector2 target) = _compute_introversie_values(joekel, joekels, introversie);
-					if (true) //_random.NextSingle() < drukteIndex)
+					if (_random.NextSingle() < drukteIndex)
 					{
-						//GD.Print("Introversie: pos=" + joekel.Position + ", target=" + target, ", di=" + drukteIndex + ", introversie=" + introversie);
 						CurrentPlan = Plan.RUN_AWAY;
 						_targetPosition = target;
 						_runAwayTicks = 3;
@@ -192,8 +191,7 @@ public class Behaviour
 				return (0, Vector2.Zero);
 			}
 
-			target = introversie * relPos.Normalized() * 10_000;
-			GD.Print("RunAway: target=" + target + ", avgLoc=" + avgLoc +", drukteIndex=" + drukteIndex);
+			target = -relPos * 1_000;
 		}
 		else
 		{

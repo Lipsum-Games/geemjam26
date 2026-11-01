@@ -312,19 +312,10 @@ public partial class Joekel : CharacterBody2D
 						pts[k] = Vector2.FromAngle(Mathf.Lerp(a0, a1, k / (float)n)) * _chonkheid;
 				return pts;
 		}
-
-		if (_behaviour.CurrentPlan == Behaviour.Plan.RUN_AWAY)
-		{
-			DrawColoredPolygon(Boog(0, s), Color.Color8(255, 0, 0));
-			DrawColoredPolygon([new Vector2(r, 0), ..Boog(s, Mathf.Tau - s)], Color.Color8(255, 0, 0));
-			DrawColoredPolygon(Boog(Mathf.Tau - s, Mathf.Tau), Color.Color8(255, 0, 0));
-		}
-		else
-		{
-			DrawColoredPolygon(Boog(0, s), _kleuren_bandjes[0]);
-			DrawColoredPolygon([new Vector2(r, 0), .. Boog(s, Mathf.Tau - s)], _kleuren_bandjes[1]);
-			DrawColoredPolygon(Boog(Mathf.Tau - s, Mathf.Tau), _kleuren_bandjes[2]);
-		}
+		
+		DrawColoredPolygon(Boog(0, s), _kleuren_bandjes[0]);
+		DrawColoredPolygon([new Vector2(r, 0), .. Boog(s, Mathf.Tau - s)], _kleuren_bandjes[1]);
+		DrawColoredPolygon(Boog(Mathf.Tau - s, Mathf.Tau), _kleuren_bandjes[2]);
 
 	}
 
