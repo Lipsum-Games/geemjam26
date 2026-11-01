@@ -68,7 +68,7 @@ public partial class JoekelSim
 			return;
 		if(joekels[i].Dna.Similarity(joekels[i].Dna, joekels[j].Dna) < 4 && GD.Randf() < 0.6f)
 			return;
-		MaakJoekel(joekels[i].Position, Dna.Combine(joekels[i].Dna, joekels[j].Dna));
+		SpawnJoekel(joekels[i].Position, Dna.Combine(joekels[i].Dna, joekels[j].Dna));
 		joekels[i].Hunger += ReproductionHungerCost;
 	}
 }

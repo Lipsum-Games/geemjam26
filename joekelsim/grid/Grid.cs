@@ -115,4 +115,27 @@ public partial class JoekelSim
 		}
 		return -1;
 	}
+
+	// Helper functie voor birth, past er een joekel op deze nieuwe plek?
+	bool IsPlekVrij(Vector2 positie, float straal)
+	{
+	    // Zit joekel in een muur?
+		if (positie.X - straal < 0 || positie.Y - straal < 0 || positie.X + straal > World.WorldSize.X || positie.Y + straal > World.WorldSize.Y)
+			return false;
+
+        // Zit joekel in een andere joekel?
+		int ringen = (int)Mathf.Ceil((straal + Karaktereigenschappen.MaxChonkheid) / CelGrootte);
+		int cel = CelVan(positie);
+		int celX = cel % GridBreedte;
+		int celY = cel / GridBreedte;
+		for (int y = celY - ringen; y <= celY + ringen; y++)
+			for (int x = celX - ringen; x <= celX + ringen; x++)
+			{
+				if (x < 0 || y < 0 || x >= GridBreedte || y >= GridHoogte) continue;
+				for (int j = celEersteJoekel[y * GridBreedte + x]; j >= 0; j = volgendeJoekelInCel[j])
+					if (positie.DistanceTo(joekels[j].Position) < straal + joekels[j].Chonkheid)
+						return false;
+			}
+		return true;
+	}
 }

@@ -1,4 +1,5 @@
 using Godot;
+using System;
 
 // De hele joekel lifecycle, geboorte en dood wordt hier geregeld.
 public partial class JoekelSim
@@ -47,6 +48,27 @@ public partial class JoekelSim
 		};
 		momenteelLevendeJoekels++;
 		return true;
+	}
+
+	void SpawnJoekel(Vector2 Position, Dna Dna){
+		var radius = Karaktereigenschappen.Chonkheid.Van(Dna);
+
+		var success = false;
+		var finalPosition = Position;
+
+        // Probeer 5x een joekel te spawnen in de buurt.
+		for (int i = 0; i < 5; i++){
+			var dir = GD.Randf() * Math.Tau;
+			var candidatePosition = Position + new Vector2(((float) Math.Cos(dir)) * (radius * 2.1f), ((float) Math.Sin(dir)) * (radius * 2.1F));
+			if (IsPlekVrij(candidatePosition, radius)){
+				finalPosition = candidatePosition;
+				success = true;
+				break;
+			}
+		}
+		if (success) {
+			MaakJoekel(finalPosition, Dna);
+		}
 	}
 
 	void VerwijderJoekel(int i)
