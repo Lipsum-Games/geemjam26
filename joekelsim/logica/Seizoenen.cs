@@ -28,6 +28,14 @@ public partial class JoekelSim
 	const float WinterVoedselInterval = 0.8f;
 	float SeizoenVoedselInterval => Mathf.Lerp(WinterVoedselInterval, ZomerVoedselInterval, Warmte);
 
+	// isolatie (0-1) uit vet en vacht samen: helpt tegen kou, maar kost in de hitte
+	float Isolatie(int i)
+	{
+		// vet: chonk 10 houdt de helft tegen, dikker nog meer
+		float vet = joekels[i].Chonkheid / (joekels[i].Chonkheid + 10);
+		return 1 - (1 - vet) * (1 - 0.8f * joekels[i].Vacht);
+	}
+
 	// onder deze temperatuur kost kou extra honger per seconde, het meest bij de koudste temperatuur
 	const float KouGrens = 10f;
 	const float MaxKouHonger = 0.25f;
@@ -35,9 +43,17 @@ public partial class JoekelSim
 	float KouHonger(int i)
 	{
 		float kou = Mathf.Clamp((KouGrens - Temperatuur) / (KouGrens - KoudsteTemperatuur), 0, 1);
-		// isolatie: chonk 10 houdt de helft van de kou tegen, dikker nog meer
-		float isolatie = joekels[i].Chonkheid / (joekels[i].Chonkheid + 10);
-		return MaxKouHonger * kou * (1 - isolatie);
+		return MaxKouHonger * kou * (1 - Isolatie(i));
+	}
+
+	// boven deze temperatuur kost isolatie extra honger (oververhit), het meest bij de warmste temperatuur
+	const float HitteGrens = 25f;
+	const float MaxHitteHonger = 0.3f;
+
+	float HitteHonger(int i)
+	{
+		float hitte = Mathf.Clamp((Temperatuur - HitteGrens) / (WarmsteTemperatuur - HitteGrens), 0, 1);
+		return MaxHitteHonger * hitte * Isolatie(i);
 	}
 
 	void UpdateSeizoen(float dt) => jaarTijd += dt;
