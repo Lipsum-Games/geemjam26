@@ -16,6 +16,15 @@ public partial class Camera : Camera2D
 		_zoomDoel = new Vector2(VolgZoom, VolgZoom);
 	}
 
+	// bij de start: midden van de wereld, zo ver uitgezoomd dat de hele wereld (met een randje) in beeld is
+	public override void _Ready()
+	{
+		Position = World.WorldSize / 2;
+		var scherm = GetViewportRect().Size;
+		float zoom = Mathf.Min(scherm.X / World.WorldSize.X, scherm.Y / World.WorldSize.Y) * 0.92f;
+		Zoom = new Vector2(zoom, zoom);
+	}
+
 	public void StopVolgen() => _volg = null;
 	public bool VolgtIemand => _volg != null;
 
