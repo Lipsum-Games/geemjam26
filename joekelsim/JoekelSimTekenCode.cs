@@ -39,7 +39,7 @@ public partial class JoekelSim
 				rotation: 0,
 				scale: new Vector2(TijdelijkeStraal, TijdelijkeStraal),
 				skew: 0,
-				origin: joekelPosities[i]));
+				origin: joekels[i].Positie));
 		}
 	}
 

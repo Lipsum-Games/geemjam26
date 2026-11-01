@@ -15,20 +15,14 @@ public partial class JoekelSim : Node2D
 	// de huidige hoeveelheid levende joekels
 	int momenteelLevendeJoekels;
 
-	// dit is de array van joekelposities. i is dus de index van de joekel
-	Vector2[] joekelPosities = new Vector2[MaxJoekels];
-
-	// snelheid van elke joekel in pixels per seconde voor de [x, y] axis.
-	Vector2[] joekelSnelheden = new Vector2[MaxJoekels];
-
-	// hoeveel seconden tot de volgende sprong van elke joekel
-	float[] joekelSpringTimers = new float[MaxJoekels];
+	// alle joekels: joekels[i] is joekel i. Wat een joekel is staat in JoekelData.cs, lekker centralized
+	JoekelData[] joekels = new JoekelData[MaxJoekels];
 
 	public override void _Ready()
 	{
 		for (int i = 0; i < StarterJoekels; i++)
 			// plaats die joekeltjes lekker random!
-			joekelPosities[i] = new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y);
+			joekels[i].Positie = new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y);
 		momenteelLevendeJoekels = StarterJoekels;
 
 		// zet de timers voor de joekel sprongetjes

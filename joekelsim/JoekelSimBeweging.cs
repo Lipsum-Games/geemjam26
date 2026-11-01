@@ -22,7 +22,7 @@ public partial class JoekelSim
 	{
 		for (int i = 0; i < momenteelLevendeJoekels; i++)
 		{
-			joekelSpringTimers[i] = GD.Randf() * SpringInterval;
+			joekels[i].SpringTimer = GD.Randf() * SpringInterval;
 		}
 	}
 
@@ -44,27 +44,27 @@ public partial class JoekelSim
 		for (int i = 0; i < momenteelLevendeJoekels; i++)
 		{
 			// springen: timer aftellen, op 0 een duw erbij (+=, niet vervangen) en timer opnieuw. Vóór de afremming, net als Joekel.cs
-			joekelSpringTimers[i] -= dt;
-			if (joekelSpringTimers[i] <= 0)
+			joekels[i].SpringTimer -= dt;
+			if (joekels[i].SpringTimer <= 0)
 			{
 				var (richting, kracht) = KiesSprong(i);
-				joekelSnelheden[i] += Vector2.FromAngle(richting) * kracht * TijdelijkeKachow;
-				joekelSpringTimers[i] = SpringInterval;
+				joekels[i].Snelheid += Vector2.FromAngle(richting) * kracht * TijdelijkeKachow;
+				joekels[i].SpringTimer = SpringInterval;
 			}
 
 		    // de afremming
-			joekelSnelheden[i] *= afremming;
+			joekels[i].Snelheid *= afremming;
 
             // als rustdrempel, zet stil, anders gewoon bewegen die hap
-			if (joekelSnelheden[i].Length() > RustDrempel)
-				joekelPosities[i] += joekelSnelheden[i] * dt;
+			if (joekels[i].Snelheid.Length() > RustDrempel)
+				joekels[i].Positie += joekels[i].Snelheid * dt;
 			else
-				joekelSnelheden[i] = Vector2.Zero;
+				joekels[i].Snelheid = Vector2.Zero;
 
 			// muren: na het bewegen terugzetten binnen de wereld, (de straal van de joekel afstand van de muur). Stuiter is weg, veel simpeler zo.
 			float r = TijdelijkeStraal;
 			// gewoon clampen binnen de muren, ezpz
-			joekelPosities[i] = joekelPosities[i].Clamp(new Vector2(r, r), World.WorldSize - new Vector2(r, r));
+			joekels[i].Positie = joekels[i].Positie.Clamp(new Vector2(r, r), World.WorldSize - new Vector2(r, r));
 		}
 	}
 }
