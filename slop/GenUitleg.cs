@@ -62,7 +62,7 @@ public partial class GenUitleg : HBoxContainer
 			}
 		}
 		_naam.Text = k.Naam;
-		_formule.Text = Netjes(k.Formule);
+		_formule.Text = Netjes(k.Formule) + k.RemixTekst;
 		_uitleg.Text = $"Bij random DNA (genen -1..1) loopt hij van {lo:0.##} tot {hi:0.##}. " +
 			"Matrix: per +1 in dat gen gaat de trait gemiddeld zoveel omhoog (rood) of omlaag (blauw). Grijs = doet niks.";
 		_matrix.Effect = effect;

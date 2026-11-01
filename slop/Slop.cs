@@ -13,6 +13,7 @@ public static class Slop
 
 	public static void Installeer(World wereld)
 	{
+		wereld.AddChild(new StartMenu { Name = "StartMenu" });
 		wereld.AddChild(new Statistiek { Name = "Statistiek" });
 		wereld.AddChild(new Clusters { Name = "Clusters" });
 

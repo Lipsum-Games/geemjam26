@@ -68,7 +68,7 @@ public static class Karaktereigenschappen
 	// 0-1: vacht
 	public static readonly Karaktereigenschap Vacht = new("Vacht", d => Sigmoid(1.5f * (d[0, 2] + d[2, 0] - d[0, 0] - d[0, 1]) - 0.5f));
 
-    // 0-1: hoeveel je van stront houdt. tegen de diagonaal in (dikke schutters zijn het zelden) + en een bonus gen
+	// 0-1: hoeveel je van stront houdt. tegen de diagonaal in (dikke schutters zijn het zelden) + en een bonus gen
 	public static readonly Karaktereigenschap Strontvreterij = new("Strontvreterij", d => Sigmoid(2.5f * d[2, 0] - d.Diag() - 1.5f));
 
 

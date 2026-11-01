@@ -20,5 +20,9 @@ public partial class Karaktereigenschap
 		Alle.Add(this);
 	}
 
-	public float Van(Dna d) => _expressie(d);
+	// random wereld (slop/RandomGenetica): het DNA wordt eerst gehusseld voordat de formule erop draait. null = gewoon
+	public Func<Dna, Dna> Remix;
+	public string RemixTekst = "";
+
+	public float Van(Dna d) => _expressie(Remix == null ? d : Remix(d));
 }
