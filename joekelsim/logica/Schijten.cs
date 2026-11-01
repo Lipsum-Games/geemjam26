@@ -8,6 +8,8 @@ public partial class JoekelSim
 	const float DrolBereik = 200f;
 	const float DrolStraal = 6f;
 	const float DrolSchadePerChonk = 1.5f;
+	// schijten kost voedsel: een drol is verteerd eten
+	const float DrolHongerKosten = 1f;
 
 	DrolData[] drollen = new DrolData[MaxDrollen];
 	int momenteelDrollen;
@@ -22,6 +24,7 @@ public partial class JoekelSim
 			if (joekels[i].SchijtTimer < 1) continue;
 			joekels[i].SchijtTimer -= 1;
 			if (momenteelDrollen == MaxDrollen) continue;
+			joekels[i].Hunger = Mathf.Min(joekels[i].Hunger + DrolHongerKosten, HungerMax);
 
 			// recht naar achter (tegenover zijn laatste sprong), net buiten zijn eigen lijf
 			Vector2 achter = Vector2.FromAngle(joekels[i].Heading + Mathf.Pi);
@@ -53,7 +56,12 @@ public partial class JoekelSim
 				break;
 			}
 
-			if (weg) drollen[d] = drollen[--momenteelDrollen];
+			// geraakt of uitgevlogen: hij valt op de grond
+			if (weg)
+			{
+				LandDrol(drollen[d].Position);
+				drollen[d] = drollen[--momenteelDrollen];
+			}
 		}
 	}
 }

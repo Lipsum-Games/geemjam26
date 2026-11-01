@@ -45,10 +45,10 @@ public partial class JoekelSim
 		ref JoekelData j = ref joekels[i];
 
 		// Kijk eerst of we in een huidig plan zitten
-		if (j.CurrentPlan is Plan.EAT or Plan.HUNT || (j.CurrentPlan != Plan.CHILL && j.Hunger < j.Trek))
+		if (j.CurrentPlan is Plan.EAT or Plan.HUNT or Plan.EAT_STRONT || (j.CurrentPlan != Plan.CHILL && j.Hunger < j.Trek))
 		{
 			// No need to act, only handle "end" conditions
-			if (j.CurrentPlan is Plan.EAT or Plan.HUNT && j.Hunger < HungerMin * 1.1f)
+			if (j.CurrentPlan is Plan.EAT or Plan.HUNT or Plan.EAT_STRONT && j.Hunger < HungerMin * 1.1f)
 			{
 				StopPlan(ref j);
 			} else if (j.CurrentPlan == Plan.RUN_AWAY)
@@ -69,7 +69,7 @@ public partial class JoekelSim
 			// Plan the next move
 
 			// Prio 1: Voedsel is heeeeeeel belangrijk
-			if (j.CurrentPlan is not (Plan.EAT or Plan.HUNT) && j.Hunger > j.Trek)
+			if (j.CurrentPlan is not (Plan.EAT or Plan.HUNT or Plan.EAT_STRONT) && j.Hunger > j.Trek)
 			{
 				if (j.Vleeslustigheid + 0.2f * (GD.Randf() - 0.5) > JaagDrempel)
 				{
@@ -86,8 +86,16 @@ public partial class JoekelSim
 				else
 				{
 					int f = DichtsteFoodSource(i, j.Perception);
-
-					if (f >= 0)
+					// strontvreters kijken ook naar drolhopen, en gaan naar wat het dichtst is
+					int h = j.Strontvreterij > StrontvreterDrempel ? DichtsteDrolHoop(j.Position, j.Perception) : -1;
+					if (h >= 0 && (f < 0 || j.Position.DistanceTo(drolHopen[h].Position) < j.Position.DistanceTo(foodSources[f].Position)))
+					{
+						j.TargetPosition = drolHopen[h].Position;
+						j.TargetId = drolHopen[h].Id;
+						j.TargetGok = h;
+						j.CurrentPlan = Plan.EAT_STRONT;
+					}
+					else if (f >= 0)
 					{
 						// Go to foodsource
 						j.TargetPosition = foodSources[f].Position;
@@ -128,6 +136,11 @@ public partial class JoekelSim
 		{
 			j.TargetGok = IndexVanFoodSource(j.TargetId, j.TargetGok);
 			if (j.TargetGok < 0 || foodSources[j.TargetGok].ResourceCount <= 0) StopPlan(ref j);
+		}
+		if (j.CurrentPlan == Plan.EAT_STRONT)
+		{
+			j.TargetGok = IndexVanDrolHoop(j.TargetId, j.TargetGok);
+			if (j.TargetGok < 0) StopPlan(ref j);
 		}
 		if (j.CurrentPlan is Plan.REPRODUCE or Plan.HUNT)
 		{
@@ -223,6 +236,9 @@ public partial class JoekelSim
 	// terug naar chillen, zonder doel
 	// pas vanaf deze vleeslustigheid gaat een joekel jagen
 	const float JaagDrempel = 0.3f;
+
+	// vanaf deze strontvreterij gaat een joekel ook naar drolhopen toe
+	const float StrontvreterDrempel = 0.3f;
 
 	static void StopPlan(ref JoekelData j)
 	{

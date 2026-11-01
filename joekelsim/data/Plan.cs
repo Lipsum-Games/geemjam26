@@ -10,5 +10,7 @@ public enum Plan
 	// Oe lalala
 	REPRODUCE, 
 	// Op jacht
-	HUNT
+	HUNT,
+	// naar een drolhoop (strontvreters)
+	EAT_STRONT
 }

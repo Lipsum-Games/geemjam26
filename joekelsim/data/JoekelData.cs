@@ -83,4 +83,7 @@ public struct JoekelData
 	// drollen per seconde, en hoe ver hij is tot de volgende (0-1)
 	public float Schijtlust;
 	public float SchijtTimer;
+
+	// tja dat is wat er staat, mans gotta eat
+	public float Strontvreterij;
 }

@@ -65,5 +65,8 @@ public static class Karaktereigenschappen
 	// drollen per seconde naar achter. zelfde input als Chonkheid (+ een eigen gen), dus vooral dikke joekels schijten
 	public static readonly Karaktereigenschap Schijtlust = new("Schijtlust", d => Relu(d.Diag() - 0.5f * d[0, 1] + 0.7f * d[1, 0]));
 
+	// 0-1: hoeveel je van stront houdt. tegen de diagonaal in (dikke schutters zijn het zelden) + en een bonus gen
+	public static readonly Karaktereigenschap Strontvreterij = new("Strontvreterij", d => Sigmoid(2.5f * d[2, 0] - d.Diag() - 1.5f));
+
 
 }

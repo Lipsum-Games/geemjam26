@@ -18,6 +18,8 @@ public partial class JoekelSim
 			if (f >= 0)
 			{
 			    float maximaalWilOfKanEten = (joekels[i].Hunger - HungerMin) * Mathf.Max((joekels[i].Vleeslustigheid - 0.5f) * -1, 0);
+				// strontvreters eten planten iets minder goed
+				maximaalWilOfKanEten *= 1 - StrontvreterPlantenMalus * joekels[i].Strontvreterij;
 				float eating = Eat(f, dt, maximaalWilOfKanEten);
 				joekels[i].HuidigeGezonheid = Mathf.Min(joekels[i].HuidigeGezonheid + 2f * eating, joekels[i].MaximaleGezondheid);
 				joekels[i].Hunger -= eating;
