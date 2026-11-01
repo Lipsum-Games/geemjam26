@@ -61,5 +61,21 @@ public partial class JoekelSim
 
 	float TemperatuurBij(Vector2 positie) => Temperatuur + NoordZuidVerschil * (positie.Y / World.WorldSize.Y * 2 - 1);
 
+	// voedsel groeit het best rond deze temperatuur (klokvorm), dus het trekt met de seizoenen mee: zomer noord, winter zuid
+	const float GroeiTemperatuur = 18f;
+	const float GroeiBreedte = 10f;
+
+	Vector2 VoedselPlek()
+	{
+		// probeer plekken tot groei lukt
+		for (int poging = 0; poging < 10; poging++)
+		{
+			var plek = new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y);
+			float afwijking = (TemperatuurBij(plek) - GroeiTemperatuur) / GroeiBreedte;
+			if (GD.Randf() < Mathf.Exp(-afwijking * afwijking / 2)) return plek;
+		}
+		return new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y);
+	}
+
 	void UpdateSeizoen(float dt) => jaarTijd += dt;
 }

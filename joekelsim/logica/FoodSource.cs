@@ -108,6 +108,6 @@ public partial class JoekelSim
 		voedselTimer -= dt;
 		if (voedselTimer > 0) return;
 		voedselTimer = VoedselInterval;
-		SpawnFoodSource(new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y));
+		SpawnFoodSource(VoedselPlek()); // waar het aangenaam warm is (zie Seizoenen.cs)
 	}
 }
