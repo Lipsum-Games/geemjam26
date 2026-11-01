@@ -1,8 +1,6 @@
 [gd_scene format=3 uid="uid://by8tiq5n8jgc1"]
 
 [ext_resource type="Script" uid="uid://b2jc2gmlj0nno" path="res://World.cs" id="1_f3sb7"]
-[ext_resource type="PackedScene" uid="uid://bl7u7i0y4gvrt" path="res://Joekel.tscn" id="2_fj7yv"]
-[ext_resource type="PackedScene" uid="uid://gwdklirbt6pu" path="res://FoodSource.tscn" id="3_tlwt5"]
 [ext_resource type="Texture2D" uid="uid://cqbvagux6qm4b" path="res://assets/melkweg.jpg" id="4_pkg7o"]
 [ext_resource type="Texture2D" uid="uid://dc2bpk7i71c7l" path="res://assets/tiles_atlas.png" id="4_tlwt5"]
 [ext_resource type="Script" uid="uid://mum8l4sa63mq" path="res://WorldTiles.cs" id="5_aqk2v"]
@@ -231,9 +229,6 @@ sources/0 = SubResource("TileSetAtlasSource_aqk2v")
 
 [node name="World" type="Node2D" unique_id=945096617]
 script = ExtResource("1_f3sb7")
-EntityScene = ExtResource("2_fj7yv")
-FoodSourceScene = ExtResource("3_tlwt5")
-SnelleSim = true
 
 [node name="WorldTiles" type="TileMapLayer" parent="." unique_id=896166233]
 tile_set = SubResource("TileSet_asv5b")

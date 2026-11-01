@@ -12,7 +12,7 @@ public partial class SimKnopjes : HBoxContainer
 	{
 		ProcessMode = ProcessModeEnum.Always;
 
-		Engine.MaxPhysicsStepsPerFrame = Owner is World { SnelleSim: true } ? 256 : 8;
+		Engine.MaxPhysicsStepsPerFrame = 256;
 
 		_pauze = Knop("Pauze", TogglePauze);
 		Knop("<", () => ZetStap(_stap - 1));

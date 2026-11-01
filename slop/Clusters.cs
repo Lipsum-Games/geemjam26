@@ -583,12 +583,8 @@ public partial class Clusters : Node
 
 	void PasMarkeringToe()
 	{
-		var gedimd = new Color(1, 1, 1, 0.15f);
 		var zichtbaar = new HashSet<object>();
 		foreach (var (j, id) in S.Indeling) if (id == S.Gemarkeerd) zichtbaar.Add(j.Sleutel);
 		GetParent().GetNodeOrNull<JoekelSim>("JoekelSim")?.ZetMarkering(S.Gemarkeerd == null ? null : zichtbaar);
-		foreach (var n in GetParent().GetChildren())
-			if (n is Joekel j)
-				j.Modulate = S.Gemarkeerd == null || zichtbaar.Contains(j) ? Colors.White : gedimd;
 	}
 }

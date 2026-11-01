@@ -26,7 +26,7 @@ public partial class JoekelSim
 		joekels[momenteelLevendeJoekels] = new JoekelData
 		{
 			Id = volgendId++,
-			CurrentPlan = Geemjam26ShipsumEvolve.genetica.Behaviour.Plan.CHILL,
+			CurrentPlan = Plan.CHILL,
 			Position = positie,
 			// willekeurige start, anders springen ze allemaal in dezelfde tick
 			SpringTimer = GD.Randf() * SpringInterval,

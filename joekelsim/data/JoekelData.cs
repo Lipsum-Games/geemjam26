@@ -40,7 +40,7 @@ public struct JoekelData
 	public float ContactTijd;
 
 	// De behaviour fields.
-	public Geemjam26ShipsumEvolve.genetica.Behaviour.Plan CurrentPlan;
+	public Plan CurrentPlan;
 	public Vector2? TargetPosition;
 	// id van voedsel of joekel van de target
 	public int TargetId;
