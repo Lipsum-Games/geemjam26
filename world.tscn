@@ -9,10 +9,12 @@
 [ext_resource type="Script" uid="uid://mum8l4sa63mq" path="res://WorldTiles.cs" id="5_aqk2v"]
 [ext_resource type="Script" uid="uid://epkggmoygl7k" path="res://Camera.cs" id="6_dwbse"]
 [ext_resource type="Script" uid="uid://clapvvycaxpvn" path="res://SimKnopjes.cs" id="7_pkg7o"]
-[ext_resource type="Script" uid="uid://317bommuewgp" path="res://DnaPaneel.cs" id="8_dnapaneel"]
+[ext_resource type="Script" uid="uid://qy010kbptrrb" path="res://DnaPaneel.cs" id="8_dnapaneel"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ioo17"]
 shader = ExtResource("4_wse8f")
+shader_parameter/world_tile_size = Vector2(0, 0)
+shader_parameter/world_max_pos = Vector2(0, 0)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_aqk2v"]
 resource_name = "tile_atlas"
