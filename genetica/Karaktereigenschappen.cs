@@ -12,7 +12,7 @@ public static class Karaktereigenschappen
 	public static readonly Karaktereigenschap Introversie = new("Introversie", d => d.Row(2) * 2 - 2 * d.Col(1));
 	
 	// How lang we aan het wegrennen zijn, in seconden
-	public static readonly Karaktereigenschap IntroversieWegrenTijd = new("IntroversieWegrenTijd", d => Range(0.25f, 2f,Sigmoid(d[2,2] - d[0,0] + d[1,2] - d[2,1] - 2.0f)));
+	public static readonly Karaktereigenschap IntroversieWegrenTijd = new("IntroversieWegrenTijd", d => Range(1f, 5f,Sigmoid(d[2,2] - d[0,0] + d[1,2] - d[2,1] - 2.0f)));
 	
 	// Hoe snel de joekels besluiten dat de honger teveel is en ze moeten vreten
 	public static readonly Karaktereigenschap Trek = new("Trek", d => Range(2f, 10f, Sigmoid(d.Col(2) * 2.0f - 2.0f * d.AntiDiag())));
