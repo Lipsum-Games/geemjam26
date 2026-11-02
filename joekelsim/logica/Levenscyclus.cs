@@ -42,10 +42,11 @@ public partial class JoekelSim
 			Vleeslustigheid = Karaktereigenschappen.Vleeslustigheid.Van(dna),
 			Perception = Karaktereigenschappen.Perception.Van(dna),
 			Introversie = Karaktereigenschappen.Introversie.Van(dna),
+			IntroversieWegrenTijd = Karaktereigenschappen.IntroversieWegrenTijd.Van(dna),
 			Oehlalalaigheid = Karaktereigenschappen.Oehlalalaigheid.Van(dna),
 			ChillSpeed = Karaktereigenschappen.ChillSpeed.Van(dna),
 			Heading = GD.Randf() * Mathf.Tau,
-			Trek = Karaktereigenschappen.Trek.Van(dna) * (HungerMax - HungerMin) + HungerMin,
+			Trek = Karaktereigenschappen.Trek.Van(dna),
 			// Kleur based on DNA
 			Zwemdiplomas = Karaktereigenschappen.Zwemdiplomas.Van(dna),
 			RanzigBereik = Karaktereigenschappen.RanzigheidAuraBereik.Van(dna),

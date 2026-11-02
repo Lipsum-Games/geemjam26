@@ -4,7 +4,7 @@ using Godot;
 public partial class JoekelSim
 {
 
-    // frictie is afremsnelheid
+	// frictie is afremsnelheid
 	const float Frictie = 1f;
 	// zodra joekel langzamer dan dit gaat, staan ze instantly stil (optimization)
 	const float RustDrempel = 10f;
@@ -15,10 +15,10 @@ public partial class JoekelSim
 	// één tick: elke joekel remt af en schuift een stukje op
 	void BeweegJoekels(float dt)
 	{
-        // apply the frictie niet linear natuurlijk
+		// apply the frictie niet linear natuurlijk
 		float afremming = Mathf.Exp(-Frictie * dt);
 
-        // apply voor elke joekel
+		// apply voor elke joekel
 		for (int i = 0; i < momenteelLevendeJoekels; i++)
 		{
 			joekels[i].Age += dt;
@@ -33,10 +33,10 @@ public partial class JoekelSim
 				joekels[i].SpringTimer = SpringInterval;
 			}
 
-		    // de afremming
+			// de afremming
 			joekels[i].Velocity *= afremming;
 
-            // als rustdrempel, zet stil, anders gewoon bewegen die hap
+			// als rustdrempel, zet stil, anders gewoon bewegen die hap
 			if (joekels[i].Velocity.Length() > RustDrempel)
 				joekels[i].Position += joekels[i].Velocity * dt;
 			else
@@ -58,7 +58,7 @@ public partial class JoekelSim
 		int aantal = BurenVan(i, joekels[i].Chonkheid + grootsteChonkheid);
 		for (int k = 0; k < aantal; k++)
 		{
-		    // j is de index van de andere joekel
+			// j is de index van de andere joekel
 			int j = burenBuffer[k];
 			float raakAfstand = joekels[i].Chonkheid + joekels[j].Chonkheid;
 			Vector2 vanHemNaarMij = joekels[i].Position - joekels[j].Position;
@@ -66,11 +66,11 @@ public partial class JoekelSim
 			// geen overlap dan gaan we gewoon verder.
 			if (afstand >= raakAfstand || afstand == 0) continue;
 
-            // de weg vector, zodat we glibberig langs glijden.
+			// de weg vector, zodat we glibberig langs glijden.
 			Vector2 weg = vanHemNaarMij / afstand;
 			joekels[i].Position = joekels[j].Position + weg * raakAfstand;
 
-            // < 0: ik beweeg (deels) zijn kant op
+			// < 0: ik beweeg (deels) zijn kant op
 			float naarHemToe = joekels[i].Velocity.Dot(weg);
 			// dat stuk eraf en de rest van de beweging blijft
 			if (naarHemToe < 0) joekels[i].Velocity -= weg * naarHemToe;
@@ -85,7 +85,7 @@ public partial class JoekelSim
 		result *= 1f - 0.3f * Mathf.Clamp((honger - 0.5f) / 0.5f, 0f, 1f);
 		var joekelTile = WorldTiles.GetTileAt(joekels[i].Position);
 		if (joekelTile != null) {
-		    // modifier from the tile the joekel is on
+			// modifier from the tile the joekel is on
 			result *= joekelTile.GetJoekelSpeedMultiplier(joekels[i].Zwemdiplomas);
 		}
 		return result;

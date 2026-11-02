@@ -1,3 +1,4 @@
+using System;
 using Godot;
 
 // De honger mangement
@@ -22,7 +23,8 @@ public partial class JoekelSim
 				maximaalWilOfKanEten *= 1 - StrontvreterPlantenMalus * joekels[i].Strontvreterij;
 				float eating = Eat(f, dt, maximaalWilOfKanEten);
 				joekels[i].HuidigeGezonheid = Mathf.Min(joekels[i].HuidigeGezonheid + 2f * eating, joekels[i].MaximaleGezondheid);
-				joekels[i].Hunger -= eating;
+				float voedingswaarde = Math.Max(0, -1f * (joekels[i].Vleeslustigheid - 0.5f)) / 1.5f;
+				joekels[i].Hunger -= voedingswaarde * eating;
 			}
 
 			// honger loopt op met de tijd, dikke natuurlijk sneller

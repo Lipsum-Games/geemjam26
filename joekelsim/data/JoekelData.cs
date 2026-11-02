@@ -52,6 +52,7 @@ public struct JoekelData
 	// wanneer honger (1..10)
 	public float Trek;
 	public float Introversie;
+	public float IntroversieWegrenTijd;
 	public float Oehlalalaigheid;
 	public float RunAwaySeconds;
 	public float Heading;    // richting van de laatste sprong

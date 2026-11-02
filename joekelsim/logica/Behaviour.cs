@@ -23,11 +23,22 @@ public partial class JoekelSim
 			}
 		}
 
-		// By default chillen, nu ff standaard klein sprongetje naar rechts.
 		if (joekels[i].CurrentPlan == Plan.CHILL)
-			return (joekels[i].Heading + (GD.Randf() - 0.5f) * 0.1f, joekels[i].ChillSpeed);
+		{
+			float headingNew = joekels[i].Heading + (GD.Randf() - 0.5f) * 0.1f;
+			Vector2 checkVec = joekels[i].Position  + Vector2.FromAngle(headingNew) * joekels[i].Kachow;
+			float r = joekels[i].Chonkheid;
+			if (checkVec.Clamp(new Vector2(r, r), World.WorldSize - new Vector2(r, r)) != checkVec)
+			{
+				// Als we de wereld uit dreigen te gaan, draai naar het midden
+				headingNew = joekels[i].Position.AngleToPoint(World.WorldSize / 2);
+			}
 
-        // Als er een doel is, spring ernaartoe.
+
+			return (headingNew, joekels[i].ChillSpeed);
+		}
+
+		// Als er een doel is, spring ernaartoe.
 		if (joekels[i].TargetPosition is Vector2 doel)
 		{
 		    // Dichtbij springt hij zachter, zodat hij er niet voorbij schiet
@@ -115,7 +126,7 @@ public partial class JoekelSim
 				{
 					j.CurrentPlan = Plan.RUN_AWAY;
 					j.TargetPosition = target;
-					j.RunAwaySeconds = 10;
+					j.RunAwaySeconds = j.IntroversieWegrenTijd;
 				}
 				else if (j.Oehlalalaigheid > GD.Randf())
 				{
@@ -218,6 +229,15 @@ public partial class JoekelSim
 			if (relPos.IsZeroApprox())
 			{
 				return (0, Vector2.Zero);
+			}
+			
+			// Check ff of we niet bijna de wereld uit stormen (of in de buurt komen)
+			Vector2 checkVec = joekels[i].Position - relPos * joekels[i].Kachow * joekels[i].IntroversieWegrenTijd * 2;
+			float r = joekels[i].Chonkheid;
+			if (checkVec.Clamp(new Vector2(r, r), World.WorldSize - new Vector2(r, r)) != checkVec)
+			{
+				// Als we de wereld uit zouden raken, doe het dan niet, en beweeg richting het midden
+				return (drukteIndex, (World.WorldSize/2 - joekels[i].Position));	
 			}
 
 			target = -relPos * 1_000;
