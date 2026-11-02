@@ -13,7 +13,6 @@ public partial class Statistiek : Node
 
 	public readonly List<float> Populatie = new();
 	public readonly Dictionary<string, List<float>> Traits = new();
-	public readonly Dictionary<string, List<float>> Types = new();
 
 	// Theoretisch min/max per trait over alle mogelijke DNA (genen -1..1).
 	// Traits zijn sommen/sigmoids/ranges van genen, die hun uitersten op de hoeken van de genruimte hebben:
@@ -55,9 +54,7 @@ public partial class Statistiek : Node
 
 	void Meet()
 	{
-		var joekels = new List<Joekel>();
-		foreach (var n in GetParent().GetChildren())
-			if (n is Joekel j && j.Dna != null) joekels.Add(j);
+		var joekels = Slop.Joekels(GetParent());
 
 		Populatie.Add(joekels.Count);
 
@@ -68,12 +65,6 @@ public partial class Statistiek : Node
 			foreach (var j in joekels) som += k.Van(j.Dna);
 			Reeks(Traits, k.Naam).Add(joekels.Count > 0 ? som / joekels.Count : 0);
 		}
-
-		var telling = new Dictionary<string, int>();
-		foreach (var j in joekels)
-			telling[j.StuiterNaam] = telling.GetValueOrDefault(j.StuiterNaam) + 1;
-		foreach (var naam in new[] { "Garfield", "Fumo", "Kei", "Gondola" })
-			Reeks(Types, naam).Add(joekels.Count > 0 ? telling.GetValueOrDefault(naam) / (float)joekels.Count : 0);
 
 		if (Populatie.Count >= MaxPunten) Halveer();
 	}
@@ -88,7 +79,6 @@ public partial class Statistiek : Node
 	{
 		Dun(Populatie);
 		foreach (var l in Traits.Values) Dun(l);
-		foreach (var l in Types.Values) Dun(l);
 		_interval *= 2;
 	}
 

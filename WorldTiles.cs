@@ -33,14 +33,14 @@ public class WorldTile {
 	public int YPos;
 	public WorldTileType Type;
 
-	public float GetJoekelSpeedMultiplier(Joekel j) {
+	public float GetJoekelSpeedMultiplier(float zwemdiplomas) {
 		switch (this.Type) {
 			case WorldTileType.Grass:
 				return 1f;
 			case WorldTileType.Forest:
 				return 0.7f; // todo: boomklimmen karaktereigenschap ofzo iets koesls
 			case WorldTileType.Water:
-				return Karaktereigenschappen.Zwemdiplomas.Van(j.Dna);
+				return zwemdiplomas;
 		}
 
 		return 1f;
@@ -56,18 +56,24 @@ public partial class WorldTiles : TileMapLayer
 	private static readonly List<WorldTile> The_Tiles = new List<WorldTile>();
 
 	private const int TILE_ATLAS_TILE_SET_SOURCE_ID = 0;
+	private static Texture2D _origineleAtlas;
+
 	private FastNoiseLite _noiseSource;
 	private const int NOISE_BLEND_FINENESS = 3;
 
 	public override void _Ready()
 	{
+		The_Tiles.Clear();
+
 		int noiseSeed = (int)GD.Randi();
 		_noiseSource = initNoiseSource(noiseSeed);
 
 		// resize tile / tile atlas / tile textue so it all fits neatly on the actual world tile size
 		TileSet.TileSize = new Vector2I(WORLD_TILE_SIZE_X, WORLD_TILE_SIZE_Y);
 		var atlas = (TileSetAtlasSource)TileSet.GetSource(0);
-		atlas.Texture = GenerateResizedAtlasTexture(atlas.Texture);
+		// de originele atlas: bij het herladen van de scene is de TileSet dezelfde en al verkleind, dus altijd vanaf het origineel
+		_origineleAtlas ??= atlas.Texture;
+		atlas.Texture = GenerateResizedAtlasTexture(_origineleAtlas);
 		TileSet.TileSize        = new Vector2I(WORLD_TILE_SIZE_X, WORLD_TILE_SIZE_Y);
 		atlas.TextureRegionSize = new Vector2I(WORLD_TILE_SIZE_X, WORLD_TILE_SIZE_Y);
 
@@ -91,17 +97,15 @@ public partial class WorldTiles : TileMapLayer
 				float noise       = _noiseSource.GetNoise2D(((float) noisex) / ((float) NOISE_BLEND_FINENESS), ((float) noisey) / ((float) NOISE_BLEND_FINENESS)); /* [-1,1] */
 				float noiseNormal = (noise + 1f) / 2f;             /* [ 0,1] */
 				noiseMap.SetPixel(noisex, noisey, new Color(noiseNormal, 0, 0));
-				
+
 				if (!(noisex % NOISE_BLEND_FINENESS == 0 && noisey % NOISE_BLEND_FINENESS == 0))
 					continue;
 
 				int x = noisex / NOISE_BLEND_FINENESS;
 				int y = noisey / NOISE_BLEND_FINENESS;
-
-				int noiseI = (int) Mathf.Floor(Mathf.Clamp(
-					noiseNormal * ((float) WorldTileAtlasCoords.TileTypes.Length), 
-					0.0f, 
-					((float) (WorldTileAtlasCoords.TileTypes.Length - 1))));
+				
+				int noiseI = (int) (noiseNormal * (WorldTileAtlasCoords.TileTypes.Length));
+				noiseI = Math.Min(noiseI, WorldTileAtlasCoords.TileTypes.Length - 1); // noise precies 1.0 zou anders index 3 geven (bestaat niet)
 
 				var tileType = WorldTileAtlasCoords.TileTypes[noiseI];
 				var atlasCoords = WorldTileAtlasCoords.Coordinates[tileType];
@@ -124,10 +128,10 @@ public partial class WorldTiles : TileMapLayer
 		var tileIndexTexture = ImageTexture.CreateFromImage(noiseMap);
 		material.SetShaderParameter("noise_map", tileIndexTexture);
 	} 
-
+	
 	public static WorldTile GetTileAt(Vector2 pos) {
-		int x = (int) pos.X;
-		int y = (int) pos.Y;
+		int x = Mathf.FloorToInt(pos.X / WORLD_TILE_SIZE_X);
+		int y = Mathf.FloorToInt(pos.Y / WORLD_TILE_SIZE_Y);
 
 		if (x < 0f || y < 0f) {
 			return null;
@@ -137,7 +141,9 @@ public partial class WorldTiles : TileMapLayer
 			return null;
 		}
 
-		return The_Tiles[y * WORLD_AMOUNT_TILES_X + x];
+		int index = y * WORLD_AMOUNT_TILES_X + x;
+		if (index >= The_Tiles.Count) return null; // (nog) geen tegels,
+		return The_Tiles[index];
 	}
 
 	private static FastNoiseLite initNoiseSource(int seed) {

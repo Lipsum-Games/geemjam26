@@ -30,3 +30,5 @@ venv/
 # OS
 .DS_Store
 Thumbs.db
+# lokale notities (handoffs e.d.), niet committen
+local_files/

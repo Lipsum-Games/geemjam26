@@ -5,15 +5,24 @@ public partial class Camera : Camera2D
 {
 
 	[Export] public float VolgZoom = 2f;
-	Joekel _volg;
+	Node2D _volg;
 	Vector2? _zoomDoel;
 	Vector2 _volgOffset;
 
-	public void Volg(Joekel joekel)
+	public void Volg(Node2D joekel)
 	{
 		_volgOffset = Vector2.Zero;
 		_volg = joekel;
 		_zoomDoel = new Vector2(VolgZoom, VolgZoom);
+	}
+
+	// bij de start: midden van de wereld, zo ver uitgezoomd dat de hele wereld (met een randje) in beeld is
+	public override void _Ready()
+	{
+		Position = World.WorldSize / 2;
+		var scherm = GetViewportRect().Size;
+		float zoom = Mathf.Min(scherm.X / World.WorldSize.X, scherm.Y / World.WorldSize.Y) * 0.92f;
+		Zoom = new Vector2(zoom, zoom);
 	}
 
 	public void StopVolgen() => _volg = null;

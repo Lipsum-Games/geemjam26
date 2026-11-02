@@ -3,6 +3,10 @@ using Godot;
 public partial class DnaPaneel : PanelContainer
 {
 	Vector2 _drukPositie;
+	JoekelSim Sim => GetTree().CurrentScene.GetNodeOrNull<JoekelSim>("JoekelSim");
+
+	// elke frame (ook tijdens pauze): info van de geselecteerde joekel in de snelle sim bijwerken
+	public override void _Process(double delta) => Sim?.ToonGeselecteerde();
 
 	public override void _Ready()
 	{
@@ -28,15 +32,16 @@ public partial class DnaPaneel : PanelContainer
 		};
 		volg.Pressed += () =>
 		{
-			if (Joekel.Geselecteerd != null)
-				(GetViewport().GetCamera2D() as Camera)?.Volg(Joekel.Geselecteerd);
+			Node2D doel = Sim?.Volgpunt;
+			if (doel != null)
+				(GetViewport().GetCamera2D() as Camera)?.Volg(doel);
 		};
 		AddChild(volg);
 	}
 
 	void Sluit()
 	{
-		Joekel.Deselecteer();
+		Sim?.Deselecteer();
 		Visible = false;
 		(GetViewport().GetCamera2D() as Camera)?.StopVolgen();
 	}
@@ -56,15 +61,7 @@ public partial class DnaPaneel : PanelContainer
 
 		// anders moet je checken of je closed of een nieuw scherm opent.
 		var wereldPositie = GetViewport().GetCamera2D().GetGlobalMousePosition();
-		var vraag = new PhysicsPointQueryParameters2D { Position = wereldPositie };
-		foreach (var raak in GetViewport().World2D.DirectSpaceState.IntersectPoint(vraag))
-		{
-			if (raak["collider"].AsGodotObject() is Joekel joekel)
-			{
-				joekel.Selecteer();
-				return;
-			}
-		}
+		if (Sim?.Kies(wereldPositie) == true) return;
 
 		Sluit();
 	}

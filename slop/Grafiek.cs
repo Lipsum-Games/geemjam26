@@ -26,12 +26,13 @@ public partial class Grafiek : Control
 
 	Rect2 Plot => new(Links, Boven, Mathf.Max(1, Size.X - Links - Rechts), Mathf.Max(1, Size.Y - Boven - Onder));
 
-	public override void _Ready() => TooltipText = " "; // niet-leeg, anders vraagt Godot _GetTooltip nooit op
+	public override void _Ready() => HoverUitleg.Koppel(this, HoverTekst); // eigen hover-paneel (leesbaar, werkt ook tijdens de sim)
 
 	public override void _Process(double delta) => QueueRedraw();
 
 	// hover = waarde van elke zichtbare lijn op dat punt in de tijd
-	public override string _GetTooltip(Vector2 p)
+	// niet _GetTooltip: dan toont Godot óók zijn eigen tooltip (dubbel)
+	public string HoverTekst(Vector2 p)
 	{
 		var plot = Plot;
 		float fractie = Mathf.Clamp((p.X - plot.Position.X) / plot.Size.X, 0, 1);

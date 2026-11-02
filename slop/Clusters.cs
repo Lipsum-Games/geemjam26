@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 public partial class Clusters : Node
 {
 	public enum Modus { Plek, Geur, Dna }
-	[Export] public Modus Wijze = Modus.Plek;   // welke modus het stats-scherm toont / markeert
+	[Export] public Modus Wijze = Modus.Dna;   // welke modus het stats-scherm toont / markeert
 	[Export] public int MinGroep = 5;           // minimum joekels om als groep te tellen...
 	[Export] public float MinGroepAandeel = 0.02f; // ...of dit deel van de populatie, als dat meer is
 	[Export] public int KuddeMinimum = 4;       // min. joekels (incl. jezelf) in je buurt om een kudde te beginnen
@@ -66,7 +66,7 @@ public partial class Clusters : Node
 	{
 		public readonly List<Groep> Groepen = new();
 		public readonly Dictionary<int, List<float>> GrootteHistorie = new();
-		public readonly Dictionary<Joekel, int> Indeling = new();
+		public readonly Dictionary<JoekelInfo, int> Indeling = new();
 		public int? Gemarkeerd;
 		public int Zwervers;
 		public int Metingen, VolgendeId;
@@ -85,7 +85,7 @@ public partial class Clusters : Node
 	// publieke kant toont altijd de huidige modus
 	public List<Groep> Groepen => S.Groepen;
 	public Dictionary<int, List<float>> GrootteHistorie => S.GrootteHistorie;
-	public Dictionary<Joekel, int> Indeling => S.Indeling;
+	public Dictionary<JoekelInfo, int> Indeling => S.Indeling;
 	public int? Gemarkeerd => S.Gemarkeerd;
 	public int Zwervers => S.Zwervers;
 	public int HistorieVersie => S.HistorieVersie;
@@ -172,14 +172,12 @@ public partial class Clusters : Node
 		PasMarkeringToe();
 	}
 
-	(List<Joekel>, Momentopname) Meet()
+	(List<JoekelInfo>, Momentopname) Meet()
 	{
-		var joekels = new List<Joekel>();
-		foreach (var n in GetParent().GetChildren())
-			if (n is Joekel j && j.Dna != null) joekels.Add(j);
+		var joekels = Slop.Joekels(GetParent());
 		var moment = new Momentopname
 		{
-			Pos = joekels.Select(j => j.GlobalPosition).ToArray(),
+			Pos = joekels.Select(j => j.Pos).ToArray(),
 			Geur = joekels.Select(j => j.Geur).ToArray(),
 			Dna = joekels.Select(Genen).ToArray(),
 		};
@@ -187,7 +185,7 @@ public partial class Clusters : Node
 	}
 
 	// indeling van de levende joekels: groepen + per-joekel indeling + beschrijving (kenmerken, banden)
-	void DeelLive(Modus modus, Staat staat, List<Joekel> joekels, Momentopname moment)
+	void DeelLive(Modus modus, Staat staat, List<JoekelInfo> joekels, Momentopname moment)
 	{
 		var (labels, k) = Indelen(modus, staat.Losheid, moment, staat.Groepen, _random);
 		var groepen = Groepeer(modus, moment, labels, k, staat.Groepen, ref staat.VolgendeId);
@@ -371,11 +369,26 @@ public partial class Clusters : Node
 		int n = pos.Length;
 		float r2 = afstand * afstand;
 
-		var buren = new List<int>[n];
-		for (int i = 0; i < n; i++) buren[i] = new List<int>();
+		// hash-grid met cel = afstand, buren on-the-fly (alle paren was O(n²) tijd én geheugen bij duizenden joekels)
+		var grid = new Dictionary<(int, int), List<int>>();
+		(int, int) Cel(Vector2 p) => ((int)MathF.Floor(p.X / afstand), (int)MathF.Floor(p.Y / afstand));
 		for (int i = 0; i < n; i++)
-			for (int j = i + 1; j < n; j++)
-				if (pos[i].DistanceSquaredTo(pos[j]) <= r2) { buren[i].Add(j); buren[j].Add(i); }
+		{
+			var c = Cel(pos[i]);
+			if (!grid.TryGetValue(c, out var l)) grid[c] = l = new List<int>();
+			l.Add(i);
+		}
+		var buren = new List<int>();
+		void Buren(int i)
+		{
+			buren.Clear();
+			var (cx, cy) = Cel(pos[i]);
+			for (int dy = -1; dy <= 1; dy++)
+				for (int dx = -1; dx <= 1; dx++)
+					if (grid.TryGetValue((cx + dx, cy + dy), out var l))
+						foreach (int j in l)
+							if (j != i && pos[i].DistanceSquaredTo(pos[j]) <= r2) buren.Add(j);
+		}
 
 		var labels = Enumerable.Repeat(-1, n).ToArray();
 		var bezocht = new bool[n];
@@ -384,18 +397,20 @@ public partial class Clusters : Node
 		{
 			if (bezocht[i]) continue;
 			bezocht[i] = true;
-			if (buren[i].Count + 1 < minimum) continue; // (voorlopig) zwerver
+			Buren(i);
+			if (buren.Count + 1 < minimum) continue; // (voorlopig) zwerver
 
 			labels[i] = groep;
-			var rij = new Queue<int>(buren[i]);
+			var rij = new Queue<int>(buren);
 			while (rij.Count > 0)
 			{
 				int q = rij.Dequeue();
 				if (labels[q] == -1) labels[q] = groep;
 				if (bezocht[q]) continue;
 				bezocht[q] = true;
-				if (buren[q].Count + 1 >= minimum)
-					foreach (var b in buren[q]) rij.Enqueue(b);
+				Buren(q);
+				if (buren.Count + 1 >= minimum)
+					foreach (var b in buren) rij.Enqueue(b);
 			}
 			groep++;
 		}
@@ -488,7 +503,7 @@ public partial class Clusters : Node
 		PasMarkeringToe();
 	}
 
-	static float[] Genen(Joekel j)
+	static float[] Genen(JoekelInfo j)
 	{
 		var g = new float[9];
 		for (int r = 0; r < 3; r++)
@@ -519,7 +534,7 @@ public partial class Clusters : Node
 		for (int i = lijst.Count - 1; i >= 0; i -= 2) lijst.RemoveAt(i);
 	}
 
-	static void BeschrijfGroepen(List<Groep> groepen, List<Joekel> joekels, int[] labels)
+	static void BeschrijfGroepen(List<Groep> groepen, List<JoekelInfo> joekels, int[] labels)
 	{
 		var traits = Karaktereigenschap.Alle;
 		var waarden = new float[joekels.Count, traits.Count];
@@ -555,13 +570,7 @@ public partial class Clusters : Node
 			var top = zs.Where(z => Mathf.Abs(z.z) >= 0.5f).OrderByDescending(z => Mathf.Abs(z.z)).Take(3)
 				.Select(z => $"{z.naam} {(z.z > 0 ? "+" : "")}{z.z:0.0}σ");
 
-			var types = new Dictionary<string, int>();
-			int leden = 0;
-			for (int i = 0; i < joekels.Count; i++)
-				if (labels[i] == c) { types[joekels[i].StuiterNaam] = types.GetValueOrDefault(joekels[i].StuiterNaam) + 1; leden++; }
-			var typeTekst = leden > 0 ? types.OrderByDescending(kv => kv.Value).Select(kv => $"{kv.Key} {100 * kv.Value / leden}%").First() : "";
-
-			g.Kenmerken = string.Join("  ·  ", new[] { typeTekst }.Concat(top));
+			g.Kenmerken = string.Join("  ·  ", top);
 		}
 	}
 
@@ -574,9 +583,8 @@ public partial class Clusters : Node
 
 	void PasMarkeringToe()
 	{
-		var gedimd = new Color(1, 1, 1, 0.15f);
-		foreach (var n in GetParent().GetChildren())
-			if (n is Joekel j)
-				j.Modulate = S.Gemarkeerd == null || (S.Indeling.TryGetValue(j, out var id) && id == S.Gemarkeerd) ? Colors.White : gedimd;
+		var zichtbaar = new HashSet<object>();
+		foreach (var (j, id) in S.Indeling) if (id == S.Gemarkeerd) zichtbaar.Add(j.Sleutel);
+		GetParent().GetNodeOrNull<JoekelSim>("JoekelSim")?.ZetMarkering(S.Gemarkeerd == null ? null : zichtbaar);
 	}
 }
