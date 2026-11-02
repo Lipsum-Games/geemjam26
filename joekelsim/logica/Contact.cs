@@ -48,12 +48,12 @@ public partial class JoekelSim
 				{
 					Reproduce(i, j);
 				}
-				// groot verschil = batel
-				else if (joekels[i].CurrentPlan == Plan.HUNT && verschil > 1)
+				// groot verschil = batel (alleen als het een planteneter is)
+				else if (joekels[i].CurrentPlan == Plan.HUNT  && joekels[j].Vleeslustigheid < 0 && verschil > 1)
 				{
 					bool leefde = joekels[j].HuidigeGezonheid > 0;
 					joekels[j].HuidigeGezonheid -= joekels[i].Chonkheid * 20f * contactDt;
-					joekels[i].Hunger = Mathf.Max(0.0f, joekels[i].Hunger - Mathf.Max(joekels[i].Vleeslustigheid + 0.3f, 0f) * 10f * contactDt);
+					joekels[i].Hunger = Mathf.Max(0.0f, joekels[i].Hunger - Mathf.Max(joekels[i].Vleeslustigheid + 0.3f, 0f) * contactDt);
 
 					// doodgemaakt? opeten! hoe dikker de prooi hoe meer vlees, hoe vleeslustiger hoe meer je eruit haalt
 					// en dan is de jacht klaar: lekker rondhangen tot hij weer honger heeft
