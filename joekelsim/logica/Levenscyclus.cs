@@ -121,4 +121,15 @@ public partial class JoekelSim
 			if (joekels[i].HuidigeGezonheid <= 0) VerwijderJoekel(i);
 		}
 	}
+
+	// Als alles dood is, is er ook niks aan, restart de sim met verse random joekels
+	void HerstelVanMassaExtinctie()
+	{
+		if (momenteelLevendeJoekels < 5)
+		{
+			for (int i = 0; i < StarterJoekels; i++)
+				// plaats die joekeltjes lekker random!
+				SpawnJoekel(new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y), Dna.Random());
+		}
+	}
 }

@@ -28,9 +28,11 @@ public partial class JoekelSim
 			}
 
 			// honger loopt op met de tijd, dikke natuurlijk sneller
-			float hongerOploopFactor = joekels[i].Chonkheid * dt / 100;
+			float hongerOploopFactor = joekels[i].Chonkheid * 0.01f * 0.01f * (joekels[i].Velocity.Length() * 1.0f + 0.1f) * dt;
 			// kou en hitte kosten ook honger (zie Seizoenen.cs)
 			hongerOploopFactor += (KouHonger(i) + HitteHonger(i)) * dt;
+			hongerOploopFactor += (joekels[i].Perception / 300f) * 0.05f * dt;
+			hongerOploopFactor += joekels[i].RanzigKracht * joekels[i].RanzigBereik * AuraPuls(i) * 0.05f * dt;
 			joekels[i].Hunger = Mathf.Min(joekels[i].Hunger + hongerOploopFactor, HungerMax);
 
 			// honger van 0 tot 1, als het boven 0.7 gaat gaat er gezondheid af, hoe hongeriger hoe harder (exponentially)

@@ -198,8 +198,8 @@ public partial class JoekelSim
 	{
 		// pak de joekels om ons heen
 		int aantal = BurenVan(i, joekels[i].Perception + grootsteChonkheid);
-		int count = 1;
-		Vector2 som = joekels[i].Position;
+		int count = 0;
+		Vector2 som = Vector2.Zero;
 		for (int k = 0; k < aantal; k++)
 		{
 			int b = burenBuffer[k];
@@ -232,7 +232,7 @@ public partial class JoekelSim
 			}
 			
 			// Check ff of we niet bijna de wereld uit stormen (of in de buurt komen)
-			Vector2 checkVec = joekels[i].Position - relPos * joekels[i].Kachow * joekels[i].IntroversieWegrenTijd * 2;
+			Vector2 checkVec = joekels[i].Position - relPos * joekels[i].Kachow * 0.1f;
 			float r = joekels[i].Chonkheid;
 			if (checkVec.Clamp(new Vector2(r, r), World.WorldSize - new Vector2(r, r)) != checkVec)
 			{
@@ -240,17 +240,15 @@ public partial class JoekelSim
 				return (drukteIndex, (World.WorldSize/2 - joekels[i].Position));	
 			}
 
-			target = -relPos * 1_000;
+			return (drukteIndex, -relPos * 1_000);
 		}
 		else
 		{
 			// Kans op drukte opzoeken, meer extraversie en minder joekels maken de kans hoger om andere joekels te zoeken
 			drukteIndex = Mathf.Abs(joekels[i].Introversie) / count;
 
-			target = avgLoc;
+			return (drukteIndex, avgLoc);
 		}
-
-		return (drukteIndex, target);
 	}
 
 	// terug naar chillen, zonder doel

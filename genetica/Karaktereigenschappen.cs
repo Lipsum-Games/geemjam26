@@ -75,11 +75,11 @@ public static class Karaktereigenschappen
 	// 0-1: hoeveel je van stront houdt. tegen de diagonaal in (dikke schutters zijn het zelden) + en een bonus gen
 	public static readonly Karaktereigenschap Strontvreterij = new("Strontvreterij", d => Sigmoid(2.5f * d[2, 0] - d.Diag() - 1.5f));
 	
-	public static readonly Karaktereigenschap MutationChance = new("MutationChance", d => Sigmoid(-0.5f * d[0,0] + d[1,0] - 0.5f * d[2,0] + 2.0f));
+	public static readonly Karaktereigenschap MutationChance = new("MutationChance", d => Sigmoid(0.3f * (-0.5f * d[0,0] + d[1,0] - 0.5f * d[2,0]) + 2.0f));
 	
-	public static readonly Karaktereigenschap MutationDev = new("MutationDev", d => 0.1f * Softplus(-0.5f * d[0,1] + d[1,1] - 0.5f * d[2,1]));
+	public static readonly Karaktereigenschap MutationDev = new("MutationDev", d => Softplus(0.3f * (-0.5f * d[0,1] + d[1,1] - 0.5f * d[2,1]) - 2.0f));
 
-	public static readonly Karaktereigenschap FlipChance = new("FlipChance", d => 0.01f * Softplus(-0.5f * d[0,2] +  d[1,2] - 0.5f * d[2,2] - 2.0f));
+	public static readonly Karaktereigenschap FlipChance = new("FlipChance", d => Softplus(0.3f * (-0.5f * d[0,2] +  d[1,2] - 0.5f * d[2,2]) - 5.0f));
 
 
 
