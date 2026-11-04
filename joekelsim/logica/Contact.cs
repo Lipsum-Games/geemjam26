@@ -89,7 +89,7 @@ public partial class JoekelSim
 		// soortgrens: te verschillend DNA = vaak een miskraam, zo blijven soorten die uit elkaar gegroeid zijn apart
 		if(joekels[i].Dna.Similarity(joekels[i].Dna, joekels[j].Dna) > SoortGrens && GD.Randf() < SoortGrensMiskraamKans)
 			return;
-		SpawnJoekel(joekels[i].Position, Dna.Combine(joekels[i].Dna, joekels[j].Dna));
+		SpawnJoekel(joekels[i].Position, Dna.Combine(joekels[i].Dna, joekels[j].Dna, joekels[i].ReproductionValues));
 		joekels[i].Hunger += ReproductionHungerCost;
 	}
 }

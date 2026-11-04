@@ -1,3 +1,4 @@
+using Geemjam26ShipsumEvolve.genetica;
 using Godot;
 
 // Alles wat een joekel is basically.. joekels[i] in JoekelSim is deze struct.
@@ -90,4 +91,6 @@ public struct JoekelData
 
 	// 0-1: warm in de winter, heet in de zomer
 	public float Vacht;
+	
+	public ReproductionValues ReproductionValues;
 }

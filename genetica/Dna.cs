@@ -1,11 +1,11 @@
 using Godot;
 using System;
+using Geemjam26ShipsumEvolve.genetica;
 
 public partial class Dna
 {
 	public const int N = 3;
 	public readonly float[,] M = new float[N, N];
-	[Export] public float MutationFactor = 0.1F;
 
 	public static Dna Random()
 	{
@@ -16,7 +16,7 @@ public partial class Dna
 		return d;
 	}
 	
-	public static Dna Combine(Dna parent1, Dna parent2)
+	public static Dna Combine(Dna parent1, Dna parent2, ReproductionValues reproductionValues)
 	{
 		var d = new Dna();
 		var choice = 0.0f;
@@ -30,21 +30,21 @@ public partial class Dna
 				}
 			}
 		}
-		return d.Noisified();
+		return d.Noisified(reproductionValues);
 	}
 
-	public Dna Noisified(){
+	public Dna Noisified(ReproductionValues reproductionValues){
 		var d = new Dna();
 		for (int r = 0; r < N; r++)
 			for (int c = 0; c < N; c++)
 			{
+				if (GD.Randf() < reproductionValues.MutationChance)
 				// kleine willekeurige duw
-				d.M[r, c] = M[r, c] + (float)GD.Randfn(0, MutationFactor);
+				d.M[r, c] = M[r, c] + (float)GD.Randfn(0, reproductionValues.MutationDeviation);
 
 				// gekke mutatie: 1% kans compleet nieuwe waarde, 1% kans omgedraaid teken
-				float kans = GD.Randf();
-				if (kans < 0.01f) d.M[r, c] = (float)GD.RandRange(-1.0, 1.0);
-				else if (kans < 0.02f) d.M[r, c] = -d.M[r, c];
+				if (GD.Randf() < reproductionValues.FlipProbability) d.M[r, c] = (float)GD.RandRange(-1.0, 1.0);
+				else if (GD.Randf() < reproductionValues.FlipProbability) d.M[r, c] = -d.M[r, c];
 			}
 		return d;
 	} 

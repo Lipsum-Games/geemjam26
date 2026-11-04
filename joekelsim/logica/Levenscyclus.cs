@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using Geemjam26ShipsumEvolve.genetica;
 
 // De hele joekel lifecycle, geboorte en dood wordt hier geregeld.
 public partial class JoekelSim
@@ -64,6 +65,12 @@ public partial class JoekelSim
 			Kleur0 = new Color((dna[0, 0] + 1) / 2, (dna[0, 1] + 1) / 2, (dna[0, 2] + 1) / 2),
 			Kleur1 = new Color((dna[1, 0] + 1) / 2, (dna[1, 1] + 1) / 2, (dna[1, 2] + 1) / 2),
 			Kleur2 = new Color((dna[2, 0] + 1) / 2, (dna[2, 1] + 1) / 2, (dna[2, 2] + 1) / 2),
+			ReproductionValues = new ReproductionValues()
+			{
+				MutationChance = Karaktereigenschappen.MutationChance.Van(dna),
+				MutationDeviation = Karaktereigenschappen.MutationDev.Van(dna),
+				FlipProbability = Karaktereigenschappen.FlipChance.Van(dna),
+			}
 		};
 
 		// meteen in de grid plaatsen, zodat wie hierna geboren wordt hem al ziet
