@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using Geemjam26ShipsumEvolve.genetica;
+using Geemjam26ShipsumEvolve.neuralnets;
 
 // De hele joekel lifecycle, geboorte en dood wordt hier geregeld.
 public partial class JoekelSim
@@ -19,7 +20,7 @@ public partial class JoekelSim
 	// Maak een nieuwe joekel op deze plek. Hij komt achteraan in de array (op plek momenteelLevendeJoekels).
 	// Als de array vol is, dan gebeurt er niets.
 	// Geeft true terug als er echt een joekel is gemaakt
-	bool MaakJoekel(Vector2 positie, Dna dna)
+	bool MaakJoekel(Vector2 positie, Dna dna, SimpleNet net)
 	{
 		if (momenteelLevendeJoekels >= MaxJoekels) return false;
 
@@ -70,7 +71,9 @@ public partial class JoekelSim
 				MutationChance = Karaktereigenschappen.MutationChance.Van(dna),
 				MutationDeviation = Karaktereigenschappen.MutationDev.Van(dna),
 				FlipProbability = Karaktereigenschappen.FlipChance.Van(dna),
-			}
+			},
+			NeuralNet = net,
+			NetControl = Karaktereigenschappen.NetControl.Van(dna)
 		};
 
 		// meteen in de grid plaatsen, zodat wie hierna geboren wordt hem al ziet
@@ -83,7 +86,7 @@ public partial class JoekelSim
 		return true;
 	}
 
-	void SpawnJoekel(Vector2 Position, Dna Dna){
+	void SpawnJoekel(Vector2 Position, Dna Dna, SimpleNet neuralNet){
 		var radius = Karaktereigenschappen.Chonkheid.Van(Dna);
 
 		var success = false;
@@ -100,7 +103,7 @@ public partial class JoekelSim
 			}
 		}
 		if (success) {
-			MaakJoekel(finalPosition, Dna);
+			MaakJoekel(finalPosition, Dna, neuralNet);
 		}
 	}
 
@@ -129,7 +132,12 @@ public partial class JoekelSim
 		{
 			for (int i = 0; i < StarterJoekels; i++)
 				// plaats die joekeltjes lekker random!
-				SpawnJoekel(new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y), Dna.Random());
+				SpawnJoekel(
+					new Vector2(GD.Randf() * World.WorldSize.X, 
+						GD.Randf() * World.WorldSize.Y), 
+					Dna.Random(), 
+					new SimpleNet(4)
+					);
 		}
 	}
 }

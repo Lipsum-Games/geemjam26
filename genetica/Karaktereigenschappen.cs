@@ -82,7 +82,6 @@ public static class Karaktereigenschappen
 	public static readonly Karaktereigenschap MutationDev = new("MutationDev", d => Softplus(0.3f * (-0.5f * d[0,1] + d[1,1] - 0.5f * d[2,1]) - 2.0f));
 
 	public static readonly Karaktereigenschap FlipChance = new("FlipChance", d => Softplus(0.3f * (-0.5f * d[0,2] +  d[1,2] - 0.5f * d[2,2]) - 5.0f));
-
-
-
+	
+	public static readonly Karaktereigenschap NetControl = new("NetControl", d => Sigmoid(d[0, 0] + d[2,2] + d[2, 0] + d[0, 2] - d[1,1]));
 }

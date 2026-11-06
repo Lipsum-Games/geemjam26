@@ -1,4 +1,5 @@
 using Geemjam26ShipsumEvolve.genetica;
+using Geemjam26ShipsumEvolve.neuralnets;
 using Godot;
 
 // Alles wat een joekel is basically.. joekels[i] in JoekelSim is deze struct.
@@ -93,4 +94,6 @@ public struct JoekelData
 	public float Vacht;
 	
 	public ReproductionValues ReproductionValues;
+	public SimpleNet NeuralNet;
+	public float NetControl;
 }

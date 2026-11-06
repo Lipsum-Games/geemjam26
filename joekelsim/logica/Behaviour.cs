@@ -1,3 +1,4 @@
+using Geemjam26ShipsumEvolve.neuralnets;
 using Godot;
 
 // Behaviour: wat wil een joekel?
@@ -7,6 +8,10 @@ public partial class JoekelSim
     // Dit bepaald dus wat de joekel gaat doen komende tijd.
 	(float richting, float kracht) DoeDingen(int i, float dt)
 	{
+		if (joekels[i].NeuralNet != null && GD.Randf() < joekels[i].NetControl)
+		{
+			return DoeNeuralNetDingen(i, dt);
+		}
 
 		BesluitPlan(i, dt);
 
@@ -48,6 +53,30 @@ public partial class JoekelSim
 			return (joekels[i].Position.AngleToPoint(doel), kracht);
 		}
 		return (0f, 0f);
+	}
+
+	private (float richting, float kracht) DoeNeuralNetDingen(int i, float dt)
+	{
+		JoekelData joekel = joekels[i];
+		int closestJoekel = ClosestJoekel(i);
+		int prooi = BesteProoi(i, joekel);
+		int f = DichtsteFoodSource(i, joekel.Perception);
+		
+		var data = new SimpleNetInputData()
+		{
+			WorldPosition	= joekel.Position,
+			Velocity        = joekel.Velocity,
+			Temperature     = 0.0f, // TODO: Waar de **** komt dit nou weet vandaan? 
+			Heading         = joekel.Heading, 
+			Hunger          = joekel.Hunger, 
+			
+			BestMate        = closestJoekel > 0 ? joekels[closestJoekel] : null,
+			BestPrey        = prooi > 0 ? joekels[prooi] : null,
+			BestFood        = f > 0 ? foodSources[f] : null,
+			
+		};
+		(float rd, float kracht) = joekels[i].NeuralNet.Process(data);
+		return (joekels[i].Heading + rd * dt, kracht);
 	}
 
 	// Voor nu nog leeg.
