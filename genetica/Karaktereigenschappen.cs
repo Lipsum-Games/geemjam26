@@ -29,7 +29,9 @@ public static class Karaktereigenschappen
 		
 		// range [-4, 4]
 		float aanleg = dna.Cells((2,1), (0,2), DNA_CELL_DOODGAANS_SNELHEID_EN_ALGEMENE_GEZONDHEID, (1, 1));
-		float aanlegNormaal = (aanleg + 4.0f) / 8.0f;
+		// float aanlegNormaal = Mathf.Clamp(0, 1, (aanleg + 4.0f) / 8.0f);
+		float aanlegNormaal = Sigmoid( aanleg);
+
 
 		float hoeveel_zwemdiplomas = aanlegNormaal * ZWEM_MAX;
 

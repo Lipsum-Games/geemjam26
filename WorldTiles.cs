@@ -40,7 +40,7 @@ public class WorldTile {
 			case WorldTileType.Forest:
 				return 0.7f; // todo: boomklimmen karaktereigenschap ofzo iets koesls
 			case WorldTileType.Water:
-				return zwemdiplomas;
+				return 0.1f * Mathf.Pow(2, zwemdiplomas);
 		}
 
 		return 1f;
