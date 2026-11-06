@@ -47,6 +47,12 @@ public record struct SimpleNetInputData
         }
     }
 
+    private Vector2 OffsetAndRot(Vector2 position)
+    {
+        Vector2 relPos = position -  WorldPosition;
+        return relPos.Rotated(-Heading);
+    }
+
     private int FillWorldCoord(float[] array, int offset)
     {
         array[offset] = WorldPosition.X / World.WorldSize.X;
@@ -82,11 +88,11 @@ public record struct SimpleNetInputData
             array[offset] = 1;
             
             // TODO: Maybe rotate relative as well?
-            Vector2 relPos = (data.Value.Position - WorldPosition) / 500.0f;
+            Vector2 relPos = OffsetAndRot(data.Value.Position) / 500.0f;
             array[offset + 1] = relPos.X;
             array[offset + 2] = relPos.Y;
             
-            Vector2 vel = (data.Value.Velocity) / 300.0f;
+            Vector2 vel = (data.Value.Velocity.Rotated(-Heading)) / 300.0f;
             array[offset + 3] = vel.X;
             array[offset + 4] = vel.Y;
 
@@ -112,7 +118,7 @@ public record struct SimpleNetInputData
         {
             array[offset] = 1;
             
-            Vector2 relPos = (data.Value.Position - WorldPosition) / 500.0f;
+            Vector2 relPos = OffsetAndRot(data.Value.Position) / 500.0f;
             array[offset + 1] = relPos.X;
             array[offset + 2] = relPos.Y;
         }

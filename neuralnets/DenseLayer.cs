@@ -139,6 +139,11 @@ public class DenseLayer
                     outputs[i] = arr2[i];
                 }
             }
+
+            if (GD.Randf() < reproductionValues.MutationChance)
+            {
+                outputs[i] += (float) GD.Randfn(0, reproductionValues.MutationDeviation);
+            }
         }
         return outputs;
     }

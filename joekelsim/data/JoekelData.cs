@@ -52,13 +52,9 @@ public struct JoekelData
 	// hoe ver zien (px)
 	public float Perception;
 	// wanneer honger (1..10)
-	public float Trek;
 	public float Introversie;
-	public float IntroversieWegrenTijd;
-	public float Oehlalalaigheid;
 	public float RunAwaySeconds;
 	public float Heading;    // richting van de laatste sprong
-	public float ChillSpeed;
 
 	// hoe oud in seconden
 	public float Age;
@@ -95,5 +91,6 @@ public struct JoekelData
 	
 	public ReproductionValues ReproductionValues;
 	public SimpleNet NeuralNet;
-	public float NetControl;
+	public float LaatsteRichting;
+	public float LaatsteKracht;
 }

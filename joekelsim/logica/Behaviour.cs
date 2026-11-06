@@ -8,13 +8,21 @@ public partial class JoekelSim
     // Dit bepaald dus wat de joekel gaat doen komende tijd.
 	(float richting, float kracht) DoeDingen(int i, float dt)
 	{
-		if (joekels[i].NeuralNet != null && GD.Randf() < joekels[i].NetControl)
-		{
-			return DoeNeuralNetDingen(i, dt);
-		}
 
 		BesluitPlan(i, dt);
 
+		if (joekels[i].CurrentPlan is Plan.NEURAL_NETWORK or Plan.HUNT)
+		{
+			joekels[i].RunAwaySeconds -= dt;
+			if (joekels[i].RunAwaySeconds < 0)
+			{
+				joekels[i].RunAwaySeconds = 1f;
+				(joekels[i].LaatsteRichting, joekels[i].LaatsteKracht) = DoeNeuralNetDingen(i, dt);
+			}
+
+			return (joekels[i].LaatsteRichting, joekels[i].LaatsteKracht);
+		}
+		
 		if (joekels[i].CurrentPlan == Plan.REPRODUCE)
 		{
 			joekels[i].TargetGok = IndexVanJoekel(joekels[i].TargetId, joekels[i].TargetGok);
@@ -26,21 +34,6 @@ public partial class JoekelSim
 			{
 				StopPlan(ref joekels[i]);
 			}
-		}
-
-		if (joekels[i].CurrentPlan == Plan.CHILL)
-		{
-			float headingNew = joekels[i].Heading + (GD.Randf() - 0.5f) * 0.1f;
-			Vector2 checkVec = joekels[i].Position  + Vector2.FromAngle(headingNew) * joekels[i].Kachow;
-			float r = joekels[i].Chonkheid;
-			if (checkVec.Clamp(new Vector2(r, r), World.WorldSize - new Vector2(r, r)) != checkVec)
-			{
-				// Als we de wereld uit dreigen te gaan, draai naar het midden
-				headingNew = joekels[i].Position.AngleToPoint(World.WorldSize / 2);
-			}
-
-
-			return (headingNew, joekels[i].ChillSpeed);
 		}
 
 		// Als er een doel is, spring ernaartoe.
@@ -75,7 +68,22 @@ public partial class JoekelSim
 			BestFood        = f > 0 ? foodSources[f] : null,
 			
 		};
-		(float rd, float kracht) = joekels[i].NeuralNet.Process(data);
+		(float rd, float kracht, Plan plan) = joekels[i].NeuralNet.Process(data);
+		
+		// Geef het netwerk een manier om te dealen met reproductie, wat te moeilijk is om in het begin zelf te doen
+		if (plan is Plan.REPRODUCE)
+		{
+			// Maatje vinden
+			int mate = ClosestJoekel(i);
+			if (mate >= 0)
+			{
+				joekels[i].CurrentPlan = Plan.REPRODUCE;
+				joekels[i].TargetPosition = joekels[mate].Position;
+				joekels[i].TargetId = joekels[mate].Id;
+				joekels[i].TargetGok = mate;
+			}
+		}
+		
 		return (joekels[i].Heading + rd * dt, kracht);
 	}
 
@@ -83,109 +91,16 @@ public partial class JoekelSim
 	void BesluitPlan(int i, float dt)
 	{
 		ref JoekelData j = ref joekels[i];
-
-		// Kijk eerst of we in een huidig plan zitten
-		if (j.CurrentPlan is Plan.EAT or Plan.HUNT or Plan.EAT_STRONT || (j.CurrentPlan != Plan.CHILL && j.Hunger < j.Trek))
-		{
-			// No need to act, only handle "end" conditions
-			if (j.CurrentPlan is Plan.EAT or Plan.HUNT or Plan.EAT_STRONT && j.Hunger < HungerMin * 1.1f)
-			{
-				StopPlan(ref j);
-			} else if (j.CurrentPlan == Plan.RUN_AWAY)
-			{
-				if (j.RunAwaySeconds > 0)
-				{
-					j.RunAwaySeconds -= dt;
-				}
-				else
-				{
-					j.CurrentPlan = Plan.CHILL;
-					j.TargetPosition = null;
-				}
-			}
-		}
-		else
-		{
-			// Plan the next move
-
-			// Prio 1: Voedsel is heeeeeeel belangrijk
-			if (j.CurrentPlan is not (Plan.EAT or Plan.HUNT or Plan.EAT_STRONT) && j.Hunger > j.Trek)
-			{
-				if (j.Vleeslustigheid + 0.2f * (GD.Randf() - 0.5) > JaagDrempel)
-				{
-					// prooi vinden
-					int prooi = BesteProoi(i, j);
-					if (prooi >= 0)
-					{
-						j.CurrentPlan = Plan.HUNT;
-						j.TargetPosition = joekels[prooi].Position;
-						j.TargetId = joekels[prooi].Id;
-						j.TargetGok = prooi;
-					}
-				}
-				else
-				{
-					int f = DichtsteFoodSource(i, j.Perception);
-					// strontvreters kijken ook naar drolhopen, en gaan naar wat het dichtst is
-					int h = j.Strontvreterij > StrontvreterDrempel ? DichtsteDrolHoop(j.Position, j.Perception) : -1;
-					if (h >= 0 && (f < 0 || j.Position.DistanceTo(drolHopen[h].Position) < j.Position.DistanceTo(foodSources[f].Position)))
-					{
-						j.TargetPosition = drolHopen[h].Position;
-						j.TargetId = drolHopen[h].Id;
-						j.TargetGok = h;
-						j.CurrentPlan = Plan.EAT_STRONT;
-					}
-					else if (f >= 0)
-					{
-						// Go to foodsource
-						j.TargetPosition = foodSources[f].Position;
-						j.TargetId = foodSources[f].Id;
-						j.TargetGok = f;
-						j.CurrentPlan = Plan.EAT;
-					}
-				}
-			} else if (j.CurrentPlan == Plan.CHILL)
-			{
-				// We doen niks, laten we wat gaan den
-
-				(float drukteIndex, Vector2 target) = _compute_introversie_values(i);
-
-				// Is het te druk?
-				if (drukteIndex > GD.Randf())
-				{
-					j.CurrentPlan = Plan.RUN_AWAY;
-					j.TargetPosition = target;
-					j.RunAwaySeconds = j.IntroversieWegrenTijd;
-				}
-				else if (j.Oehlalalaigheid > GD.Randf())
-				{
-					// Maatje vinden
-					int mate = ClosestJoekel(i);
-					if (mate >= 0)
-					{
-						j.CurrentPlan = Plan.REPRODUCE;
-						j.TargetPosition = joekels[mate].Position;
-						j.TargetId = joekels[mate].Id;
-						j.TargetGok = mate;
-					}
-				}
-			}
-		}
-
-		if (j.CurrentPlan == Plan.EAT)
-		{
-			j.TargetGok = IndexVanFoodSource(j.TargetId, j.TargetGok);
-			if (j.TargetGok < 0 || foodSources[j.TargetGok].ResourceCount <= 0) StopPlan(ref j);
-		}
-		if (j.CurrentPlan == Plan.EAT_STRONT)
-		{
-			j.TargetGok = IndexVanDrolHoop(j.TargetId, j.TargetGok);
-			if (j.TargetGok < 0) StopPlan(ref j);
-		}
-		if (j.CurrentPlan is Plan.REPRODUCE or Plan.HUNT)
+		
+		if (j.CurrentPlan is Plan.REPRODUCE)
 		{
 			j.TargetGok = IndexVanJoekel(j.TargetId, j.TargetGok);
 			if (j.TargetGok < 0) StopPlan(ref j);
+		}
+
+		if (j.CurrentPlan is not (Plan.REPRODUCE or Plan.HUNT))
+		{
+			j.CurrentPlan = Plan.NEURAL_NETWORK;
 		}
 	}
 	private int BesteProoi(int i, JoekelData joekelData)

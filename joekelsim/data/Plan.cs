@@ -12,5 +12,7 @@ public enum Plan
 	// Op jacht
 	HUNT,
 	// naar een drolhoop (strontvreters)
-	EAT_STRONT
+	EAT_STRONT,
+	// Neural net control
+	NEURAL_NETWORK,
 }

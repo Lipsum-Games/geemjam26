@@ -1,5 +1,6 @@
 using System;
 using Geemjam26ShipsumEvolve.genetica;
+using Godot;
 
 namespace Geemjam26ShipsumEvolve.neuralnets;
 
@@ -9,6 +10,7 @@ namespace Geemjam26ShipsumEvolve.neuralnets;
  */
 public class SimpleNet
 {
+    private static readonly Plan[] plans = [Plan.NEURAL_NETWORK, Plan.REPRODUCE, Plan.HUNT];
     public static readonly int INPUT_SIZE = SimpleNetInputData.INPUT_SIZE + 0;
     
     private readonly DenseLayer[] layers = new  DenseLayer[2];
@@ -25,9 +27,9 @@ public class SimpleNet
         
         layers[1] = new DenseLayer(
             hSize, 
-            2, 
+            5, 
             DenseLayer.GenRandomWeights(INPUT_SIZE, hSize),
-            null, // Totally unbiased :3
+            null, //DenseLayer.GenEmptyBiases(5),
             v => v // No activation, we'll process the outputs later
         );
     }
@@ -37,7 +39,7 @@ public class SimpleNet
         this.layers = layers;
     }
 
-    public (float richtingDev, float kracht) Process(SimpleNetInputData data)
+    public (float richtingDev, float kracht, Plan plan) Process(SimpleNetInputData data)
     {
         float[] inp = new float[INPUT_SIZE];
         data.FillInputArray(inp);
@@ -50,7 +52,23 @@ public class SimpleNet
 
         float richtingDev = Activations.Tanh(v[0]) * 1f;
         float kracht = Activations.Sigmoid(v[1]);
-        return (richtingDev, kracht);
+        float[] planProbs = Activations.Softmax(v[2..]);
+
+        float val = GD.Randf();
+        float sum = 0f;
+        Plan plan = Plan.NEURAL_NETWORK;
+
+        for (int i = 0; i < plans.Length; i++)
+        {
+            sum += planProbs[i];
+            if (val < sum)
+            {
+                plan = plans[i];
+                break;
+            }
+        }
+        
+        return (richtingDev, kracht, plan);
     }
 
     public SimpleNet Reproduce(SimpleNet other, ReproductionValues reproductionValues)
