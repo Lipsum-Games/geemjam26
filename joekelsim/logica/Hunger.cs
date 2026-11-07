@@ -16,7 +16,7 @@ public partial class JoekelSim
 
             // als we voedsel aanraken (een valida f index voor voedsel)
 			int f = RaaktFoodSource(i);
-			if (f >= 0)
+			if (joekels[i].CurrentPlan != Plan.HUNT && f >= 0)
 			{
 			    float maximaalWilOfKanEten = (joekels[i].Hunger - HungerMin) * Mathf.Max((joekels[i].Vleeslustigheid - 0.5f) * -1, 0);
 				// strontvreters eten planten iets minder goed

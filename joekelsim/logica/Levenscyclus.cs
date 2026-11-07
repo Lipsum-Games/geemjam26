@@ -1,7 +1,7 @@
 using Godot;
 using System;
 using Geemjam26ShipsumEvolve.genetica;
-using Geemjam26ShipsumEvolve.neuralnets;
+using Geemjam26ShipsumEvolve.neuralnets.simplenet;
 
 // De hele joekel lifecycle, geboorte en dood wordt hier geregeld.
 public partial class JoekelSim
@@ -69,6 +69,8 @@ public partial class JoekelSim
 				FlipProbability = Karaktereigenschappen.FlipChance.Van(dna),
 			},
 			NeuralNet = net,
+			LaatsteRichting = 0,
+			LaatsteKracht = 0
 		};
 
 		// meteen in de grid plaatsen, zodat wie hierna geboren wordt hem al ziet
@@ -131,7 +133,7 @@ public partial class JoekelSim
 					new Vector2(GD.Randf() * World.WorldSize.X, 
 						GD.Randf() * World.WorldSize.Y), 
 					Dna.Random(), 
-					new SimpleNet(4)
+					new SimpleNet(8)
 					);
 		}
 	}

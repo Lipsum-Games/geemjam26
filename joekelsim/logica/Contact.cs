@@ -13,10 +13,10 @@ public partial class JoekelSim
 	const float AgeOfConsent = 200f / 60f;
 
 	// boven dit DNA-verschil zijn het eigenlijk andere soorten
-	const float SoortGrens = 4f;
+	const float SoortGrens = 40f;
 	const float SoortGrensMiskraamKans = 0.5f;
 	// onder dit DNA-verschil is het inteelt (bijna-klonen)
-	const float InteeltGrens = 1.5f;
+	const float InteeltGrens = -1.5f;
 
 	// hoeveel honger een kill wegneemt per chonk van de prooi
 	const float VleesPerChonk = 1.2f;
@@ -49,11 +49,11 @@ public partial class JoekelSim
 					Reproduce(i, j);
 				}
 				// groot verschil = batel (alleen als het een planteneter is)
-				else if (joekels[i].CurrentPlan == Plan.HUNT  && joekels[j].Vleeslustigheid < 0 && verschil > 1)
+				else if (joekels[i].CurrentPlan == Plan.HUNT && verschil > 1)
 				{
 					bool leefde = joekels[j].HuidigeGezonheid > 0;
 					joekels[j].HuidigeGezonheid -= joekels[i].Chonkheid * 20f * contactDt;
-					joekels[i].Hunger = Mathf.Max(0.0f, joekels[i].Hunger - Mathf.Max(joekels[i].Vleeslustigheid + 0.3f, 0f) * contactDt);
+					joekels[i].Hunger = Mathf.Max(0.0f, joekels[i].Hunger - joekels[j].Chonkheid * contactDt);
 
 					// doodgemaakt? opeten! hoe dikker de prooi hoe meer vlees, hoe vleeslustiger hoe meer je eruit haalt
 					// en dan is de jacht klaar: lekker rondhangen tot hij weer honger heeft

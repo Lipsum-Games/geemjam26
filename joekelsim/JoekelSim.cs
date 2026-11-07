@@ -1,4 +1,4 @@
-using Geemjam26ShipsumEvolve.neuralnets;
+using Geemjam26ShipsumEvolve.neuralnets.simplenet;
 using Godot;
 
 // Snelle joekel sim waar alle joekels in arrays zitten ipv eigen nodes
@@ -37,7 +37,7 @@ public partial class JoekelSim : Node2D
 		BouwJoekelGrid(); // eerst een leeg grid (alles -1): SpawnJoekel kijkt in het grid of een plek vrij is
 		for (int i = 0; i < StarterJoekels; i++)
 			// plaats die joekeltjes lekker random!
-			SpawnJoekel(new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y), Dna.Random(), new SimpleNet(4));
+			SpawnJoekel(new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y), Dna.Random(), new SimpleNet(8));
 		for (int f = 0; f < StarterFoodSources; f++)
 		    // en ook maar lekker random dat eten plaatsen!
 			SpawnFoodSource(new Vector2(GD.Randf() * World.WorldSize.X, GD.Randf() * World.WorldSize.Y));
@@ -51,7 +51,7 @@ public partial class JoekelSim : Node2D
 		MaakVachtTekening();
 		MaakJoekelTekening();
 		MaakSeizoenTekening();
-		TekenJoekels();
+		MaakJoekelTekening();
 	}
 
 	public override void _PhysicsProcess(double delta)

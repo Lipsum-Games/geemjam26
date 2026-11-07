@@ -13,14 +13,16 @@ public partial class JoekelSim
 
 		if (joekels[i].CurrentPlan is Plan.NEURAL_NETWORK or Plan.HUNT)
 		{
-			joekels[i].RunAwaySeconds -= dt;
-			if (joekels[i].RunAwaySeconds < 0)
+			if (joekels[i].SpringTimer - dt < 0)
 			{
-				joekels[i].RunAwaySeconds = 1f;
-				(joekels[i].LaatsteRichting, joekels[i].LaatsteKracht) = DoeNeuralNetDingen(i, dt);
+				// Compute alleen wanneer we gaan springen
+				(float richting, float kracht) = DoeNeuralNetDingen(i, dt);
+				joekels[i].LaatsteRichting = richting;
+				joekels[i].LaatsteKracht =  kracht;
 			}
-
+			
 			return (joekels[i].LaatsteRichting, joekels[i].LaatsteKracht);
+			//return DoeNeuralNetDingen(i, dt);
 		}
 		
 		if (joekels[i].CurrentPlan == Plan.REPRODUCE)
@@ -43,6 +45,7 @@ public partial class JoekelSim
 			float afstand = doel.DistanceTo(joekels[i].Position);
 			float maxVel = GetVelocityVal(i);
 			float kracht = afstand < maxVel ? Mathf.Clamp(1.0f * afstand / maxVel, 0, 1) : 1f;
+			
 			return (joekels[i].Position.AngleToPoint(doel), kracht);
 		}
 		return (0f, 0f);
@@ -50,7 +53,7 @@ public partial class JoekelSim
 
 	private (float richting, float kracht) DoeNeuralNetDingen(int i, float dt)
 	{
-		JoekelData joekel = joekels[i];
+		ref JoekelData joekel = ref joekels[i];
 		int closestJoekel = ClosestJoekel(i);
 		int prooi = BesteProoi(i, joekel);
 		int f = DichtsteFoodSource(i, joekel.Perception);
@@ -71,7 +74,7 @@ public partial class JoekelSim
 		(float rd, float kracht, Plan plan) = joekels[i].NeuralNet.Process(data);
 		
 		// Geef het netwerk een manier om te dealen met reproductie, wat te moeilijk is om in het begin zelf te doen
-		if (plan is Plan.REPRODUCE)
+		if (joekels[i].CurrentPlan != Plan.REPRODUCE && plan is Plan.REPRODUCE)
 		{
 			// Maatje vinden
 			int mate = ClosestJoekel(i);
@@ -83,8 +86,13 @@ public partial class JoekelSim
 				joekels[i].TargetGok = mate;
 			}
 		}
+		else if (joekels[i].CurrentPlan != Plan.REPRODUCE)
+		{
+			StopPlan(ref joekels[i]);
+			joekels[i].CurrentPlan = plan;
+		}
 		
-		return (joekels[i].Heading + rd * dt, kracht);
+		return ((joekels[i].LaatsteRichting + rd) % Mathf.Tau, kracht);
 	}
 
 	// Voor nu nog leeg.

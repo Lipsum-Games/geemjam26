@@ -64,7 +64,7 @@ public class DenseLayer
         return outputs;
     }
 
-    public static float[] GenRandomWeights(int inputLength, int neurons)
+    public static float[] GenRandomWeights(int inputLength, int neurons, float gain=1.0f)
     {
         // Kaiming/He init
         
@@ -72,7 +72,7 @@ public class DenseLayer
         
         for (int i = 0; i < inputLength * neurons; i++)
         {
-            weights[i] = (float) GD.Randfn(0, Mathf.Sqrt2 * Mathf.Sqrt(6f / (inputLength + neurons)));
+            weights[i] = gain * (float) GD.Randfn(0, Mathf.Sqrt2 * Mathf.Sqrt(6f / (inputLength + neurons)));
         }
         return weights;
     }

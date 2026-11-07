@@ -1,5 +1,5 @@
 using Geemjam26ShipsumEvolve.genetica;
-using Geemjam26ShipsumEvolve.neuralnets;
+using Geemjam26ShipsumEvolve.neuralnets.simplenet;
 using Godot;
 
 // Alles wat een joekel is basically.. joekels[i] in JoekelSim is deze struct.

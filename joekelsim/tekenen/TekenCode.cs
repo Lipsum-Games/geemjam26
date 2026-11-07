@@ -1,3 +1,4 @@
+using System;
 using Godot;
 
 // Hier worden alle joekels getekend, met behulp van een Multimesh, heel simpel gewoon hun vorm: de cirkel!
@@ -75,6 +76,11 @@ public partial class JoekelSim
 				scale: new Vector2(joekels[i].Chonkheid, joekels[i].Chonkheid),
 				skew: 0,
 				origin: joekels[i].Position);
+
+			if (!transform.IsFinite())
+			{
+				throw new Exception("Transform " + transform + " is not finite!");
+			}
 			joekelBanden[0].SetInstanceTransform2D(i, transform);
 			joekelBanden[1].SetInstanceTransform2D(i, transform);
 			joekelBanden[2].SetInstanceTransform2D(i, transform);
@@ -88,7 +94,7 @@ public partial class JoekelSim
 	MultiMesh foodSourceMultiMesh;
 
 	// Hoe groot is het voedsel? Draw en collision.
-	const float FoodSourceStraal = 20f;
+	const float FoodSourceStraal = 15f;
 
 	void MaakFoodSourceTekening()
 	{

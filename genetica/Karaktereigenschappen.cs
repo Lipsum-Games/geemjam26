@@ -37,7 +37,7 @@ public static class Karaktereigenschappen
 
 	// de chonkheid van de joeekel, hoe fatsig bente ei???
 	public const float MinChonkheid = 5f;
-	public const float MaxChonkheid = 30f;
+	public const float MaxChonkheid = 10f;
 	public static readonly Karaktereigenschap Chonkheid = new("Chonkheid", d => Mathf.Min(MinChonkheid + 6f * Softplus(d.Diag() - 0.5f * d[0, 1]), MaxChonkheid));
 
 	// RANZIG???? OUTTA HEREEEE
@@ -52,7 +52,7 @@ public static class Karaktereigenschappen
 	public static readonly Karaktereigenschap AuraPulsDuur = new("AuraPulsDuur", d => Range(0.3f, 3f, Sigmoid(1.5f * d[1, 2] - d[0, 1] + 0.5f * d[2, 2])));
 
 	// hoe scheef een joekel springt (radialen, de spreiding van de fout op elke sprong).
-	public static readonly Karaktereigenschap Drunkness = new("Drunkness", d => 0.1f * Relu(0.8f * (d[0, 0] + d[0, 2]) - 0.7f * d[2, 1] + 0.4f * d[1, 2] + 1.5f) * Relu(0.8f * (d[0, 0] + d[0, 2]) - 0.7f * d[2, 1] + 0.4f * d[1, 2] + 1.5f));
+	public static readonly Karaktereigenschap Drunkness = new("Drunkness", d => 0f); //0.1f * Relu(0.8f * (d[0, 0] + d[0, 2]) - 0.7f * d[2, 1] + 0.4f * d[1, 2] + 1.5f) * Relu(0.8f * (d[0, 0] + d[0, 2]) - 0.7f * d[2, 1] + 0.4f * d[1, 2] + 1.5f));
 
 	// drollen per seconde naar achter. zelfde input als Chonkheid (+ een eigen gen), dus vooral dikke joekels schijten
 	public static readonly Karaktereigenschap Schijtlust = new("Schijtlust", d => 0f); //Relu(d.Diag() - 0.5f * d[0, 1] + 0.7f * d[1, 0]));
